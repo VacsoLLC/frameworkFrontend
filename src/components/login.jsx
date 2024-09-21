@@ -163,7 +163,7 @@ export default function LoginModal({children}) {
                             window.location.href = sso.link;
                           }}
                           autoFocus
-                          className="w-full flex-1"
+                          className="w-full flex-1 hover:bg-indigo-600"
                         >
                           {sso.name}
                         </Btn>
