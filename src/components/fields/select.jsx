@@ -1,4 +1,4 @@
-import { Dropdown } from 'primereact/dropdown';
+import {Dropdown} from 'primereact/dropdown';
 
 export function edit({
   columnId,

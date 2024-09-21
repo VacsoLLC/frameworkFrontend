@@ -1,13 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {useState, useEffect, useMemo} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { Button } from 'primereact/button';
+import {DataTable} from 'primereact/datatable';
+import {Column} from 'primereact/column';
+import {Button} from 'primereact/button';
 
 import CreateRecordButton from './buttons/createrecord.jsx';
 
-import { useBackend } from '../lib/usebackend.js';
+import {useBackend} from '../lib/usebackend.js';
 
 import fields from './fields';
 
@@ -119,7 +119,7 @@ export default function DataTableExtended({
     setLazyState((prevLazyState) => ({
       ...prevLazyState,
       filters: Object.keys(schema.data.schema).reduce((acc, key) => {
-        acc[key] = { value: '', matchMode: 'contains' };
+        acc[key] = {value: '', matchMode: 'contains'};
         return acc;
       }, {}),
     }));
@@ -205,7 +205,7 @@ export default function DataTableExtended({
       <DataTable
         value={rows?.data?.rows || []}
         header={header}
-        tableStyle={{ minWidth: '50rem' }}
+        tableStyle={{minWidth: '50rem'}}
         onRowClick={(e) => {
           navigate(`/${db}/${table}/${e.data.id}`);
         }}
@@ -224,7 +224,7 @@ export default function DataTableExtended({
       >
         {Object.entries(schema?.data?.schema || {})
           .sort(
-            ([, settingsA], [, settingsB]) => settingsA.order - settingsB.order
+            ([, settingsA], [, settingsB]) => settingsA.order - settingsB.order,
           )
           .map(([columnId, settings]) => {
             if (settings.join) return; // Dont show the column that contains a forgien key

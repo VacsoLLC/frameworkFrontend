@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
-import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
+import {Dropdown} from 'primereact/dropdown';
+import {Button} from 'primereact/button';
 
 import CreateRecord from '../buttons/createrecord.jsx';
 
-import { useBackend, callBackend } from '../../lib/usebackend.js';
+import {useBackend, callBackend} from '../../lib/usebackend.js';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -18,7 +18,7 @@ async function getDropDownOptions(settings, value) {
         args: {
           columns: ['id', settings.friendlyColumnName],
           queryModifier: settings.queryModifier,
-          queryModifierArgs: { settings, value },
+          queryModifierArgs: {settings, value},
         },
       });
 
@@ -26,7 +26,7 @@ async function getDropDownOptions(settings, value) {
         throw new Error('Network response was not ok');
       }
 
-      response.data.rows.push({ id: null, name: 'None' });
+      response.data.rows.push({id: null, name: 'None'});
 
       return response.data.rows;
     } catch (err) {
@@ -35,7 +35,7 @@ async function getDropDownOptions(settings, value) {
   }
 }
 
-export function edit({ columnId, settings, value, handleChange, ...props }) {
+export function edit({columnId, settings, value, handleChange, ...props}) {
   const navigate = useNavigate();
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [reload, setReload] = useState(1);

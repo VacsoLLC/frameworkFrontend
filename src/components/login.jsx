@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 
-import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { Messages } from 'primereact/messages';
-import { Divider } from 'primereact/divider';
-import { callBackend, clearCache } from '../lib/usebackend.js';
+import {Dialog} from 'primereact/dialog';
+import {Messages} from 'primereact/messages';
+import {callBackend, clearCache} from '../lib/usebackend.js';
+import {Button as Btn} from '../components/ui/button';
 
 import useUserStore from '../stores/user.js';
+import {Input} from './ui/input.jsx';
+import {Label} from './ui/label.jsx';
+import {Separator} from './ui/separator.jsx';
+import {CheckIcon} from '@radix-ui/react-icons';
 
-export default function LoginModal({ children }) {
+export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [ssoList, setSSOList] = useState(null);
@@ -54,7 +56,7 @@ export default function LoginModal({ children }) {
         packageName: 'core',
         className: 'login',
         methodName: 'getToken',
-        args: { email, password },
+        args: {email, password},
         auth: false,
         supressDialog: true,
       });
@@ -100,76 +102,72 @@ export default function LoginModal({ children }) {
           <Dialog
             header="Login"
             visible={!authenticated}
-            style={{ width: '45vw' }}
+            style={{width: '45vw'}}
             closable={false}
             modal
+            draggable={false}
           >
             <div className="card flex justify-content-center">
-              <form>
-                <div className="p-fluid p-5">
-                  <div className="field grid">
-                    <label
-                      htmlFor="email"
-                      className="col-12 mb-2 md:col-3 md:mb-0 formLabel"
-                    >
-                      Email Address
-                    </label>
-                    <div className="col-12 md:col-9">
-                      <InputText
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="field grid">
-                    <label
-                      htmlFor="password"
-                      className="col-12 mb-2 md:col-3 md:mb-0 formLabel"
-                    >
-                      Password
-                    </label>
-                    <div className="col-12 md:col-9">
-                      <InputText
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="justify-content-center flex">
-                    <Button
-                      label="Login"
-                      icon="pi pi-check"
-                      onClick={onLogin}
-                      autoFocus
-                      style={{ width: '7vw' }}
-                    />
-                  </div>
+              <div className="w-full max-w-md mx-auto space-y-4 p-2 pr-6 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Label
+                    htmlFor="email"
+                    className="w-20 text-right flex-shrink-0"
+                  >
+                    Email
+                  </Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    className="flex-grow"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
-              </form>
+                <div className="flex items-center space-x-2">
+                  <Label
+                    htmlFor="password"
+                    className="w-20 text-right flex-shrink-0"
+                  >
+                    Password
+                  </Label>
+                  <Input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    className="flex-grow"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                <div className="pt-2 flex justify-content-center">
+                  <Btn
+                    className="bg-indigo-500 hover:bg-indigo-600"
+                    type="submit"
+                    onClick={onLogin}
+                  >
+                    <CheckIcon className="mr-1" /> Login
+                  </Btn>
+                </div>
+              </div>
 
-              {ssoList && (
+              {ssoList && ssoList.length > 0 && (
                 <>
-                  <Divider layout="vertical" />
-                  <div>
-                    <div className="text-center">Or login with:</div> <br />{' '}
-                    <br />
+                  <Separator orientation="vertical" />
+                  <div className="flex-col items-center p-3 pl-5">
+                    <div className="text-center">Or login with:</div>
                     {ssoList.map((sso) => (
-                      <>
-                        <Button
+                      <div className="mt-4">
+                        <Btn
                           label={sso.name}
-                          //icon="pi pi-check"
                           onClick={() => {
                             window.location.href = sso.link;
                           }}
                           autoFocus
-                          style={{ width: '10vw' }}
-                        />
-                        <br />
-                        <br />
-                      </>
+                          className="w-full flex-1"
+                        >
+                          {sso.name}
+                        </Btn>
+                      </div>
                     ))}
                   </div>
                 </>

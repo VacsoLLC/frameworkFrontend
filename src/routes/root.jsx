@@ -1,17 +1,17 @@
-import { useRef, useEffect, useState, startTransition } from 'react';
-import { Outlet } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import {useRef, useEffect, useState, startTransition} from 'react';
+import {Outlet} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
-import { Menubar } from 'primereact/menubar';
-import { Menu } from 'primereact/menu';
-import { Button } from 'primereact/button';
-import { Avatar } from 'primereact/avatar';
-import { Toast } from 'primereact/toast';
-import { InputText } from 'primereact/inputtext';
+import {Menubar} from 'primereact/menubar';
+import {Menu} from 'primereact/menu';
+import {Button} from 'primereact/button';
+import {Avatar} from 'primereact/avatar';
+import {Toast} from 'primereact/toast';
+import {InputText} from 'primereact/inputtext';
 
-import { useBackend } from '../lib/usebackend.js';
+import {useBackend} from '../lib/usebackend.js';
 
-import { Dialog } from 'primereact/dialog';
+import {Dialog} from 'primereact/dialog';
 
 import Login from '../components/login.jsx';
 
@@ -35,7 +35,7 @@ export default function Root() {
     methodName: 'getAllMenuItems',
     filter: (data) => buildMenu(data.data, navigate),
     clear: !authenticated,
-    args: { authenticated }, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
+    args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
   });
 
   const sendToast = (toastObject) => {
@@ -133,7 +133,7 @@ function buildMenu(items, navigate) {
   let output = [];
 
   for (const item of Object.keys(items).sort(
-    (a, b) => items[a].order - items[b].order
+    (a, b) => items[a].order - items[b].order,
   )) {
     let itemoutput = {};
 

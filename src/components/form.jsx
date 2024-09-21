@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip } from 'primereact/tooltip';
+import {Tooltip} from 'primereact/tooltip';
 import Fields from './fields/index.jsx';
 
 /**
@@ -76,7 +76,7 @@ export default function Form({
             <label
               htmlFor={columnId}
               className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
-              style={{ width: '200px' }}
+              style={{width: '200px'}}
             >
               <div
                 data-pr-tooltip={

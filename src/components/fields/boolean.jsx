@@ -1,5 +1,5 @@
-import { Checkbox } from 'primereact/checkbox';
-import { Dropdown } from 'primereact/dropdown';
+import {Checkbox} from 'primereact/checkbox';
+import {Dropdown} from 'primereact/dropdown';
 
 export function edit({
   columnId,
@@ -24,7 +24,7 @@ export function read(props) {
   return <>{props.value ? 'Yes' : 'No'}</>;
 }
 
-export function filter({ columnId, value, onFilterElementChange, ...props }) {
+export function filter({columnId, value, onFilterElementChange, ...props}) {
   return (
     <Dropdown
       value={value}
@@ -34,9 +34,9 @@ export function filter({ columnId, value, onFilterElementChange, ...props }) {
         onFilterElementChange(columnId, e.value, 'equals');
       }}
       options={[
-        { label: 'All', value: '' },
-        { label: 'Yes', value: '1' },
-        { label: 'No', value: '0' },
+        {label: 'All', value: ''},
+        {label: 'Yes', value: '1'},
+        {label: 'No', value: '0'},
       ]}
     />
   );

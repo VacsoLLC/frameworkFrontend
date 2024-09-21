@@ -1,4 +1,4 @@
-import { InputText } from 'primereact/inputtext';
+import {InputText} from 'primereact/inputtext';
 
 export function edit({
   columnId,
@@ -21,6 +21,6 @@ export function edit({
   );
 }
 
-export function read({ valueFriendly, value }) {
+export function read({valueFriendly, value}) {
   return valueFriendly;
 }

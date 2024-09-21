@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Root from './routes/root.jsx';
 import Table from './routes/table.jsx';
 import ViewRecord from './routes/viewrecord.jsx';
@@ -13,6 +13,7 @@ import 'primeflex/primeflex.css'; // css utility
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.css'; // core css
 import './main.css';
+import './output.css';
 
 function App() {
   const router = createBrowserRouter([

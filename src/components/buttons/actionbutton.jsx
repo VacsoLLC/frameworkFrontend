@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Button } from 'primereact/button';
+import {useState} from 'react';
+import {Button} from 'primereact/button';
 import ActionModal from '../actionmodal.jsx';
-import { Tooltip } from 'primereact/tooltip';
+import {Tooltip} from 'primereact/tooltip';
 import AttachButton from './attachbutton.jsx';
 
 export default function ActionButton({
@@ -58,7 +58,7 @@ export default function ActionButton({
         onClick={onClick}
         severity={button.color || 'primary'}
         tooltip={button.disabled || button.helpText}
-        tooltipOptions={{ position: 'top', showOnDisabled: true }}
+        tooltipOptions={{position: 'top', showOnDisabled: true}}
       />
     </>
   );

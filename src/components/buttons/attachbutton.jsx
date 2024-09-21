@@ -1,8 +1,8 @@
 // src/components/AttachmentUploader.jsx
 
 import React from 'react';
-import { FileUpload } from 'primereact/fileupload';
-import { api } from '../../lib/usebackend.js';
+import {FileUpload} from 'primereact/fileupload';
+import {api} from '../../lib/usebackend.js';
 import useUserStore from '../../stores/user.js';
 
 /**
@@ -41,7 +41,7 @@ export default function AttachmentUploader({
 
       const response = await api.uploadFiles(
         '/api/core/attachment/upload',
-        formData
+        formData,
       );
 
       if (response.ok) {

@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from 'primereact/button';
-import { useBackend, callBackend } from '../lib/usebackend.js';
+import React, {useState, useEffect, useMemo} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Button} from 'primereact/button';
+import {useBackend, callBackend} from '../lib/usebackend.js';
 import useUserStore from '../stores/user.js';
 import Form from './form.jsx';
 import ActionButton from './buttons/actionbutton.jsx';
-import { formatDateTime, unFormatDateTime } from './util.js';
+import {formatDateTime, unFormatDateTime} from './util.js';
 import './record.css';
-
 
 export default function Record({
   db,
@@ -65,7 +64,7 @@ export default function Record({
           if (settings.defaultValue !== undefined) {
             initialData[columnId] = settings.defaultValue;
           }
-        }
+        },
       );
       // Apply any pre-filled values from 'where'
       where.forEach((whereClause) => {
@@ -98,13 +97,13 @@ export default function Record({
 
   const handleSubmit = async (params) => {
     setError(null);
-    const postData = { ...formData };
+    const postData = {...formData};
     Object.entries(schema?.data?.schema || {}).forEach(
       ([columnId, settings]) => {
         if (settings.columnType === 'datetime') {
           postData[columnId] = unFormatDateTime(formData[columnId]); // TODO: get rid of this. may not actually be needed
         }
-      }
+      },
     );
 
     try {
@@ -112,7 +111,7 @@ export default function Record({
         packageName: db,
         className: table,
         methodName: 'recordCreate',
-        args: { data: postData },
+        args: {data: postData},
         supressDialog: true,
       });
 
@@ -169,7 +168,7 @@ export default function Record({
         acc[columnId] = settings;
         return acc;
       },
-      {}
+      {},
     );
   }, [schema, table, newRecord, where]);
 
@@ -194,7 +193,7 @@ export default function Record({
         <div className="field grid" key="submitbutton">
           <div
             className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
-            style={{ width: '200px' }}
+            style={{width: '200px'}}
           ></div>
           <div className="col">
             {newRecord && (
@@ -203,15 +202,15 @@ export default function Record({
                   type="submit"
                   label="Create"
                   tooltip="Create the record"
-                  tooltipOptions={{ position: 'top' }}
+                  tooltipOptions={{position: 'top'}}
                   className="mr-1 mb-1"
-                  onClick={() => handleSubmit({ close: false })}
+                  onClick={() => handleSubmit({close: false})}
                 />
                 <Button
                   type="button"
                   label="Cancel"
                   tooltip="Cancel and go back"
-                  tooltipOptions={{ position: 'top' }}
+                  tooltipOptions={{position: 'top'}}
                   severity="secondary"
                   className="mr-1 mb-1"
                   onClick={onClose}
@@ -234,7 +233,6 @@ export default function Record({
                   columns={schema.data.schema}
                 />
               ))}
-            
           </div>
         </div>
       </Form>

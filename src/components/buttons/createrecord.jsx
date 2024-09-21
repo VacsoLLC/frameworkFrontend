@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
+import {useState} from 'react';
+import {Button} from 'primereact/button';
+import {Dialog} from 'primereact/dialog';
 import CreateRecord from '../record.jsx';
 
 export default function AddRecordButton({
@@ -36,7 +36,7 @@ export default function AddRecordButton({
       <Dialog
         header={header}
         visible={showDialog}
-        style={{ width: '50vw' }}
+        style={{width: '50vw'}}
         onHide={closeDialog}
         draggable={false}
       >
