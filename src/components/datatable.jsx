@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { DataTable } from 'primereact/datatable';
+// import { DataTable } from 'primereact/datatable';
+import DataTableNew from '../components/datatableNew.jsx'
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 
@@ -202,7 +203,7 @@ export default function DataTableExtended({
 
   return (
     <>
-      <DataTable
+      <DataTableNew
         value={rows?.data?.rows || []}
         header={header}
         tableStyle={{ minWidth: '50rem' }}
@@ -270,7 +271,7 @@ export default function DataTableExtended({
 
             return <Column key={columnId} field={columnId} {...columnProps} />;
           })}
-      </DataTable>
+      </DataTableNew>
     </>
   );
 }

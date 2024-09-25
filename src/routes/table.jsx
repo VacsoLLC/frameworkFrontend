@@ -1,6 +1,6 @@
 import * as React from 'react';
-import DataTable from '../components/datatable.jsx';
-import { Routes, Route, useParams, useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
+import DataTableNew from '../components/datatableNew.jsx';
 
 const generateLocationWhere = (location) => {
   return location?.state?.filter && Array.isArray(location.state.filter)
@@ -19,7 +19,7 @@ export default function Root() {
 
   return (
     <React.Suspense>
-      <DataTable
+      <DataTableNew
         db={db}
         table={table}
         reload={reload}

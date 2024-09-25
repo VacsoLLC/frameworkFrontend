@@ -3,7 +3,7 @@ import { useBackend } from '../lib/usebackend.js';
 
 import { TabView, TabPanel } from 'primereact/tabview';
 
-import DataTable from './datatable.jsx';
+import DataTableNew from './datatableNew.jsx';
 
 export default function Related({ db, table, recordId, reload, forceReload }) {
   const [tables, loading] = useBackend({
@@ -70,7 +70,7 @@ export default function Related({ db, table, recordId, reload, forceReload }) {
                   Object.keys(childTable.columnmap)[0]
                 } // use the first column we join on as the key
               >
-                <DataTable
+                <DataTableNew
                   db={childTable.db}
                   table={childTable.table}
                   where={childTable.where}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import DataTable from '../components/datatable.jsx';
+import DataTableNew from '../components/datatableNew.jsx';
 import { Routes, Route, useParams } from 'react-router-dom';
 import { Tree } from 'primereact/tree';
 import API from '../lib/api.js';
@@ -96,7 +96,7 @@ export default function Root() {
           />
         </div>
         <div className="col-9">
-          <DataTable db={db} table={table} where={where} />
+          <DataTableNew db={db} table={table} where={where} />
         </div>
       </div>
     </>
