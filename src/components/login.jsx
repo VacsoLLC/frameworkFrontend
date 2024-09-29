@@ -3,20 +3,22 @@ import React, {useState, useRef, useEffect} from 'react';
 import {Dialog} from 'primereact/dialog';
 import {Messages} from 'primereact/messages';
 import {callBackend, clearCache} from '../lib/usebackend.js';
-import {Button as Btn} from '../components/ui/button';
 
 import useUserStore from '../stores/user.js';
-import {Input} from './ui/input.jsx';
-import {Label} from './ui/label.jsx';
-import {Separator} from './ui/separator.jsx';
-import {CheckIcon} from '@radix-ui/react-icons';
+import {Button} from '../components/ui/button';
+import {Input} from '../components/ui/input';
+import {Label} from '../components/ui/label';
+import {Separator} from '../components/ui/separator';
+import {useToast} from '../hooks/use-toast.js';
+import {Toaster} from './ui/toaster.jsx';
 
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [ssoList, setSSOList] = useState(null);
 
-  const toast = useUserStore((state) => state.toast);
+  // const toast = useUserStore((state) => state.toast);
+  const {toast: shadToast} = useToast();
 
   const setToken = useUserStore((state) => state.setToken);
   const authenticated = useUserStore((state) => state.authenticated);
@@ -45,9 +47,10 @@ export default function LoginModal({children}) {
 
   const onLogin = async (e) => {
     e.preventDefault();
-
-    msgs.current.clear(); // Clear any previous errors
-    msgs.current.getElement().hidden = true;
+    if (msgs.current) {
+      msgs.current.clear(); // Clear any previous errors
+      msgs.current.getElement().hidden = true;
+    }
 
     console.log('Email:', email, 'Password:', password);
 
@@ -66,34 +69,112 @@ export default function LoginModal({children}) {
       if (data && data.token) {
         setToken(data.token);
 
-        toast({
-          severity: 'success',
-          summary: 'Success',
-          detail: `Login successful`,
-          life: 3000,
+        // toast({
+        //   severity: 'success',
+        //   summary: 'Success',
+        //   detail: `Login successful`,
+        //   life: 3000,
+        // });
+        shadToast({
+          title: 'Success',
+          description: 'Login successful',
+          duration: 3000,
+          variant: 'success',
         });
 
         clearCache();
         console.log('Login successful!');
       } else {
-        toast({
-          severity: 'error',
-          summary: 'Failed',
-          detail: `Login failed`,
-          life: 3000,
+        // toast({
+        //   severity: 'error',
+        //   summary: 'Failed',
+        //   detail: `Login failed`,
+        //   life: 3000,
+        // });
+        shadToast({
+          title: 'Failed',
+          description: 'Login failed',
+          duration: 3000,
+          variant: 'error',
         });
 
         console.log('No token received');
       }
     } catch (error) {
-      toast({
-        severity: 'error',
-        summary: 'Failed',
-        detail: `Login failed`,
-        life: 3000,
+      // toast({
+      //   severity: 'error',
+      //   summary: 'Failed',
+      //   detail: `Login failed`,
+      //   life: 3000,
+      // });
+      shadToast({
+        title: 'Failed',
+        description: 'Login failed',
+        duration: 3000,
+        variant: 'error',
       });
     }
   };
+  return (
+    <>
+      <Dialog
+        visible={!authenticated}
+        style={{width: '45vw'}}
+        closable={false}
+        modal
+        draggable={false}
+      >
+        <div className="flex justify-center">
+          <div className="w-96 p-6 border rounded-lg shadow-md bg-card">
+            <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full" onClick={onLogin}>
+                Login
+              </Button>
+            </div>
+
+            <Separator className="my-6" />
+
+            <div className="space-y-4">
+              <p className="text-sm text-center text-muted-foreground">
+                Or login with...
+              </p>
+              {ssoList?.length &&
+                ssoList.map((sso) => (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      window.location.href = sso.link;
+                    }}
+                  >
+                    {sso.name}
+                  </Button>
+                ))}
+            </div>
+          </div>
+        </div>
+      </Dialog>
+      <Toaster />
+      <>{children}</>
+    </>
+  );
 
   return (
     <>
@@ -140,11 +221,7 @@ export default function LoginModal({children}) {
                   />
                 </div>
                 <div className="pt-2 flex justify-content-center">
-                  <Btn
-                    className="bg-indigo-500 hover:bg-indigo-600"
-                    type="submit"
-                    onClick={onLogin}
-                  >
+                  <Btn className="" type="submit" onClick={onLogin}>
                     <CheckIcon className="mr-1" /> Login
                   </Btn>
                 </div>
@@ -163,7 +240,7 @@ export default function LoginModal({children}) {
                             window.location.href = sso.link;
                           }}
                           autoFocus
-                          className="w-full flex-1 hover:bg-indigo-600"
+                          className="w-full flex-"
                         >
                           {sso.name}
                         </Btn>
