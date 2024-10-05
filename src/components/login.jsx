@@ -122,6 +122,7 @@ export default function LoginModal({children}) {
         style={{width: '45vw'}}
         closable={false}
         modal
+        maskClassName={'bg-opacity-50 bg-black'}
         draggable={false}
       >
         <div className="flex justify-center">
