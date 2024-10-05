@@ -10,7 +10,7 @@ import Search from './routes/search.jsx';
 
 // import 'primereact/resources/themes/lara-light-indigo/theme.css'; // theme
 // import 'primeflex/primeflex.css'; // css utility
-// import 'primeicons/primeicons.css';
+import 'primeicons/primeicons.css';
 // import 'primereact/resources/primereact.css'; // core css
 import './main.css';
 import './output.css';

@@ -16,6 +16,7 @@ import {Dialog} from 'primereact/dialog';
 import Login from '../components/login.jsx';
 
 import useUserStore from '../stores/user.js';
+import TopNavbar from '../components/AppBar.jsx';
 
 export default function Root() {
   const navigate = useNavigate();
@@ -120,8 +121,13 @@ export default function Root() {
         <br />
         {errorMessage}
       </Dialog>
-      <Toast ref={toast} />
-      <Menubar model={newItems} className="mb-1" end={end} />
+      <Toast ref={toast} userItems={userItems} />
+      <TopNavbar
+        navItems={newItems}
+        userItems={userItems}
+        onSearch={(val) => navigate(`/search?value=${val}`)}
+      />
+      {/* <Menubar model={newItems} className="mb-1" end={end} /> */}
       <Login>
         <Outlet />
       </Login>
