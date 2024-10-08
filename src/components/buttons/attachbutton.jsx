@@ -1,6 +1,6 @@
 // src/components/AttachmentUploader.jsx
 
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {api} from '../../lib/usebackend.js';
 import useUserStore from '../../stores/user.js';
 import {Button} from '../ui/button.jsx';
@@ -22,7 +22,7 @@ export default function AttachmentUploader({
 }) {
   const toast = useUserStore((state) => state.toast);
   const uploadRef = React.useRef(null);
-  const [uploading, setUploading] = useState(false)
+  const [uploading, setUploading] = useState(false);
 
   const handleButtonClick = () => {
     uploadRef.current?.click();
@@ -33,7 +33,7 @@ export default function AttachmentUploader({
    */
   const uploadHandler = async (event) => {
     try {
-      setUploading(true)
+      setUploading(true);
       const files = Array.from(event.target.files);
       const formData = new FormData();
 
@@ -47,7 +47,7 @@ export default function AttachmentUploader({
 
       const response = await api.uploadFiles(
         '/api/core/attachment/upload',
-        formData
+        formData,
       );
 
       if (response.ok) {
@@ -73,7 +73,7 @@ export default function AttachmentUploader({
       });
     } finally {
       if (uploadRef.current) uploadRef.current.value = '';
-      setUploading(false)
+      setUploading(false);
     }
   };
 
@@ -87,7 +87,7 @@ export default function AttachmentUploader({
         multiple
       />
       <Button onClick={handleButtonClick} disabled={uploading}>
-      {uploading ? (
+        {uploading ? (
           <>
             <Loader2 className="mr-2 h-6 w-6 animate-spin" />
             Uploading...

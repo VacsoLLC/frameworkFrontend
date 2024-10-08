@@ -130,7 +130,11 @@ export default function ActionModal({
                 ></div>
                 <div className="flex-col-reverse">
                   <Button onClick={onSubmit}>{button.label}</Button>
-                  <Button onClick={closeDialog} variant="secondary" className="ml-2">
+                  <Button
+                    onClick={closeDialog}
+                    variant="secondary"
+                    className="ml-2"
+                  >
                     Cancel
                   </Button>
                 </div>

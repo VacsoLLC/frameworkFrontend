@@ -65,7 +65,7 @@ export default function Record({
           if (settings.defaultValue !== undefined) {
             initialData[columnId] = settings.defaultValue;
           }
-        }
+        },
       );
       // Apply any pre-filled values from 'where'
       where.forEach((whereClause) => {
@@ -104,7 +104,7 @@ export default function Record({
         if (settings.columnType === 'datetime') {
           postData[columnId] = unFormatDateTime(formData[columnId]); // TODO: get rid of this. may not actually be needed
         }
-      }
+      },
     );
 
     try {
@@ -169,7 +169,7 @@ export default function Record({
         acc[columnId] = settings;
         return acc;
       },
-      {}
+      {},
     );
   }, [schema, table, newRecord, where]);
 
@@ -177,9 +177,11 @@ export default function Record({
   if (loading || recordLoading || schemaLoading || buttonsLoading) return <></>;
 
   return (
-    <div className='mt-4 ml-4'>
+    <div className="mt-4 ml-4">
       {showHeader ? (
-        <h2 className='text-2xl font-semibold'>{(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}</h2>
+        <h2 className="text-2xl font-semibold">
+          {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
+        </h2>
       ) : (
         ''
       )}

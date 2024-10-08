@@ -1,6 +1,6 @@
 // import {Checkbox} from 'primereact/checkbox';
 import {Dropdown} from 'primereact/dropdown';
-import { Checkbox } from '../ui/checkbox';
+import {Checkbox} from '../ui/checkbox';
 
 export function edit({
   columnId,
@@ -9,17 +9,16 @@ export function edit({
   value,
   handleChange,
 }) {
-
   return (
     <Checkbox
       id={columnId}
       name={columnId}
-      onCheckedChange={(e) => {
-        handleChange(columnId, e.target.checked ? 1 : 0);
+      onCheckedChange={(checked) => {
+        handleChange(columnId, checked ? 1 : 0);
       }}
       checked={value ? true : false}
     />
-  )
+  );
   return (
     <Checkbox
       id={columnId}

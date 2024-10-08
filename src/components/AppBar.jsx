@@ -45,7 +45,7 @@ const getDropdownForItem = (item) => {
 export default function TopNavbar({navItems, onSearch, userItems}) {
   return (
     <nav className="border-b">
-      <div className="flex h-16 items-center px-4">
+      <div className="flex items-center px-4" style={{height: '3rem'}}>
         <div className="flex space-x-4">
           {navItems?.length > 0 &&
             navItems.map((navItem) => {

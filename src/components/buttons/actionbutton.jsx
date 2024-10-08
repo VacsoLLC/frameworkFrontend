@@ -63,8 +63,8 @@ export default function ActionButton({
       <Button
         disabled={button.disabled ? true : false}
         variant={COLOR_TO_VARIANT_MAP[button?.color] ?? 'default'}
-         className="mr-1 mb-1"
-         onClick={onClick}
+        className="mr-1 mb-1"
+        onClick={onClick}
       >
         {button?.label}
       </Button>

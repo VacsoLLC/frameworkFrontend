@@ -20,7 +20,7 @@ import {
 
 import {useBackend, callBackend} from '../../lib/usebackend.js';
 import {Button} from '../ui/button.jsx';
-import { CloudCog } from 'lucide-react';
+import {CloudCog} from 'lucide-react';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -76,14 +76,14 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
     console.log(props);
     return <div>Loading...</div>;
   }
-console.log(value, columnId)
-console.log(dropdownOptions,columnId)
+  console.log(value, columnId);
+  console.log(dropdownOptions, columnId);
   return (
     <>
       <Select
         value={value?.toString()}
         onValueChange={(e) => {
-          console.log(e)
+          console.log(e);
           handleChange(columnId, e);
         }}
         // size={settings.fieldWidth}
@@ -121,7 +121,7 @@ console.log(dropdownOptions,columnId)
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-            size="sm"
+              size="sm"
               onClick={() => {
                 navigate(`/${settings.joinDb}/${settings.join}/${value}`);
               }}

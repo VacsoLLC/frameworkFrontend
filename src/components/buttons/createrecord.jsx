@@ -1,9 +1,20 @@
 import {useState} from 'react';
 
-import {Dialog} from 'primereact/dialog';
+// import {Dialog} from 'primereact/dialog';
 import CreateRecord from '../record.jsx';
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '../ui/tooltip.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip.jsx';
 import {Button} from '../ui/button.jsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog.jsx';
 
 export default function AddRecordButton({
   db,
@@ -26,14 +37,6 @@ export default function AddRecordButton({
 
   return (
     <>
-      {/* <Button
-        icon="pi pi-plus"
-        className="mx-1"
-        onClick={openDialog}
-        tooltip="Create record"
-        disabled={disabled}
-        visible={!disabled} // TODO decide if we want to hide the button or just disable it. For ticketing, we want to hide it. Other apps? probably disable.
-      /> */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -42,6 +45,8 @@ export default function AddRecordButton({
               onClick={() => {
                 openDialog();
               }}
+              disabled={disabled}
+              className={disabled ? 'hidden' : ''}
               key="viewRelatedRecord"
             >
               <i className="pi pi-plus" />
@@ -52,23 +57,25 @@ export default function AddRecordButton({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-
       <Dialog
-        header={header}
-        visible={showDialog}
+        open={showDialog}
+        onOpenChange={closeDialog}
         style={{width: '50vw'}}
-        onHide={closeDialog}
-        draggable={false}
       >
-        <CreateRecord
-          db={db}
-          table={table}
-          onClose={(id) => {
-            closeDialog(id);
-          }}
-          where={where}
-          closeOnCreate={closeOnCreate}
-        />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{header}</DialogTitle>
+          </DialogHeader>
+          <CreateRecord
+            db={db}
+            table={table}
+            onClose={(id) => {
+              closeDialog(id);
+            }}
+            where={where}
+            closeOnCreate={closeOnCreate}
+          />
+        </DialogContent>
       </Dialog>
     </>
   );
