@@ -86,6 +86,7 @@ export default function Form({
           {Object.entries(schema || {}).map(([columnId, settings]) => (
             <div
               className="flex items-center justify-center space-x-4"
+              style={{marginTop: '12px'}}
               key={columnId}
             >
               <Tooltip>

@@ -8,6 +8,8 @@ import ActionButton from './buttons/actionbutton.jsx';
 import {formatDateTime, unFormatDateTime} from './util.js';
 import './record.css';
 import {Button} from './ui/button.jsx';
+import {useToast} from '../hooks/use-toast.js';
+import {Toaster} from './ui/toaster.jsx';
 
 export default function Record({
   db,
@@ -23,6 +25,7 @@ export default function Record({
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const toast = useUserStore((state) => state.toast);
+  const {toast: shadToast} = useToast();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const userId = useUserStore((state) => state.userId);
@@ -124,12 +127,18 @@ export default function Record({
         onClose(response.data.id);
       }
 
-      toast({
-        severity: 'success',
+      shadToast({
         summary: 'Success',
-        detail: `Record created successfully. ID: ${response.data.id}`,
+        description: `Record created successfully. ID: ${response.data.id}`,
         life: 3000,
+        variant: 'success',
       });
+      // toast({
+      //   severity: 'success',
+      //   summary: 'Success',
+      //   detail: `Record created successfully. ID: ${response.data.id}`,
+      //   life: 3000,
+      // });
 
       if (!closeOnCreate) {
         navigate(`/${db}/${table}/${response.data.id}`);
@@ -138,11 +147,11 @@ export default function Record({
       }
     } catch (error) {
       console.error('Error creating record:', error);
-      toast({
-        severity: 'error',
+      shadToast({
         summary: 'Error',
-        detail: `An error occurred: ${error.message}`,
+        description: `An error occurred: ${error.message}`,
         life: 5000,
+        variant: 'error',
       });
     }
   };
@@ -178,6 +187,7 @@ export default function Record({
 
   return (
     <div className="mt-4 ml-4">
+      <Toaster />
       {showHeader ? (
         <h2 className="text-2xl font-semibold">
           {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
