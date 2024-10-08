@@ -1,11 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
+import {useEffect, useState} from 'react';
 import Form from './form.jsx';
 import useUserStore from '../stores/user.js';
-import { useNavigate } from 'react-router-dom';
-import { unFormatDateTime } from './util.js';
-import { callBackend } from '../lib/usebackend.js';
+import {useNavigate} from 'react-router-dom';
+import {unFormatDateTime} from './util.js';
+import {callBackend} from '../lib/usebackend.js';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog.jsx';
+import {Button} from './ui/button.jsx';
 
 export default function ActionModal({
   show,
@@ -44,7 +49,7 @@ export default function ActionModal({
   };
 
   const handleChange = (columnId, value) => {
-    setFormData((prev) => ({ ...prev, [columnId]: value }));
+    setFormData((prev) => ({...prev, [columnId]: value}));
   };
 
   const onSubmit = async () => {
@@ -68,7 +73,7 @@ export default function ActionModal({
           className: table,
           methodName: button.id,
           recordId,
-          args: { ...formData, data: recordFormData },
+          args: {...formData, data: recordFormData},
           supressDialog: true,
         });
 
@@ -98,6 +103,48 @@ export default function ActionModal({
       }
     }
   };
+  return (
+    <Dialog open={showDialog} onOpenChange={() => closeDialog()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{button.label}</DialogTitle>
+        </DialogHeader>
+        {button.verify && (
+          <>
+            {button.verify}
+            <br />
+            <br />
+          </>
+        )}
+        {(button.verify || button.inputs) && (
+          <>
+            <Form
+              schema={button.inputs}
+              formData={formData}
+              handleChange={handleChange}
+            >
+              <div className="field grid" key="submitbutton">
+                <div
+                  className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
+                  style={{width: '200px'}}
+                ></div>
+                <div className="flex-col-reverse">
+                  <Button onClick={onSubmit}>{button.label}</Button>
+                  <Button
+                    onClick={closeDialog}
+                    variant="secondary"
+                    className="ml-2"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </Form>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <>
@@ -106,7 +153,7 @@ export default function ActionModal({
         visible={showDialog}
         onHide={closeDialog}
         size="large"
-        style={{ width: '1000px' }}
+        style={{width: '1000px'}}
         className=""
       >
         {button.verify && (
@@ -126,7 +173,7 @@ export default function ActionModal({
               <div className="field grid" key="submitbutton">
                 <div
                   className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
-                  style={{ width: '200px' }}
+                  style={{width: '200px'}}
                 ></div>
                 <div className="col">
                   <Button

@@ -4,3 +4,10 @@ dist
 dist-ssr
 *.local
 .eslintcache
+package.json
+package-lock.json
+*.html
+*.yml
+*.yaml
+*.scss
+*.md

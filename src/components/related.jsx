@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useBackend } from '../lib/usebackend.js';
+import React, {useState, useEffect, useRef} from 'react';
+import {useBackend} from '../lib/usebackend.js';
 
-import { TabView, TabPanel } from 'primereact/tabview';
+import {TabView, TabPanel} from 'primereact/tabview';
 
 import DataTable from './datatable.jsx';
 
-export default function Related({ db, table, recordId, reload, forceReload }) {
+export default function Related({db, table, recordId, reload, forceReload}) {
   const [tables, loading] = useBackend({
     packageName: db,
     className: table,
@@ -39,7 +39,7 @@ export default function Related({ db, table, recordId, reload, forceReload }) {
             break;
         }
 
-        childTable.where.push({ [columna]: right });
+        childTable.where.push({[columna]: right});
       }
     }
 

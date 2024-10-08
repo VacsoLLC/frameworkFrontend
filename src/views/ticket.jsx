@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import DataTable from '../components/datatable.jsx';
-import { Routes, Route, useParams } from 'react-router-dom';
-import { Tree } from 'primereact/tree';
+import {Routes, Route, useParams} from 'react-router-dom';
+import {Tree} from 'primereact/tree';
 import API from '../lib/api.js';
-import { Card } from 'primereact/card';
-import { Badge } from 'primereact/badge';
+import {Card} from 'primereact/card';
+import {Badge} from 'primereact/badge';
 
 const api = new API();
 
@@ -13,7 +13,7 @@ const api = new API();
 ////////////////////////////////////
 
 export default function Root() {
-  const { db, table } = useParams();
+  const {db, table} = useParams();
   const [nodes, setNodes] = useState([]);
   const [where, setWhere] = useState({});
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -48,7 +48,7 @@ export default function Root() {
           label: row.name || config[key].nullLabel,
           data: row,
           onClick: (e) => {
-            setWhere({ [key]: row.id });
+            setWhere({[key]: row.id});
           },
           count: row.tickets,
           expanded: true,

@@ -1,8 +1,8 @@
 // store.js
-import { create } from 'zustand';
-import { jwtDecode } from 'jwt-decode';
-import { persist } from 'zustand/middleware';
-import { clearCache } from '../lib/usebackend';
+import {create} from 'zustand';
+import {jwtDecode} from 'jwt-decode';
+import {persist} from 'zustand/middleware';
+import {clearCache} from '../lib/usebackend';
 
 const useUserStore = create(
   persist(
@@ -11,10 +11,10 @@ const useUserStore = create(
       tokenFields: {},
       authenticated: false,
       errorMessage: null,
-      clearErrorMessage: () => set({ errorMessage: null }),
-      setErrorMessage: (errorMessage) => set({ errorMessage }),
+      clearErrorMessage: () => set({errorMessage: null}),
+      setErrorMessage: (errorMessage) => set({errorMessage}),
       setAuthenticated: (authenticated) => {
-        set({ authenticated });
+        set({authenticated});
         if (authenticated) {
           console.log('Authenticated');
           for (const request of get().pendingRequests) {
@@ -23,7 +23,7 @@ const useUserStore = create(
         }
       },
       toast: () => {},
-      setToast: (toast) => set({ toast }),
+      setToast: (toast) => set({toast}),
       setDefault: () => {
         set({
           token: null,
@@ -77,8 +77,8 @@ const useUserStore = create(
         return false;
       },
     }),
-    { name: 'user' }
-  )
+    {name: 'user'},
+  ),
 );
 
 export default useUserStore;

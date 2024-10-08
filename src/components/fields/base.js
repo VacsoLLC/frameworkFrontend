@@ -19,7 +19,7 @@ export function edit({
   );
 }
 
-export function read({ value }) {
+export function read({value}) {
   return value;
 }
 

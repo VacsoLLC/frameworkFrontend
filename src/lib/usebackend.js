@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import API from './api.js';
 import _ from 'lodash';
 import useUserStore from '../stores/user.js';
@@ -35,7 +35,7 @@ export function useBackend({
   console.log(
     'usebackend userId',
     `/api/${packageName}/${className}/${methodName}`,
-    userId
+    userId,
   );
 
   React.useEffect(() => {
@@ -74,7 +74,7 @@ export function useBackend({
       console.log(
         `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
         response,
-        arguments
+        arguments,
       );
 
       if (filter) {
@@ -140,4 +140,4 @@ export function callBackend({
   return api.fetch(URL, args, auth, supressDialog);
 }
 
-export { api };
+export {api};

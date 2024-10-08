@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useBackend } from '../lib/usebackend.js';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { Card } from 'primereact/card';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import { useNavigate } from 'react-router-dom';
-import { DataView } from 'primereact/dataview';
+import React, {useState, useEffect} from 'react';
+import {useLocation} from 'react-router-dom';
+import {useBackend} from '../lib/usebackend.js';
+import {InputText} from 'primereact/inputtext';
+import {Button} from 'primereact/button';
+import {Card} from 'primereact/card';
+import {ProgressSpinner} from 'primereact/progressspinner';
+import {useNavigate} from 'react-router-dom';
+import {DataView} from 'primereact/dataview';
 
 export default function Search() {
   const location = useLocation();
@@ -69,7 +69,7 @@ export default function Search() {
             onClick={(e) => {
               e.stopPropagation();
               navigate(
-                `/${item.searchDb}/${item.searchTable}/${item.searchRecordId}`
+                `/${item.searchDb}/${item.searchTable}/${item.searchRecordId}`,
               );
             }}
           >
@@ -86,10 +86,7 @@ export default function Search() {
         </div>
         {showExpand && !expanded && (
           <div className="arrow-container">
-            <i
-              className="pi pi-chevron-down"
-              style={{ fontSize: '0.8rem' }}
-            ></i>
+            <i className="pi pi-chevron-down" style={{fontSize: '0.8rem'}}></i>
           </div>
         )}
       </div>
@@ -117,7 +114,7 @@ export default function Search() {
             </font>
             {loading && (
               <ProgressSpinner
-                style={{ width: '20px', height: '20px' }}
+                style={{width: '20px', height: '20px'}}
                 strokeWidth="8"
                 animationDuration=".25s"
               />

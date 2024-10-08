@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from 'primereact/button';
-import { useBackend, callBackend } from '../lib/usebackend.js';
+import React, {useState, useEffect, useMemo} from 'react';
+import {useNavigate} from 'react-router-dom';
+// import {Button} from 'primereact/button';
+import {useBackend, callBackend} from '../lib/usebackend.js';
 import useUserStore from '../stores/user.js';
 import Form from './form.jsx';
 import ActionButton from './buttons/actionbutton.jsx';
-import { formatDateTime, unFormatDateTime } from './util.js';
+import {formatDateTime, unFormatDateTime} from './util.js';
 import './record.css';
-
+import {Button} from './ui/button.jsx';
+import {useToast} from '../hooks/use-toast.js';
+import {Toaster} from './ui/toaster.jsx';
 
 export default function Record({
   db,
@@ -23,6 +25,7 @@ export default function Record({
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const toast = useUserStore((state) => state.toast);
+  const {toast: shadToast} = useToast();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const userId = useUserStore((state) => state.userId);
@@ -65,7 +68,7 @@ export default function Record({
           if (settings.defaultValue !== undefined) {
             initialData[columnId] = settings.defaultValue;
           }
-        }
+        },
       );
       // Apply any pre-filled values from 'where'
       where.forEach((whereClause) => {
@@ -98,13 +101,13 @@ export default function Record({
 
   const handleSubmit = async (params) => {
     setError(null);
-    const postData = { ...formData };
+    const postData = {...formData};
     Object.entries(schema?.data?.schema || {}).forEach(
       ([columnId, settings]) => {
         if (settings.columnType === 'datetime') {
           postData[columnId] = unFormatDateTime(formData[columnId]); // TODO: get rid of this. may not actually be needed
         }
-      }
+      },
     );
 
     try {
@@ -112,7 +115,7 @@ export default function Record({
         packageName: db,
         className: table,
         methodName: 'recordCreate',
-        args: { data: postData },
+        args: {data: postData},
         supressDialog: true,
       });
 
@@ -124,12 +127,18 @@ export default function Record({
         onClose(response.data.id);
       }
 
-      toast({
-        severity: 'success',
+      shadToast({
         summary: 'Success',
-        detail: `Record created successfully. ID: ${response.data.id}`,
+        description: `Record created successfully. ID: ${response.data.id}`,
         life: 3000,
+        variant: 'success',
       });
+      // toast({
+      //   severity: 'success',
+      //   summary: 'Success',
+      //   detail: `Record created successfully. ID: ${response.data.id}`,
+      //   life: 3000,
+      // });
 
       if (!closeOnCreate) {
         navigate(`/${db}/${table}/${response.data.id}`);
@@ -138,11 +147,11 @@ export default function Record({
       }
     } catch (error) {
       console.error('Error creating record:', error);
-      toast({
-        severity: 'error',
+      shadToast({
         summary: 'Error',
-        detail: `An error occurred: ${error.message}`,
+        description: `An error occurred: ${error.message}`,
         life: 5000,
+        variant: 'error',
       });
     }
   };
@@ -169,7 +178,7 @@ export default function Record({
         acc[columnId] = settings;
         return acc;
       },
-      {}
+      {},
     );
   }, [schema, table, newRecord, where]);
 
@@ -177,9 +186,12 @@ export default function Record({
   if (loading || recordLoading || schemaLoading || buttonsLoading) return <></>;
 
   return (
-    <>
+    <div className="mt-4 ml-4">
+      <Toaster />
       {showHeader ? (
-        <h2>{(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}</h2>
+        <h2 className="text-2xl font-semibold">
+          {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
+        </h2>
       ) : (
         ''
       )}
@@ -194,28 +206,43 @@ export default function Record({
         <div className="field grid" key="submitbutton">
           <div
             className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
-            style={{ width: '200px' }}
+            style={{width: '200px'}}
           ></div>
           <div className="col">
             {newRecord && (
               <>
                 <Button
                   type="submit"
+                  onClick={() => handleSubmit({close: false})}
+                >
+                  Create
+                </Button>
+
+                {/* <Button
+                  type="submit"
                   label="Create"
                   tooltip="Create the record"
-                  tooltipOptions={{ position: 'top' }}
+                  tooltipOptions={{position: 'top'}}
                   className="mr-1 mb-1"
-                  onClick={() => handleSubmit({ close: false })}
-                />
+                  onClick={() => handleSubmit({close: false})}
+                /> */}
                 <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={onClose}
+                  className="ml-4"
+                >
+                  Cancel
+                </Button>
+                {/* <Button
                   type="button"
                   label="Cancel"
                   tooltip="Cancel and go back"
-                  tooltipOptions={{ position: 'top' }}
+                  tooltipOptions={{position: 'top'}}
                   severity="secondary"
                   className="mr-1 mb-1"
                   onClick={onClose}
-                />
+                /> */}
               </>
             )}
 
@@ -234,10 +261,9 @@ export default function Record({
                   columns={schema.data.schema}
                 />
               ))}
-            
           </div>
         </div>
       </Form>
-    </>
+    </div>
   );
 }

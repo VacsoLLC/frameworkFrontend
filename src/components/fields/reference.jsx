@@ -1,12 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 import CreateRecord from '../buttons/createrecord.jsx';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 
-import { useBackend, callBackend } from '../../lib/usebackend.js';
+import {useBackend, callBackend} from '../../lib/usebackend.js';
+import {Button} from '../ui/button.jsx';
+import {CloudCog} from 'lucide-react';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -18,7 +32,7 @@ async function getDropDownOptions(settings, value) {
         args: {
           columns: ['id', settings.friendlyColumnName],
           queryModifier: settings.queryModifier,
-          queryModifierArgs: { settings, value },
+          queryModifierArgs: {settings, value},
         },
       });
 
@@ -26,7 +40,7 @@ async function getDropDownOptions(settings, value) {
         throw new Error('Network response was not ok');
       }
 
-      response.data.rows.push({ id: null, name: 'None' });
+      response.data.rows.push({id: null, name: 'None'});
 
       return response.data.rows;
     } catch (err) {
@@ -35,7 +49,7 @@ async function getDropDownOptions(settings, value) {
   }
 }
 
-export function edit({ columnId, settings, value, handleChange, ...props }) {
+export function edit({columnId, settings, value, handleChange, ...props}) {
   const navigate = useNavigate();
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [reload, setReload] = useState(1);
@@ -62,10 +76,34 @@ export function edit({ columnId, settings, value, handleChange, ...props }) {
     console.log(props);
     return <div>Loading...</div>;
   }
-
+  console.log(value, columnId);
+  console.log(dropdownOptions, columnId);
   return (
     <>
-      <Dropdown
+      <Select
+        value={value?.toString()}
+        onValueChange={(e) => {
+          console.log(e);
+          handleChange(columnId, e);
+        }}
+        // size={settings.fieldWidth}
+        key={columnId}
+        placeholder={settings.friendlyColumnName}
+      >
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {dropdownOptions.map((item) => (
+              <SelectItem value={`${item.id}`} key={item.name}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      {/* <Dropdown
         id={columnId}
         value={value}
         onChange={(e) => {
@@ -78,8 +116,27 @@ export function edit({ columnId, settings, value, handleChange, ...props }) {
         size={settings.fieldWidth}
         key={columnId}
         filter={filter}
-      />
-      <Button
+      /> */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              onClick={() => {
+                navigate(`/${settings.joinDb}/${settings.join}/${value}`);
+              }}
+              key="viewRelatedRecord"
+            >
+              <i className="pi pi-external-link" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>View related record</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
+      {/* <Button
         icon="pi pi-external-link"
         className="ml-1"
         onClick={() => {
@@ -87,7 +144,7 @@ export function edit({ columnId, settings, value, handleChange, ...props }) {
         }}
         tooltip="View related record"
         key="viewRelatedRecord"
-      />
+      /> */}
       {settings.referenceCreate && (
         <CreateRecord
           db={settings.joinDb}
