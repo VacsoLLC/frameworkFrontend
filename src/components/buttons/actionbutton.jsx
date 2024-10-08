@@ -1,8 +1,19 @@
 import {useState} from 'react';
-import {Button} from 'primereact/button';
 import ActionModal from '../actionmodal.jsx';
 import {Tooltip} from 'primereact/tooltip';
 import AttachButton from './attachbutton.jsx';
+import {Button} from '../ui/button.jsx';
+
+const COLOR_TO_VARIANT_MAP = {
+  primary: 'default',
+  secondary: 'secondary',
+  success: 'success',
+  danger: 'destructive',
+  warning: 'warning',
+  info: 'info',
+  light: 'light',
+  dark: 'dark',
+};
 
 export default function ActionButton({
   button,
@@ -50,6 +61,14 @@ export default function ActionButton({
       />
 
       <Button
+        disabled={button.disabled ? true : false}
+        variant={COLOR_TO_VARIANT_MAP[button?.color] ?? 'default'}
+         className="mr-1 mb-1"
+         onClick={onClick}
+      >
+        {button?.label}
+      </Button>
+      {/* <Button
         type="button"
         label={button.label}
         key={button.label}
@@ -59,7 +78,7 @@ export default function ActionButton({
         severity={button.color || 'primary'}
         tooltip={button.disabled || button.helpText}
         tooltipOptions={{position: 'top', showOnDisabled: true}}
-      />
+      /> */}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import {InputText} from 'primereact/inputtext';
+import { Input } from '../ui/input';
 
 export function edit({
   columnId,
@@ -9,15 +9,26 @@ export function edit({
   handleChange,
 }) {
   return (
-    <InputText
-      id={columnId}
+
+    <Input
+          id={columnId}
       name={columnId}
       placeholder={settings.helpText}
       onChange={(e) => handleChange(columnId, e.target.value)}
       value={value || ''}
       size={settings.fieldWidth}
       key={columnId}
-    />
+      />
+
+    // <InputText
+    //   id={columnId}
+    //   name={columnId}
+    //   placeholder={settings.helpText}
+    //   onChange={(e) => handleChange(columnId, e.target.value)}
+    //   value={value || ''}
+    //   size={settings.fieldWidth}
+    //   key={columnId}
+    // />
   );
 }
 

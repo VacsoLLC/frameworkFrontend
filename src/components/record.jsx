@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {Button} from 'primereact/button';
+// import {Button} from 'primereact/button';
 import {useBackend, callBackend} from '../lib/usebackend.js';
 import useUserStore from '../stores/user.js';
 import Form from './form.jsx';
 import ActionButton from './buttons/actionbutton.jsx';
 import {formatDateTime, unFormatDateTime} from './util.js';
 import './record.css';
+import {Button} from './ui/button.jsx';
 
 export default function Record({
   db,
@@ -64,7 +65,7 @@ export default function Record({
           if (settings.defaultValue !== undefined) {
             initialData[columnId] = settings.defaultValue;
           }
-        },
+        }
       );
       // Apply any pre-filled values from 'where'
       where.forEach((whereClause) => {
@@ -103,7 +104,7 @@ export default function Record({
         if (settings.columnType === 'datetime') {
           postData[columnId] = unFormatDateTime(formData[columnId]); // TODO: get rid of this. may not actually be needed
         }
-      },
+      }
     );
 
     try {
@@ -168,7 +169,7 @@ export default function Record({
         acc[columnId] = settings;
         return acc;
       },
-      {},
+      {}
     );
   }, [schema, table, newRecord, where]);
 
@@ -176,9 +177,9 @@ export default function Record({
   if (loading || recordLoading || schemaLoading || buttonsLoading) return <></>;
 
   return (
-    <>
+    <div className='mt-4 ml-4'>
       {showHeader ? (
-        <h2>{(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}</h2>
+        <h2 className='text-2xl font-semibold'>{(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}</h2>
       ) : (
         ''
       )}
@@ -200,13 +201,28 @@ export default function Record({
               <>
                 <Button
                   type="submit"
+                  onClick={() => handleSubmit({close: false})}
+                >
+                  Create
+                </Button>
+
+                {/* <Button
+                  type="submit"
                   label="Create"
                   tooltip="Create the record"
                   tooltipOptions={{position: 'top'}}
                   className="mr-1 mb-1"
                   onClick={() => handleSubmit({close: false})}
-                />
+                /> */}
                 <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={onClose}
+                  className="ml-4"
+                >
+                  Cancel
+                </Button>
+                {/* <Button
                   type="button"
                   label="Cancel"
                   tooltip="Cancel and go back"
@@ -214,7 +230,7 @@ export default function Record({
                   severity="secondary"
                   className="mr-1 mb-1"
                   onClick={onClose}
-                />
+                /> */}
               </>
             )}
 
@@ -236,6 +252,6 @@ export default function Record({
           </div>
         </div>
       </Form>
-    </>
+    </div>
   );
 }
