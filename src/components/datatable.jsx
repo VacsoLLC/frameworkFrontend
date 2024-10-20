@@ -1,21 +1,52 @@
 import {useState, useEffect, useMemo} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import {Button} from 'primereact/button';
-
 import CreateRecordButton from './buttons/createrecord.jsx';
-
 import {useBackend} from '../lib/usebackend.js';
-
 import fields from './fields';
 
-import './datatable.css';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './ui/table.jsx';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+} from '@tanstack/react-table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu.jsx';
+import {Button} from './ui/button.jsx';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsDown,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronsUp,
+  ChevronsUpDown,
+  Filter,
+  FilterXIcon,
+  Loader2,
+  X,
+} from 'lucide-react';
+import {Input} from './ui/input.jsx';
+import {debounce} from 'lodash';
+
+const DEFAULT_LIMIT = 20;
 
 const defaultLazyState = {
   offset: 0,
-  limit: 10,
+  limit: DEFAULT_LIMIT,
   page: 1,
   sortField: 'id',
   sortOrder: 1,
@@ -77,6 +108,7 @@ export default function DataTableExtended({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [lazyState, setLazyState] = useState(defaultLazyState);
 
@@ -96,7 +128,7 @@ export default function DataTableExtended({
     returnCount: true,
   });
 
-  const [rows] = useBackend({
+  const [rows, loading] = useBackend({
     packageName: db,
     className: table,
     methodName: 'rowsGet',
@@ -127,13 +159,14 @@ export default function DataTableExtended({
 
   useEffect(() => {
     // update the state for the server call
+    const sortOrder = lazyState.sortOrder === 'ASC' ? 1 : -1;
     setRowGetArgs((prevRowsGetArgs) => {
       return {
         ...prevRowsGetArgs,
         offset: lazyState.offset,
         limit: lazyState.limit,
         sortField: lazyState.sortField,
-        sortOrder: lazyState.sortOrder > 0 ? 'DESC' : 'ASC',
+        sortOrder: sortOrder > 0 ? 'ASC' : 'DESC',
         returnCount: true,
         where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
       };
@@ -169,8 +202,98 @@ export default function DataTableExtended({
     });
   };
 
+  const onSortChange = (field, order) => {
+    setLazyState((prevLazyState) => {
+      return {
+        ...prevLazyState,
+        sortField: field,
+        sortOrder: order,
+      };
+    });
+  };
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((columnId, value, matchMode) => {
+        console.log(columnId, value, matchMode);
+        onFilterElementChange(columnId, value, matchMode);
+      }, 500),
+    [onFilterElementChange],
+  );
+  const columns = Object.entries(schema?.data?.schema || {})
+    .filter(([columnId, settings]) => {
+      if (settings.join || settings.hidden || settings.hiddenList) return;
+      return true;
+    })
+    .sort(([, settingsA], [, settingsB]) => settingsA.order - settingsB.order)
+    .map(([columnId, settings]) => ({
+      accessorKey: columnId,
+      header: ({column}) => {
+        const currentSortField =
+          lazyState.sortField === column.id ? column.id : null;
+        const currentSortOrder = currentSortField
+          ? lazyState.sortOrder === 'ASC'
+            ? 'ASC'
+            : 'DESC'
+          : null;
+        console.log(currentSortField, currentSortOrder);
+        return (
+          <div className="flex items-center justify-between p-1">
+            {settings.friendlyName}
+            <Button
+              variant={currentSortField ? 'outline' : 'ghost'}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => {
+                onSortChange(
+                  column.id,
+                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
+                );
+              }}
+            >
+              <span className="sr-only">Open menu</span>
+              {currentSortOrder ? (
+                currentSortOrder === 'ASC' ? (
+                  <ChevronsUp className="h-4 w-4" />
+                ) : (
+                  <ChevronsDown className="h-4 w-4" />
+                )
+              ) : (
+                <ChevronsUpDown className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        );
+      },
+      cell: ({row}) => {
+        const value = row.getValue(columnId);
+        return fields[settings.fieldType]?.read
+          ? fields[settings.fieldType].read({
+              value,
+              valueFriendly: value,
+              settings,
+            })
+          : value;
+      },
+      enableSorting: true,
+      enableColumnFilter: true,
+    }));
+
+  const shadTable = useReactTable({
+    data: rows?.data?.rows ?? [],
+    columns,
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  console.log(shadTable);
   const header = (
-    <div className="flex flex-wrap align-items-center justify-content-between gap-2">
+    <div className="flex flex-wrap align-middle justify-between">
       <div>
         <span className="text-xl text-900 font-bold">
           {location?.state?.tableHeader || schema?.data?.name}
@@ -188,89 +311,215 @@ export default function DataTableExtended({
           where={child ? where : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
           closeOnCreate={closeOnCreate}
         />
-        <Button
-          onClick={() => {
-            forceReload();
-          }}
-          className="mx-1"
-          icon="pi pi-refresh"
-          tooltip="Refresh data"
-        />
+        <Button size="sm" onClick={() => forceReload()} className="mx-2">
+          <i className="pi pi-refresh" />
+        </Button>
       </div>
     </div>
   );
+  const totalPages = Math.ceil((rows?.data?.count ?? 0) / lazyState.limit);
+  const onPageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    setLazyState((prevLazyState) => {
+      return {
+        ...prevLazyState,
+        offset: (pageNumber - 1) * prevLazyState.limit,
+      };
+    });
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <Button
+          key={i}
+          variant={i === currentPage ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => onPageChange(i)}
+          className="mx-1"
+        >
+          {i}
+        </Button>,
+      );
+    }
+
+    return pageNumbers;
+  };
 
   return (
-    <>
-      <DataTable
-        value={rows?.data?.rows || []}
-        header={header}
-        tableStyle={{minWidth: '50rem'}}
-        onRowClick={(e) => {
-          navigate(`/${db}/${table}/${e.data.id}`);
-        }}
-        lazy
-        filterDisplay="row"
-        paginator
-        rows={lazyState.limit}
-        first={lazyState.offset}
-        sortField={lazyState.sortField}
-        filters={lazyState.filters}
-        sortOrder={lazyState.sortOrder}
-        onPage={onLazyStateChange}
-        onSort={onLazyStateChange}
-        onFilter={onLazyStateChange}
-        totalRecords={rows?.data?.count || 0}
-      >
-        {Object.entries(schema?.data?.schema || {})
-          .sort(
-            ([, settingsA], [, settingsB]) => settingsA.order - settingsB.order,
-          )
-          .map(([columnId, settings]) => {
-            if (settings.join) return; // Dont show the column that contains a forgien key
-            if (settings.hidden) return;
-            if (settings.hiddenList) return;
+    <div className="m-4">
+      {header}
+      <div className="rounded-md border my-4">
+        <Table>
+          <TableHeader>
+            {shadTable.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : header.column.columnDef.header({column: header.column})}
+                    {header.column.getCanFilter() ? (
+                      <div className="flex items-center space-x-2 my-2">
+                        <Input
+                          placeholder={`Filter ${header.column.id}`}
+                          // value={advancedFilters[header.column.id]?.value || ''}
+                          onChange={(e) =>
+                            debouncedSearch(
+                              header.column.id,
+                              e.target.value,
+                              lazyState.filters[header.column.id]?.matchMode,
+                            )
+                          }
+                          className="max-w-sm"
+                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 p-0"
+                            >
+                              <Filter className="h-4 w-4" />
+                              <span className="sr-only">Open filter menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {[
+                              'contains',
+                              'startsWith',
+                              'endsWith',
+                              'equals',
+                              'notEquals',
+                              'notContains',
+                            ].map((option) => (
+                              <DropdownMenuItem
+                                key={option}
+                                onSelect={() =>
+                                  onFilterElementChange(
+                                    header.column.id,
+                                    lazyState.filters[header.column.id]?.value,
+                                    option,
+                                  )
+                                }
+                                className={`flex items-center justify-between ${
+                                  option ===
+                                  lazyState.filters[header.column.id]?.matchMode
+                                    ? 'bg-primary/10'
+                                    : ''
+                                }`}
+                              >
+                                {option}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        {lazyState.filters[header.column.id]?.value &&
+                          lazyState.filters[header.column.id]?.matchMode && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 p-0"
+                              onClick={() =>
+                                onFilterElementChange(
+                                  header.column.id,
+                                  '',
+                                  lazyState.filters[header.column.id]
+                                    ?.matchMode,
+                                )
+                              }
+                            >
+                              <FilterXIcon className="h-4 w-4" />
+                              <span className="sr-only">Clear filter</span>
+                            </Button>
+                          )}
+                      </div>
+                    ) : null}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          {shadTable.getRowModel().rows.length ? (
+            <TableBody>
+              {shadTable.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  onClick={() => navigate(`/${db}/${table}/${row.original.id}`)}
+                  className="cursor-pointer"
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <TableCell key={cell.id}>
+                        {cell.column.columnDef.cell({
+                          row: cell.row,
+                          getValue: cell.getValue,
+                        })}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                {loading ? (
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                ) : (
+                  'No data found'
+                )}
+              </TableCell>
+            </TableRow>
+          )}
+        </Table>
+        <div className="flex items-center justify-center space-x-2 m-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onPageChange(1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
 
-            const columnProps = {
-              filter: true,
-              sortable: true,
-              header: settings.friendlyName,
-            };
+          {renderPageNumbers()}
 
-            // filter
-            if (fields[settings.fieldType]?.filter) {
-              const Filter = fields[settings.fieldType]?.filter;
-              columnProps.filterElement = (
-                <Filter
-                  value={lazyState.filters[columnId]?.value || ''}
-                  onFilterElementChange={onFilterElementChange}
-                  columnId={columnId}
-                />
-              );
-
-              if (Filter.showFilterMenu !== undefined) {
-                columnProps.showFilterMenu = Filter.showFilterMenu;
-              }
-
-              if (Filter.showClearButton !== undefined) {
-                columnProps.showClearButton = Filter.showClearButton;
-              }
-            }
-
-            // read
-            if (fields[settings.fieldType]?.read) {
-              const Read = fields[settings.fieldType].read;
-              columnProps.body = (data) =>
-                Read({
-                  value: data[columnId],
-                  valueFriendly: data[columnId],
-                  settings,
-                });
-            }
-
-            return <Column key={columnId} field={columnId} {...columnProps} />;
-          })}
-      </DataTable>
-    </>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onPageChange(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
