@@ -40,7 +40,7 @@ import {
   X,
 } from 'lucide-react';
 import {Input} from './ui/input.jsx';
-import {debounce} from 'lodash';
+import {debounce, head} from 'lodash';
 import {cn} from '../lib/utils.js';
 
 const DEFAULT_LIMIT = 20;
@@ -213,14 +213,6 @@ export default function DataTableExtended({
     });
   };
 
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((columnId, value, matchMode) => {
-        console.log(columnId, value, matchMode);
-        onFilterElementChange(columnId, value, matchMode);
-      }, 500),
-    [onFilterElementChange],
-  );
   const columns = Object.entries(schema?.data?.schema || {})
     .filter(([columnId, settings]) => {
       if (settings.join || settings.hidden || settings.hiddenList) return;
@@ -374,13 +366,15 @@ export default function DataTableExtended({
                     {header.column.getCanFilter() ? (
                       <div className="flex items-center space-x-2 my-2">
                         <Input
-                          onChange={(e) =>
-                            debouncedSearch(
+                          value={lazyState.filters[header.column.id]?.value}
+                          onChange={(e) => {
+                            onFilterElementChange(
                               header.column.id,
                               e.target.value,
                               lazyState.filters[header.column.id]?.matchMode,
-                            )
-                          }
+                            );
+                          }}
+                          key={header.column.id}
                           className="max-w-sm"
                         />
                         <DropdownMenu>
