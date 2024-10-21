@@ -41,6 +41,7 @@ import {
 } from 'lucide-react';
 import {Input} from './ui/input.jsx';
 import {debounce} from 'lodash';
+import {cn} from '../lib/utils.js';
 
 const DEFAULT_LIMIT = 20;
 
@@ -239,7 +240,7 @@ export default function DataTableExtended({
         console.log(currentSortField, currentSortOrder);
         return (
           <div className="flex items-center justify-between p-1">
-            {settings.friendlyName}
+            <div className="text-black">{settings.friendlyName}</div>
             <Button
               variant={currentSortField ? 'outline' : 'ghost'}
               size="sm"
@@ -300,18 +301,20 @@ export default function DataTableExtended({
         </span>
       </div>
       <div>
-        <CreateRecordButton
-          db={db}
-          table={table}
-          disabled={schema?.data?.readOnly}
-          header={'Create ' + schema?.data?.name}
-          onClose={() => {
-            forceReload();
-          }}
-          where={child ? where : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
-          closeOnCreate={closeOnCreate}
-        />
-        <Button size="sm" onClick={() => forceReload()} className="mx-2">
+        <span className="mr-2">
+          <CreateRecordButton
+            db={db}
+            table={table}
+            disabled={schema?.data?.readOnly}
+            header={'Create ' + schema?.data?.name}
+            onClose={() => {
+              forceReload();
+            }}
+            where={child ? where : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
+            closeOnCreate={closeOnCreate}
+          />
+        </span>
+        <Button size="sm" onClick={() => forceReload()}>
           <i className="pi pi-refresh" />
         </Button>
       </div>
@@ -371,8 +374,6 @@ export default function DataTableExtended({
                     {header.column.getCanFilter() ? (
                       <div className="flex items-center space-x-2 my-2">
                         <Input
-                          placeholder={`Filter ${header.column.id}`}
-                          // value={advancedFilters[header.column.id]?.value || ''}
                           onChange={(e) =>
                             debouncedSearch(
                               header.column.id,
@@ -423,25 +424,29 @@ export default function DataTableExtended({
                             ))}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        {lazyState.filters[header.column.id]?.value &&
-                          lazyState.filters[header.column.id]?.matchMode && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 p-0"
-                              onClick={() =>
-                                onFilterElementChange(
-                                  header.column.id,
-                                  '',
-                                  lazyState.filters[header.column.id]
-                                    ?.matchMode,
-                                )
-                              }
-                            >
-                              <FilterXIcon className="h-4 w-4" />
-                              <span className="sr-only">Clear filter</span>
-                            </Button>
+                        {/* lazyState.filters[header.column.id]?.value &&
+                        lazyState.filters[header.column.id]?.matchMode && */}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn(
+                            'h-8 w-8 p-2 transition-opacity duration-200',
+                            lazyState.filters[header.column.id]?.value &&
+                              lazyState.filters[header.column.id]?.matchMode
+                              ? 'opacity-100'
+                              : 'opacity-0',
                           )}
+                          onClick={() =>
+                            onFilterElementChange(
+                              header.column.id,
+                              '',
+                              lazyState.filters[header.column.id]?.matchMode,
+                            )
+                          }
+                        >
+                          <FilterXIcon className="h-4 w-4" />
+                          <span className="sr-only">Clear filter</span>
+                        </Button>
                       </div>
                     ) : null}
                   </TableHead>
