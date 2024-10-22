@@ -353,7 +353,7 @@ export default function DataTableExtended({
   return (
     <div className="m-4">
       {header}
-      <div className="rounded-md border my-4">
+      <div className="rounded-md border my-2">
         <Table>
           <TableHeader>
             {shadTable.getHeaderGroups().map((headerGroup) => (
