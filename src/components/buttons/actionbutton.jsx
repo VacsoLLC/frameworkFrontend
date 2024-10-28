@@ -40,9 +40,7 @@ export default function ActionButton({
   }
 
   if (button.type == 'attach') {
-    return (
-      <AttachButton db={db} table={table} recordId={recordId} className="" />
-    );
+    return <AttachButton db={db} table={table} recordId={recordId} />;
   }
 
   return (
@@ -68,17 +66,6 @@ export default function ActionButton({
       >
         {button?.label}
       </Button>
-      {/* <Button
-        type="button"
-        label={button.label}
-        key={button.label}
-        disabled={button.disabled ? true : false}
-        className="mr-1 mb-1"
-        onClick={onClick}
-        severity={button.color || 'primary'}
-        tooltip={button.disabled || button.helpText}
-        tooltipOptions={{position: 'top', showOnDisabled: true}}
-      /> */}
     </>
   );
 }

@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog.jsx';
+import {Plus} from 'lucide-react';
 
 export default function AddRecordButton({
   db,
@@ -49,7 +50,7 @@ export default function AddRecordButton({
               className={disabled ? 'hidden' : ''}
               key="viewRelatedRecord"
             >
-              <i className="pi pi-plus" />
+              <Plus />
             </Button>
           </TooltipTrigger>
           <TooltipContent>

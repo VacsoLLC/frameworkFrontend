@@ -37,6 +37,7 @@ import {
   Filter,
   FilterXIcon,
   Loader2,
+  RefreshCcw,
   X,
 } from 'lucide-react';
 import {Input} from './ui/input.jsx';
@@ -307,7 +308,7 @@ export default function DataTableExtended({
           />
         </span>
         <Button size="sm" onClick={() => forceReload()}>
-          <i className="pi pi-refresh" />
+          <RefreshCcw />
         </Button>
       </div>
     </div>

@@ -17,6 +17,9 @@ import Login from '../components/login.jsx';
 
 import useUserStore from '../stores/user.js';
 import TopNavbar from '../components/AppBar.jsx';
+import {useToast} from '../hooks/use-toast.js';
+import {Toaster} from '../components/ui/toaster.jsx';
+import {LogOut, User} from 'lucide-react';
 
 export default function Root() {
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ export default function Root() {
   const logout = useUserStore((state) => state.logout);
   const userId = useUserStore((state) => state.userId);
   const setToast = useUserStore((state) => state.setToast);
+  const {toast: shadToast} = useToast();
   const authenticated = useUserStore((state) => state.authenticated);
   const toast = useRef(null);
   const errorMessage = useUserStore((state) => state.errorMessage);
@@ -38,9 +42,14 @@ export default function Root() {
     clear: !authenticated,
     args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
   });
-
   const sendToast = (toastObject) => {
-    toast.current.show(toastObject);
+    console.log(toastObject, 'toast');
+    shadToast({
+      summary: toastObject.summary,
+      description: toastObject.detail,
+      life: 3000,
+      variant: toastObject.severity,
+    });
   };
 
   useEffect(() => {
@@ -63,49 +72,20 @@ export default function Root() {
   const userItems = [
     {
       label: 'Profile',
-      icon: 'pi pi-fw pi-user',
+      icon: 'User',
       command: () => {
         navigate(`/core/user/${userId}`);
       },
     },
     {
       label: 'Logout',
-      icon: 'pi pi-fw pi-sign-out',
+      icon: 'LogOut',
       command: () => {
         logout();
         navigate('/');
       },
     },
   ];
-
-  const end = (
-    <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          navigate(`/search?value=${e.target.search.value}`);
-          e.target.search.value = '';
-        }}
-      >
-        <InputText
-          placeholder="Search"
-          type="text"
-          id="search"
-          key="search"
-          className="w-8rem sm:w-auto mr-3 mb-0 mt-0 p-inputtext-sm"
-        />
-
-        <Menu popup model={userItems} ref={userMenu} show={false} />
-        <Avatar
-          icon="pi pi-user"
-          size="medium"
-          severity="secondary"
-          aria-label="User"
-          onClick={(event) => userMenu.current.toggle(event)}
-        />
-      </form>
-    </>
-  );
 
   return (
     <>
@@ -121,7 +101,7 @@ export default function Root() {
         <br />
         {errorMessage}
       </Dialog>
-      <Toast ref={toast} userItems={userItems} />
+      <Toaster />
       <TopNavbar
         navItems={newItems}
         userItems={userItems}
@@ -165,7 +145,7 @@ function buildMenu(items, navigate) {
     }
 
     if (items[item].icon) {
-      itemoutput.icon = `pi pi-fw ${items[item].icon}`;
+      itemoutput.icon = items[item].icon;
     }
 
     output.push(itemoutput);

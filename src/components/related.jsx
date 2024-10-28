@@ -62,7 +62,10 @@ export default function Related({db, table, recordId, reload, forceReload}) {
     tables && tables.length > 0 ? getTabKey(tables?.[0]) : null;
 
   return (
-    <Tabs defaultValue={defaultTab} className="m-4 p-4 border-2 rounded-lg border-slate-200">
+    <Tabs
+      defaultValue={defaultTab}
+      className="m-4 p-4 border-2 rounded-lg border-slate-200"
+    >
       {tables && tables.length > 0 ? (
         <>
           <TabsList className="w-100">
@@ -96,36 +99,4 @@ export default function Related({db, table, recordId, reload, forceReload}) {
       ) : null}
     </Tabs>
   );
-
-  // return (
-  //   <>
-  //     <TabView key={table + 'related'}>
-  //       {tables &&
-  //         tables.length > 0 &&
-  //         tables.map((childTable) => {
-  //           return (
-  //             <TabPanel
-  //               header={childTable.tabName}
-  //               key={
-  //                 table +
-  //                 childTable.tabName +
-  //                 Object.keys(childTable.columnmap)[0]
-  //               } // use the first column we join on as the key
-  //             >
-  //               <DataTable
-  //                 db={childTable.db}
-  //                 table={childTable.table}
-  //                 where={childTable.where}
-  //                 closeOnCreate={true}
-  //                 reload={reload}
-  //                 forceReload={forceReload}
-  //                 key={table + childTable.tabName + childTable.table}
-  //                 child={true}
-  //               />
-  //             </TabPanel>
-  //           );
-  //         })}
-  //     </TabView>
-  //   </>
-  // );
 }

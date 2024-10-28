@@ -78,7 +78,7 @@ export default function AttachmentUploader({
   };
 
   return (
-    <div className="grid max-w-sm items-center gap-1.5">
+    <>
       <input
         type="file"
         ref={uploadRef}
@@ -86,7 +86,7 @@ export default function AttachmentUploader({
         className="hidden"
         multiple
       />
-      <Button onClick={handleButtonClick} disabled={uploading}>
+      <Button onClick={handleButtonClick} disabled={uploading} className="">
         {uploading ? (
           <>
             <Loader2 className="mr-2 h-6 w-6 animate-spin" />
@@ -94,11 +94,11 @@ export default function AttachmentUploader({
           </>
         ) : (
           <>
-            <Upload className="mr-2 h-6 w-6" />
+            <Upload className="mr-2" />
             Upload Files
           </>
         )}
       </Button>
-    </div>
+    </>
   );
 }

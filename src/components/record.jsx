@@ -133,12 +133,6 @@ export default function Record({
         life: 3000,
         variant: 'success',
       });
-      // toast({
-      //   severity: 'success',
-      //   summary: 'Success',
-      //   detail: `Record created successfully. ID: ${response.data.id}`,
-      //   life: 3000,
-      // });
 
       if (!closeOnCreate) {
         navigate(`/${db}/${table}/${response.data.id}`);
@@ -208,7 +202,7 @@ export default function Record({
             className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
             style={{width: '200px'}}
           ></div>
-          <div className="col">
+          <div className="col ml-16">
             {newRecord && (
               <>
                 <Button
@@ -217,15 +211,6 @@ export default function Record({
                 >
                   Create
                 </Button>
-
-                {/* <Button
-                  type="submit"
-                  label="Create"
-                  tooltip="Create the record"
-                  tooltipOptions={{position: 'top'}}
-                  className="mr-1 mb-1"
-                  onClick={() => handleSubmit({close: false})}
-                /> */}
                 <Button
                   type="button"
                   variant="secondary"
@@ -234,33 +219,28 @@ export default function Record({
                 >
                   Cancel
                 </Button>
-                {/* <Button
-                  type="button"
-                  label="Cancel"
-                  tooltip="Cancel and go back"
-                  tooltipOptions={{position: 'top'}}
-                  severity="secondary"
-                  className="mr-1 mb-1"
-                  onClick={onClose}
-                /> */}
               </>
             )}
-
-            {!newRecord &&
-              buttons?.data &&
-              Object.entries(buttons.data).map(([key, button]) => (
-                <ActionButton
-                  button={button}
-                  key={key}
-                  db={db}
-                  table={table}
-                  recordId={recordId}
-                  forceReload={forceReload}
-                  reload={reload}
-                  formData={formData}
-                  columns={schema.data.schema}
-                />
-              ))}
+            <div className="flex flex-wrap">
+              {!newRecord &&
+                buttons?.data &&
+                Object.entries(buttons.data).map(([key, button]) => (
+                  <>
+                    <ActionButton
+                      button={button}
+                      key={key}
+                      db={db}
+                      table={table}
+                      recordId={recordId}
+                      forceReload={forceReload}
+                      reload={reload}
+                      formData={formData}
+                      columns={schema.data.schema}
+                    />
+                    {button.newLine && <div className="w-full" />}
+                  </>
+                ))}
+            </div>
           </div>
         </div>
       </Form>

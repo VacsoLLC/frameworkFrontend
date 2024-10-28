@@ -1,5 +1,6 @@
-import {Button} from 'primereact/button';
+import {Download} from 'lucide-react';
 import {api} from '../../lib/usebackend';
+import {Button} from '../ui/button';
 
 export function read(...args) {
   return <pre>{args[0].value}</pre>;
@@ -11,12 +12,13 @@ export function edit({formData, value, recordId}) {
       <span className="mr-2">{value}</span>
 
       <Button
-        icon="pi pi-download"
         onClick={(e) => {
           e.preventDefault();
           api.downloadFile(`/api/core/attachment/download/${recordId}`, value);
         }}
-      />
+      >
+        <Download />
+      </Button>
     </div>
   );
 }

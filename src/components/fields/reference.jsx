@@ -20,7 +20,7 @@ import {
 
 import {useBackend, callBackend} from '../../lib/usebackend.js';
 import {Button} from '../ui/button.jsx';
-import {CloudCog} from 'lucide-react';
+import {CloudCog, ExternalLink} from 'lucide-react';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -103,20 +103,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           </SelectGroup>
         </SelectContent>
       </Select>
-      {/* <Dropdown
-        id={columnId}
-        value={value}
-        onChange={(e) => {
-          handleChange(columnId, e.value);
-        }}
-        optionLabel={settings.friendlyColumnName}
-        optionValue="id"
-        options={dropdownOptions}
-        className="w-full md:w-14rem"
-        size={settings.fieldWidth}
-        key={columnId}
-        filter={filter}
-      /> */}
+
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -127,7 +114,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
               }}
               key="viewRelatedRecord"
             >
-              <i className="pi pi-external-link" />
+              <ExternalLink />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -136,15 +123,6 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         </Tooltip>
       </TooltipProvider>
 
-      {/* <Button
-        icon="pi pi-external-link"
-        className="ml-1"
-        onClick={() => {
-          navigate(`/${settings.joinDb}/${settings.join}/${value}`);
-        }}
-        tooltip="View related record"
-        key="viewRelatedRecord"
-      /> */}
       {settings.referenceCreate && (
         <CreateRecord
           db={settings.joinDb}

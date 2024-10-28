@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ChevronDown, Search} from 'lucide-react';
+import {ChevronDown, Search, User} from 'lucide-react';
 
 import {Input} from './ui/input';
 import {
@@ -10,6 +10,7 @@ import {
 } from './ui/dropdown-menu';
 import {Button} from './ui/button';
 import {Avatar, AvatarFallback} from './ui/avatar';
+import CustomIcon from './CustomIcon';
 
 const Link = ({children, href}) => <a href={href}>{children}</a>;
 
@@ -21,17 +22,20 @@ const getMenuItemForDropdown = (subItem) => {
       }}
       className="cursor-pointer p-2 my-2"
     >
-      <i className={`${subItem.icon} mr-1`} /> {subItem.label}
+      <CustomIcon name={subItem.icon} className={'mx-1'} />
+      {subItem.label}
     </DropdownMenuItem>
   );
 };
 
 const getDropdownForItem = (item) => {
+  console.log(item);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost">
-          <i className={`${item.icon} mr-1`} /> {item.label}
+          <CustomIcon name={item.icon} className={'mx-1'} />
+          {item.label}
           <ChevronDown className="ml-1 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -91,7 +95,7 @@ export default function TopNavbar({navItems, onSearch, userItems}) {
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar>
                   <AvatarFallback>
-                    <i className="pi pi-user" />
+                    <User />
                   </AvatarFallback>
                 </Avatar>
               </Button>
