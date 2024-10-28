@@ -3,7 +3,6 @@ import DataTable from '../components/datatable.jsx';
 import {Routes, Route, useParams} from 'react-router-dom';
 import {Tree} from 'primereact/tree';
 import API from '../lib/api.js';
-import {Card} from 'primereact/card';
 import {Badge} from 'primereact/badge';
 
 const api = new API();

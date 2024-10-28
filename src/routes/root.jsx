@@ -1,25 +1,14 @@
-import {useRef, useEffect, useState, startTransition} from 'react';
+import {useRef, useEffect, startTransition} from 'react';
 import {Outlet} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
-
-import {Menubar} from 'primereact/menubar';
-import {Menu} from 'primereact/menu';
-import {Button} from 'primereact/button';
-import {Avatar} from 'primereact/avatar';
-import {Toast} from 'primereact/toast';
-import {InputText} from 'primereact/inputtext';
-
 import {useBackend} from '../lib/usebackend.js';
-
 import {Dialog} from 'primereact/dialog';
-
 import Login from '../components/login.jsx';
-
 import useUserStore from '../stores/user.js';
 import TopNavbar from '../components/AppBar.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from '../components/ui/toaster.jsx';
-import {LogOut, User} from 'lucide-react';
+import {Button} from '../components/ui/button.jsx';
 
 export default function Root() {
   const navigate = useNavigate();
@@ -59,12 +48,9 @@ export default function Root() {
   const errorFooter = () => {
     return (
       <div>
-        <Button
-          label="Ok"
-          onClick={clearErrorMessage}
-          autoFocus
-          severity="danger"
-        />
+        <Button onClick={clearErrorMessage} variant="danger">
+          Ok
+        </Button>
       </div>
     );
   };

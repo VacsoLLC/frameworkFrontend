@@ -1,6 +1,5 @@
 import {useState} from 'react';
 import ActionModal from '../actionmodal.jsx';
-import {Tooltip} from 'primereact/tooltip';
 import AttachButton from './attachbutton.jsx';
 import {Button} from '../ui/button.jsx';
 

@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
 import {useBackend} from '../lib/usebackend.js';
-import {InputText} from 'primereact/inputtext';
-import {Button} from 'primereact/button';
-import {Card} from 'primereact/card';
-import {ProgressSpinner} from 'primereact/progressspinner';
 import {useNavigate} from 'react-router-dom';
 import {DataView} from 'primereact/dataview';
+import {Input} from '../components/ui/input.jsx';
+import {Button} from '../components/ui/button.jsx';
+import {Loader2} from 'lucide-react';
 
 export default function Search() {
   const location = useLocation();
@@ -94,16 +93,17 @@ export default function Search() {
   };
 
   return (
-    <div className="mt-2">
-      <form onSubmit={handleSearch} className="p-fluid m-0">
-        <div className="p-inputgroup">
-          <InputText
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Enter your search query"
-          />
-          <Button type="submit" label="Search" />
-        </div>
+    <div className="m-2">
+      <form onSubmit={handleSearch} className="flex w-full items-center">
+        <Input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-grow rounded-r-none"
+        />
+        <Button type="submit" className="rounded-l-none">
+          Search
+        </Button>
       </form>
 
       {(loading || results) && (
@@ -112,13 +112,7 @@ export default function Search() {
             <font size="5" className="pr-2">
               Search Results
             </font>
-            {loading && (
-              <ProgressSpinner
-                style={{width: '20px', height: '20px'}}
-                strokeWidth="8"
-                animationDuration=".25s"
-              />
-            )}
+            {loading && <Loader2 className="mr-2 h-6 w-6 animate-spin" />}
             {error && !loading && (
               <>
                 An error occured updating the search results. Please try again.

@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {useBackend} from '../lib/usebackend.js';
 
-import {TabView, TabPanel} from 'primereact/tabview';
-
 import DataTable from './datatable.jsx';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs.jsx';
 

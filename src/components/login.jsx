@@ -1,14 +1,12 @@
 import React, {useState, useRef, useEffect} from 'react';
 
 import {Dialog} from 'primereact/dialog';
-import {Messages} from 'primereact/messages';
 import {callBackend, clearCache} from '../lib/usebackend.js';
 
 import useUserStore from '../stores/user.js';
 import {Button} from '../components/ui/button';
 import {Input} from '../components/ui/input';
 import {Label} from '../components/ui/label';
-import {Separator} from '../components/ui/separator';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';
 
@@ -177,88 +175,6 @@ export default function LoginModal({children}) {
         </div>
       </Dialog>
       <Toaster />
-      <>{children}</>
-    </>
-  );
-
-  return (
-    <>
-      <>
-        <div>
-          <Dialog
-            header="Login"
-            visible={!authenticated}
-            style={{width: '45vw'}}
-            closable={false}
-            modal
-            draggable={false}
-          >
-            <div className="card flex justify-content-center">
-              <div className="w-full max-w-md mx-auto space-y-4 p-2 pr-6 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Label
-                    htmlFor="email"
-                    className="w-20 text-right flex-shrink-0"
-                  >
-                    Email
-                  </Label>
-                  <Input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    className="flex-grow"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Label
-                    htmlFor="password"
-                    className="w-20 text-right flex-shrink-0"
-                  >
-                    Password
-                  </Label>
-                  <Input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    className="flex-grow"
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <div className="pt-2 flex justify-content-center">
-                  <Btn className="" type="submit" onClick={onLogin}>
-                    <CheckIcon className="mr-1" /> Login
-                  </Btn>
-                </div>
-              </div>
-
-              {ssoList && ssoList.length > 0 && (
-                <>
-                  <Separator orientation="vertical" />
-                  <div className="flex-col items-center p-3 pl-5">
-                    <div className="text-center">Or login with:</div>
-                    {ssoList.map((sso) => (
-                      <div className="mt-4">
-                        <Btn
-                          label={sso.name}
-                          onClick={() => {
-                            window.location.href = sso.link;
-                          }}
-                          autoFocus
-                          className="w-full flex-"
-                        >
-                          {sso.name}
-                        </Btn>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-            <Messages ref={msgs} />
-          </Dialog>
-        </div>
-      </>
       <>{children}</>
     </>
   );

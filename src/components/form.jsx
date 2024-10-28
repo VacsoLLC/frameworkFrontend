@@ -1,5 +1,4 @@
 import React from 'react';
-// import {Tooltip} from 'primereact/tooltip';
 import Fields from './fields/index.jsx';
 import {Label} from './ui/label.jsx';
 import {

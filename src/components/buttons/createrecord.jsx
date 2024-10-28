@@ -1,6 +1,5 @@
 import {useState} from 'react';
 
-// import {Dialog} from 'primereact/dialog';
 import CreateRecord from '../record.jsx';
 import {
   Tooltip,
