@@ -12,7 +12,7 @@ import './main.css';
 import './output.css';
 import './global.css';
 
-function App() {
+function Frontend({views}) {
   const router = createBrowserRouter([
     {
       path: '/',
@@ -27,24 +27,24 @@ function App() {
           element: <Search />,
         },
         {
-          path: '/:db/:table',
+          path: '/:db/:table',//core/user/table
           element: <Table />,
         },
         {
-          path: '/:db/:table/create',
+          path: '/:db/:table/create', //core/user/create
           element: <CreateRecord />,
         },
         {
-          path: '/:db/:table/:recordId',
+          path: '/:db/:table/:recordId', //core/user/record/1
           element: <ViewRecord />,
         },
         {
-          path: '/:db/:table/view/:view',
-          element: <View />,
+          path: '/:db/:table/view/:view',//core/user/othertableview
+          element: <View views={views} />,
         },
         {
-          path: '/:db/:table/view/:view/:recordId',
-          element: <View />,
+          path: '/:db/:table/view/:view/:recordId', //core/user/otherrecordview/1
+          element: <View views={views} />,
         },
       ],
     },
@@ -62,4 +62,4 @@ function App() {
   );
 }
 
-export default App;
+export default Frontend;

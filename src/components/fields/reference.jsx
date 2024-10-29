@@ -96,47 +96,16 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         <SelectContent>
           <SelectGroup>
             {dropdownOptions.map((item) => (
-              <SelectItem value={`${item.id}`} key={item.name}>
-                {item.name}
+              <SelectItem
+                value={`${item.id}`}
+                key={item[settings.friendlyColumnName]}
+              >
+                {item[settings.friendlyColumnName]}
               </SelectItem>
             ))}
           </SelectGroup>
         </SelectContent>
       </Select>
-
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="sm"
-              onClick={() => {
-                navigate(`/${settings.joinDb}/${settings.join}/${value}`);
-              }}
-              key="viewRelatedRecord"
-            >
-              <ExternalLink />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>View related record</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      {settings.referenceCreate && (
-        <CreateRecord
-          db={settings.joinDb}
-          table={settings.join}
-          onClose={async (id) => {
-            if (id) {
-              forceReload();
-              handleChange(columnId, id);
-            }
-          }}
-          closeOnCreate={true}
-          header="Create Related Record"
-        />
-      )}
     </>
   );
 }
