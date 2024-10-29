@@ -35,7 +35,7 @@ export function useBackend({
   console.log(
     'usebackend userId',
     `/api/${packageName}/${className}/${methodName}`,
-    userId,
+    userId
   );
 
   React.useEffect(() => {
@@ -74,7 +74,7 @@ export function useBackend({
       console.log(
         `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
         response,
-        arguments,
+        arguments
       );
 
       if (filter) {
@@ -141,3 +141,70 @@ export function callBackend({
 }
 
 export {api};
+
+/**
+ * Performs a deep comparison between two values to determine if they are equivalent.
+ * @param {*} value1 The first value to compare
+ * @param {*} value2 The second value to compare
+ * @returns {boolean} Returns true if the values are equivalent, else false
+ */
+function deepEqual(value1, value2) {
+  // Handle strict equality and null/undefined cases
+  if (value1 === value2) {
+    return true;
+  }
+
+  // If either value is null or undefined and they're not strictly equal, return false
+  if (value1 == null || value2 == null) {
+    return false;
+  }
+
+  // Handle different types
+  if (typeof value1 !== typeof value2) {
+    return false;
+  }
+
+  // Handle dates
+  if (value1 instanceof Date && value2 instanceof Date) {
+    return value1.getTime() === value2.getTime();
+  }
+
+  // Handle arrays
+  if (Array.isArray(value1) && Array.isArray(value2)) {
+    if (value1.length !== value2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < value1.length; i++) {
+      if (!deepEqual(value1[i], value2[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Handle objects
+  if (typeof value1 === 'object' && typeof value2 === 'object') {
+    const keys1 = Object.keys(value1);
+    const keys2 = Object.keys(value2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (const key of keys1) {
+      if (!keys2.includes(key)) {
+        return false;
+      }
+
+      if (!deepEqual(value1[key], value2[key])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
