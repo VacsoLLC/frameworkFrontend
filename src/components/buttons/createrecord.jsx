@@ -49,7 +49,7 @@ export default function AddRecordButton({
               className={disabled ? 'hidden' : ''}
               key="viewRelatedRecord"
             >
-              <Plus />
+              <Plus size={16} />
             </Button>
           </TooltipTrigger>
           <TooltipContent>

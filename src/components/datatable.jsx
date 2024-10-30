@@ -308,7 +308,7 @@ export default function DataTableExtended({
           />
         </span>
         <Button size="sm" onClick={() => forceReload()}>
-          <RefreshCcw />
+          <RefreshCcw size={16} />
         </Button>
       </div>
     </div>
