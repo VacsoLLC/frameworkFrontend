@@ -232,7 +232,7 @@ export default function DataTableExtended({
           : null;
         console.log(currentSortField, currentSortOrder);
         return (
-          <div className="flex items-center justify-between p-1">
+          <div className="flex items-center justify-between p-0">
             <div className="text-black">{settings.friendlyName}</div>
             <Button
               variant={currentSortField ? 'outline' : 'ghost'}
@@ -241,7 +241,7 @@ export default function DataTableExtended({
               onClick={() => {
                 onSortChange(
                   column.id,
-                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
+                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC'
                 );
               }}
             >
@@ -288,13 +288,13 @@ export default function DataTableExtended({
   console.log(shadTable);
   const header = (
     <div className="flex flex-wrap align-middle justify-between">
-      <div>
-        <span className="text-xl text-900 font-bold">
+      <div className="flex items-end">
+        <span className="text-xl text-900 font-bold ml-1">
           {location?.state?.tableHeader || schema?.data?.name}
         </span>
       </div>
       <div>
-        <span className="mr-2">
+        <span className="mr-1">
           <CreateRecordButton
             db={db}
             table={table}
@@ -344,7 +344,7 @@ export default function DataTableExtended({
           className="mx-1"
         >
           {i}
-        </Button>,
+        </Button>
       );
     }
 
@@ -352,27 +352,30 @@ export default function DataTableExtended({
   };
 
   return (
-    <div className="m-4">
+    <div className="ml-2 mr-2 my-1">
       {header}
-      <div className="rounded-md border my-2">
+      <div className="rounded-md border my-1">
         <Table>
           <TableHeader>
             {shadTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="px-2">
                     {header.isPlaceholder
                       ? null
-                      : header.column.columnDef.header({column: header.column})}
+                      : header.column.columnDef.header({
+                          column: header.column,
+                        })}
+
                     {header.column.getCanFilter() ? (
-                      <div className="flex items-center space-x-2 my-2">
+                      <div className="flex items-center space-x-2 my-1">
                         <Input
                           value={lazyState.filters[header.column.id]?.value}
                           onChange={(e) => {
                             onFilterElementChange(
                               header.column.id,
                               e.target.value,
-                              lazyState.filters[header.column.id]?.matchMode,
+                              lazyState.filters[header.column.id]?.matchMode
                             );
                           }}
                           key={header.column.id}
@@ -383,7 +386,7 @@ export default function DataTableExtended({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 p-0"
+                              className="h-8 w-8"
                             >
                               <Filter className="h-4 w-4" />
                               <span className="sr-only">Open filter menu</span>
@@ -404,7 +407,7 @@ export default function DataTableExtended({
                                   onFilterElementChange(
                                     header.column.id,
                                     lazyState.filters[header.column.id]?.value,
-                                    option,
+                                    option
                                   )
                                 }
                                 className={`flex items-center justify-between ${
@@ -429,13 +432,13 @@ export default function DataTableExtended({
                             lazyState.filters[header.column.id]?.value &&
                               lazyState.filters[header.column.id]?.matchMode
                               ? 'opacity-100'
-                              : 'opacity-0',
+                              : 'opacity-0'
                           )}
                           onClick={() =>
                             onFilterElementChange(
                               header.column.id,
                               '',
-                              lazyState.filters[header.column.id]?.matchMode,
+                              lazyState.filters[header.column.id]?.matchMode
                             )
                           }
                         >
@@ -459,7 +462,7 @@ export default function DataTableExtended({
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="p-2">
                         {cell.column.columnDef.cell({
                           row: cell.row,
                           getValue: cell.getValue,
