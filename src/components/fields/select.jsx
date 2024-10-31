@@ -1,4 +1,11 @@
-import { Dropdown } from 'primereact/dropdown';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 export function edit({
   columnId,
@@ -8,18 +15,27 @@ export function edit({
   handleChange,
 }) {
   return (
-    <Dropdown
+    <Select
       value={value}
-      onChange={(e) => {
-        handleChange(columnId, e.value);
+      onValueChange={(e, a, b, c) => {
+        if (e == '') return;
+        handleChange(columnId, e);
       }}
-      options={settings.options.map((item) => ({
-        label: item,
-        value: item,
-      }))}
-      className="w-full md:w-14rem"
       size={settings.fieldWidth}
       key={columnId}
-    />
+    >
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {settings.options.map((item) => (
+            <SelectItem value={item} key={item}>
+              {item}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

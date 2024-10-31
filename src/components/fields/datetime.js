@@ -1,4 +1,4 @@
-import { formatDateTime } from '../util';
-export function read({ value }) {
+import {formatDateTime} from '../util';
+export function read({value}) {
   return formatDateTime(value);
 }

@@ -1,4 +1,4 @@
-import { InputText } from 'primereact/inputtext';
+import {Input} from '../ui/input';
 
 export function edit({
   columnId,
@@ -9,7 +9,7 @@ export function edit({
   handleChange,
 }) {
   return (
-    <InputText
+    <Input
       id={columnId}
       name={columnId}
       placeholder={settings.helpText}
@@ -21,6 +21,6 @@ export function edit({
   );
 }
 
-export function read({ valueFriendly, value }) {
+export function read({valueFriendly, value}) {
   return valueFriendly;
 }

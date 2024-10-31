@@ -1,9 +1,10 @@
 // src/components/AttachmentUploader.jsx
 
-import React from 'react';
-import { FileUpload } from 'primereact/fileupload';
-import { api } from '../../lib/usebackend.js';
+import React, {useState} from 'react';
+import {api} from '../../lib/usebackend.js';
 import useUserStore from '../../stores/user.js';
+import {Button} from '../ui/button.jsx';
+import {Loader2, Upload} from 'lucide-react';
 
 /**
  * AttachmentUploader component for handling file uploads
@@ -21,14 +22,19 @@ export default function AttachmentUploader({
 }) {
   const toast = useUserStore((state) => state.toast);
   const uploadRef = React.useRef(null);
+  const [uploading, setUploading] = useState(false);
 
+  const handleButtonClick = () => {
+    uploadRef.current?.click();
+  };
   /**
    * Handles multiple file uploads
    * @param {Object} event - The upload event object
    */
   const uploadHandler = async (event) => {
     try {
-      const files = event.files;
+      setUploading(true);
+      const files = Array.from(event.target.files);
       const formData = new FormData();
 
       files.forEach((file, index) => {
@@ -65,27 +71,34 @@ export default function AttachmentUploader({
         detail: `An error occurred while uploading files: ${error.message}`,
         life: 5000,
       });
+    } finally {
+      if (uploadRef.current) uploadRef.current.value = '';
+      setUploading(false);
     }
-    uploadRef.current.clear();
   };
 
   return (
-    <FileUpload
-      mode="basic"
-      name="files"
-      url="/api/core/attachment/upload"
-      accept="*/*"
-      maxFileSize={10000000000000}
-      multiple
-      auto
-      customUpload
-      uploadHandler={uploadHandler}
-      chooseOptions={{
-        iconOnly: false,
-        className: 'custom-choose-btn',
-      }}
-      chooseLabel="Attach File(s)"
-      ref={uploadRef}
-    />
+    <>
+      <input
+        type="file"
+        ref={uploadRef}
+        onChange={uploadHandler}
+        className="hidden"
+        multiple
+      />
+      <Button onClick={handleButtonClick} disabled={uploading} className="">
+        {uploading ? (
+          <>
+            <Loader2 size={16} className="mr-2 h-6 w-6 animate-spin" />
+            Uploading...
+          </>
+        ) : (
+          <>
+            <Upload size={16} className="mr-2" />
+            Upload Files
+          </>
+        )}
+      </Button>
+    </>
   );
 }

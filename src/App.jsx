@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Root from './routes/root.jsx';
 import Table from './routes/table.jsx';
 import ViewRecord from './routes/viewrecord.jsx';
@@ -8,13 +8,11 @@ import Home from './routes/home.jsx';
 import CreateRecord from './routes/createrecord.jsx';
 import Search from './routes/search.jsx';
 
-import 'primereact/resources/themes/lara-light-indigo/theme.css'; // theme
-import 'primeflex/primeflex.css'; // css utility
-import 'primeicons/primeicons.css';
-import 'primereact/resources/primereact.css'; // core css
 import './main.css';
+import './output.css';
+import './global.css';
 
-function App() {
+function Frontend({views}) {
   const router = createBrowserRouter([
     {
       path: '/',
@@ -29,24 +27,24 @@ function App() {
           element: <Search />,
         },
         {
-          path: '/:db/:table',
+          path: '/:db/:table', //core/user/table
           element: <Table />,
         },
         {
-          path: '/:db/:table/create',
+          path: '/:db/:table/create', //core/user/create
           element: <CreateRecord />,
         },
         {
-          path: '/:db/:table/:recordId',
+          path: '/:db/:table/:recordId', //core/user/record/1
           element: <ViewRecord />,
         },
         {
-          path: '/:db/:table/view/:view',
-          element: <View />,
+          path: '/:db/:table/view/:view', //core/user/othertableview
+          element: <View views={views} />,
         },
         {
-          path: '/:db/:table/view/:view/:recordId',
-          element: <View />,
+          path: '/:db/:table/view/:view/:recordId', //core/user/otherrecordview/1
+          element: <View views={views} />,
         },
       ],
     },
@@ -57,7 +55,11 @@ function App() {
   ]);
   //return <>hello</>;
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
-export default App;
+export default Frontend;

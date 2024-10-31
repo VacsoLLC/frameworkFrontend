@@ -1,21 +1,20 @@
-import { useRef, useEffect, useState, startTransition } from 'react';
-import { Outlet } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-
-import { Menubar } from 'primereact/menubar';
-import { Menu } from 'primereact/menu';
-import { Button } from 'primereact/button';
-import { Avatar } from 'primereact/avatar';
-import { Toast } from 'primereact/toast';
-import { InputText } from 'primereact/inputtext';
-
-import { useBackend } from '../lib/usebackend.js';
-
-import { Dialog } from 'primereact/dialog';
-
+import {useRef, useEffect, startTransition} from 'react';
+import {Outlet} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
+import {useBackend} from '../lib/usebackend.js';
 import Login from '../components/login.jsx';
-
 import useUserStore from '../stores/user.js';
+import TopNavbar from '../components/AppBar.jsx';
+import {useToast} from '../hooks/use-toast.js';
+import {Toaster} from '../components/ui/toaster.jsx';
+import {Button} from '../components/ui/button.jsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog.jsx';
 
 export default function Root() {
   const navigate = useNavigate();
@@ -24,6 +23,7 @@ export default function Root() {
   const logout = useUserStore((state) => state.logout);
   const userId = useUserStore((state) => state.userId);
   const setToast = useUserStore((state) => state.setToast);
+  const {toast: shadToast} = useToast();
   const authenticated = useUserStore((state) => state.authenticated);
   const toast = useRef(null);
   const errorMessage = useUserStore((state) => state.errorMessage);
@@ -35,11 +35,16 @@ export default function Root() {
     methodName: 'getAllMenuItems',
     filter: (data) => buildMenu(data.data, navigate),
     clear: !authenticated,
-    args: { authenticated }, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
+    args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
   });
-
   const sendToast = (toastObject) => {
-    toast.current.show(toastObject);
+    console.log(toastObject, 'toast');
+    shadToast({
+      summary: toastObject.summary,
+      description: toastObject.detail,
+      life: 3000,
+      variant: toastObject.severity,
+    });
   };
 
   useEffect(() => {
@@ -49,12 +54,9 @@ export default function Root() {
   const errorFooter = () => {
     return (
       <div>
-        <Button
-          label="Ok"
-          onClick={clearErrorMessage}
-          autoFocus
-          severity="danger"
-        />
+        <Button onClick={clearErrorMessage} variant="danger">
+          Ok
+        </Button>
       </div>
     );
   };
@@ -62,14 +64,14 @@ export default function Root() {
   const userItems = [
     {
       label: 'Profile',
-      icon: 'pi pi-fw pi-user',
+      icon: 'User',
       command: () => {
         navigate(`/core/user/${userId}`);
       },
     },
     {
       label: 'Logout',
-      icon: 'pi pi-fw pi-sign-out',
+      icon: 'LogOut',
       command: () => {
         logout();
         navigate('/');
@@ -77,51 +79,34 @@ export default function Root() {
     },
   ];
 
-  const end = (
-    <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          navigate(`/search?value=${e.target.search.value}`);
-          e.target.search.value = '';
-        }}
-      >
-        <InputText
-          placeholder="Search"
-          type="text"
-          id="search"
-          key="search"
-          className="w-8rem sm:w-auto mr-3 mb-0 mt-0 p-inputtext-sm"
-        />
-
-        <Menu popup model={userItems} ref={userMenu} show={false} />
-        <Avatar
-          icon="pi pi-user"
-          size="medium"
-          severity="secondary"
-          aria-label="User"
-          onClick={(event) => userMenu.current.toggle(event)}
-        />
-      </form>
-    </>
-  );
-
   return (
     <>
-      <Dialog
-        header="Error"
-        visible={errorMessage}
-        onHide={clearErrorMessage}
-        footer={errorFooter}
-        modal
-      >
-        The server has reported an error.
-        <br />
-        <br />
-        {errorMessage}
+      <Dialog open={errorMessage} onOpenChange={clearErrorMessage}>
+        <DialogContent
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          className="[&>button]:hidden w-120"
+          hideClose
+        >
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          The server has reported an error.
+          <br />
+          <br />
+          {errorMessage}
+          <DialogFooter className="sm:justify-start">
+            {errorFooter}
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
-      <Toast ref={toast} />
-      <Menubar model={newItems} className="mb-1" end={end} />
+      <Toaster />
+      <TopNavbar
+        navItems={newItems}
+        userItems={userItems}
+        onSearch={(val) => navigate(`/search?value=${val}`)}
+      />
+      {/* <Menubar model={newItems} className="mb-1" end={end} /> */}
       <Login>
         <Outlet />
       </Login>
@@ -133,7 +118,7 @@ function buildMenu(items, navigate) {
   let output = [];
 
   for (const item of Object.keys(items).sort(
-    (a, b) => items[a].order - items[b].order
+    (a, b) => items[a].order - items[b].order,
   )) {
     let itemoutput = {};
 
@@ -159,7 +144,7 @@ function buildMenu(items, navigate) {
     }
 
     if (items[item].icon) {
-      itemoutput.icon = `pi pi-fw ${items[item].icon}`;
+      itemoutput.icon = items[item].icon;
     }
 
     output.push(itemoutput);

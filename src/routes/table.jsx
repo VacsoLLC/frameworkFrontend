@@ -1,6 +1,6 @@
 import * as React from 'react';
 import DataTable from '../components/datatable.jsx';
-import { Routes, Route, useParams, useLocation } from 'react-router-dom';
+import {Routes, Route, useParams, useLocation} from 'react-router-dom';
 
 const generateLocationWhere = (location) => {
   return location?.state?.filter && Array.isArray(location.state.filter)
@@ -9,7 +9,7 @@ const generateLocationWhere = (location) => {
 };
 
 export default function Root() {
-  const { db, table } = useParams();
+  const {db, table} = useParams();
   const [reload, setReload] = React.useState(0);
   const location = useLocation();
 

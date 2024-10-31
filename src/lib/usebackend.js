@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import API from './api.js';
-import _ from 'lodash';
+//import {_} from 'lodash';
 import useUserStore from '../stores/user.js';
 
 const api = new API();
@@ -31,14 +31,19 @@ export function useBackend({
   const queuedRequest = React.useRef(null);
   const fetching = React.useRef(false);
   const userId = useUserStore((state) => state.userId);
+  const authenticated = useUserStore((state) => state.authenticated);
 
   console.log(
     'usebackend userId',
     `/api/${packageName}/${className}/${methodName}`,
-    userId
+    userId,
   );
 
   React.useEffect(() => {
+    if (!authenticated) {
+      console.log('useBackend: waiting for authentication');
+      return;
+    }
     const fetchData = async () => {
       if (newArgs === null) return;
 
@@ -74,7 +79,7 @@ export function useBackend({
       console.log(
         `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
         response,
-        arguments
+        arguments,
       );
 
       if (filter) {
@@ -93,7 +98,15 @@ export function useBackend({
       fetching.current = false;
     };
     fetchData();
-  }, [packageName, className, methodName, newArgs, reload, userId]);
+  }, [
+    packageName,
+    className,
+    methodName,
+    newArgs,
+    reload,
+    userId,
+    authenticated,
+  ]);
 
   useEffect(() => {
     if (clear) {
@@ -104,7 +117,7 @@ export function useBackend({
   if (skip) return [returnValue, loading, error];
 
   // This prevents duplicate calls when just a reference changes.
-  if (!_.isEqual(newArgs, args)) {
+  if (!deepEqual(newArgs, args)) {
     if (queueing && fetching.current) {
       console.log('Queuing request', args);
       queuedRequest.current = args;
@@ -140,4 +153,71 @@ export function callBackend({
   return api.fetch(URL, args, auth, supressDialog);
 }
 
-export { api };
+export {api};
+
+/**
+ * Performs a deep comparison between two values to determine if they are equivalent.
+ * @param {*} value1 The first value to compare
+ * @param {*} value2 The second value to compare
+ * @returns {boolean} Returns true if the values are equivalent, else false
+ */
+function deepEqual(value1, value2) {
+  // Handle strict equality and null/undefined cases
+  if (value1 === value2) {
+    return true;
+  }
+
+  // If either value is null or undefined and they're not strictly equal, return false
+  if (value1 == null || value2 == null) {
+    return false;
+  }
+
+  // Handle different types
+  if (typeof value1 !== typeof value2) {
+    return false;
+  }
+
+  // Handle dates
+  if (value1 instanceof Date && value2 instanceof Date) {
+    return value1.getTime() === value2.getTime();
+  }
+
+  // Handle arrays
+  if (Array.isArray(value1) && Array.isArray(value2)) {
+    if (value1.length !== value2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < value1.length; i++) {
+      if (!deepEqual(value1[i], value2[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Handle objects
+  if (typeof value1 === 'object' && typeof value2 === 'object') {
+    const keys1 = Object.keys(value1);
+    const keys2 = Object.keys(value2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (const key of keys1) {
+      if (!keys2.includes(key)) {
+        return false;
+      }
+
+      if (!deepEqual(value1[key], value2[key])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
