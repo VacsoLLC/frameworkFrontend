@@ -31,6 +31,7 @@ export function useBackend({
   const queuedRequest = React.useRef(null);
   const fetching = React.useRef(false);
   const userId = useUserStore((state) => state.userId);
+  const authenticated = useUserStore((state) => state.authenticated);
 
   console.log(
     'usebackend userId',
@@ -39,6 +40,10 @@ export function useBackend({
   );
 
   React.useEffect(() => {
+    if (!authenticated) {
+      console.log('useBackend: waiting for authentication');
+      return;
+    }
     const fetchData = async () => {
       if (newArgs === null) return;
 
@@ -93,7 +98,15 @@ export function useBackend({
       fetching.current = false;
     };
     fetchData();
-  }, [packageName, className, methodName, newArgs, reload, userId]);
+  }, [
+    packageName,
+    className,
+    methodName,
+    newArgs,
+    reload,
+    userId,
+    authenticated,
+  ]);
 
   useEffect(() => {
     if (clear) {
