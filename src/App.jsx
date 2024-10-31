@@ -27,7 +27,7 @@ function Frontend({views}) {
           element: <Search />,
         },
         {
-          path: '/:db/:table',//core/user/table
+          path: '/:db/:table', //core/user/table
           element: <Table />,
         },
         {
@@ -39,7 +39,7 @@ function Frontend({views}) {
           element: <ViewRecord />,
         },
         {
-          path: '/:db/:table/view/:view',//core/user/othertableview
+          path: '/:db/:table/view/:view', //core/user/othertableview
           element: <View views={views} />,
         },
         {

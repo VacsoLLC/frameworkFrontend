@@ -17,8 +17,8 @@ export function edit({
   return (
     <Select
       value={value}
-      onValueChange={(e,a,b,c) => {
-        if (e  == '') return;
+      onValueChange={(e, a, b, c) => {
+        if (e == '') return;
         handleChange(columnId, e);
       }}
       size={settings.fieldWidth}
