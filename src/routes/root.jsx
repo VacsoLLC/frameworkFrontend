@@ -2,13 +2,19 @@ import {useRef, useEffect, startTransition} from 'react';
 import {Outlet} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
 import {useBackend} from '../lib/usebackend.js';
-import {Dialog} from 'primereact/dialog';
 import Login from '../components/login.jsx';
 import useUserStore from '../stores/user.js';
 import TopNavbar from '../components/AppBar.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from '../components/ui/toaster.jsx';
 import {Button} from '../components/ui/button.jsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog.jsx';
 
 export default function Root() {
   const navigate = useNavigate();
@@ -75,17 +81,24 @@ export default function Root() {
 
   return (
     <>
-      <Dialog
-        header="Error"
-        visible={errorMessage}
-        onHide={clearErrorMessage}
-        footer={errorFooter}
-        modal
-      >
-        The server has reported an error.
-        <br />
-        <br />
-        {errorMessage}
+      <Dialog open={errorMessage} onOpenChange={clearErrorMessage}>
+        <DialogContent
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          className="[&>button]:hidden w-120"
+          hideClose
+        >
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          The server has reported an error.
+          <br />
+          <br />
+          {errorMessage}
+          <DialogFooter className="sm:justify-start">
+            {errorFooter}
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
       <Toaster />
       <TopNavbar

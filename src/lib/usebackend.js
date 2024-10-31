@@ -36,7 +36,7 @@ export function useBackend({
   console.log(
     'usebackend userId',
     `/api/${packageName}/${className}/${methodName}`,
-    userId
+    userId,
   );
 
   React.useEffect(() => {
@@ -79,7 +79,7 @@ export function useBackend({
       console.log(
         `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
         response,
-        arguments
+        arguments,
       );
 
       if (filter) {

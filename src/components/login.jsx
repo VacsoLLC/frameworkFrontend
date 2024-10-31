@@ -1,6 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
 
-import {Dialog} from 'primereact/dialog';
 import {callBackend, clearCache} from '../lib/usebackend.js';
 
 import useUserStore from '../stores/user.js';
@@ -9,6 +8,7 @@ import {Input} from '../components/ui/input';
 import {Label} from '../components/ui/label';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';
+import {Dialog, DialogContent} from './ui/dialog.jsx';
 
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
@@ -49,9 +49,6 @@ export default function LoginModal({children}) {
       msgs.current.clear(); // Clear any previous errors
       msgs.current.getElement().hidden = true;
     }
-
-    console.log('Email:', email, 'Password:', password);
-
     try {
       const response = await callBackend({
         packageName: 'core',
@@ -61,18 +58,9 @@ export default function LoginModal({children}) {
         auth: false,
         supressDialog: true,
       });
-
       const data = response.data;
-
       if (data && data.token) {
         setToken(data.token);
-
-        // toast({
-        //   severity: 'success',
-        //   summary: 'Success',
-        //   detail: `Login successful`,
-        //   life: 3000,
-        // });
         shadToast({
           title: 'Success',
           description: 'Login successful',
@@ -83,12 +71,6 @@ export default function LoginModal({children}) {
         clearCache();
         console.log('Login successful!');
       } else {
-        // toast({
-        //   severity: 'error',
-        //   summary: 'Failed',
-        //   detail: `Login failed`,
-        //   life: 3000,
-        // });
         shadToast({
           title: 'Failed',
           description: 'Login failed',
@@ -99,12 +81,6 @@ export default function LoginModal({children}) {
         console.log('No token received');
       }
     } catch (error) {
-      // toast({
-      //   severity: 'error',
-      //   summary: 'Failed',
-      //   detail: `Login failed`,
-      //   life: 3000,
-      // });
       shadToast({
         title: 'Failed',
         description: 'Login failed',
@@ -113,6 +89,71 @@ export default function LoginModal({children}) {
       });
     }
   };
+  return (
+    <>
+      <Dialog open={!authenticated} onOpenChange={() => {}}>
+        <DialogContent
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          className="[&>button]:hidden w-120"
+          hideClose
+        >
+          <div className="flex justify-center">
+            <div className="w-96 p-6">
+              <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                <Button type="submit" className="w-full" onClick={onLogin}>
+                  Login
+                </Button>
+              </div>
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {ssoList?.length &&
+                  ssoList.map((sso) => (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        window.location.href = sso.link;
+                      }}
+                    >
+                      {sso.name}
+                    </Button>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Toaster />
+      <>{children}</>
+    </>
+  );
   return (
     <>
       <Dialog
