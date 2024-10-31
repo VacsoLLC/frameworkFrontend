@@ -8,17 +8,18 @@ export function read(...args) {
 
 export function edit({formData, value, recordId}) {
   return (
-    <div className="flex align-items-center">
-      <span className="mr-2">{value}</span>
-
+    <>
+      <div className="flex align-items-center">
+        <span className="mr-2">{value}</span>
+      </div>
       <Button
         onClick={(e) => {
           e.preventDefault();
           api.downloadFile(`/api/core/attachment/download/${recordId}`, value);
         }}
       >
-        <Download />
+        <Download size={16} />
       </Button>
-    </div>
+    </>
   );
 }

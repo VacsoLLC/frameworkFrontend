@@ -95,7 +95,7 @@ export default function TopNavbar({navItems, onSearch, userItems}) {
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar>
                   <AvatarFallback>
-                    <User />
+                    <User size={16} />
                   </AvatarFallback>
                 </Avatar>
               </Button>
