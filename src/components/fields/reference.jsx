@@ -1,12 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 import CreateRecord from '../buttons/createrecord.jsx';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 
-import { useBackend, callBackend } from '../../lib/usebackend.js';
+import {useBackend, callBackend} from '../../lib/usebackend.js';
+import {Button} from '../ui/button.jsx';
+import {CloudCog, ExternalLink} from 'lucide-react';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -18,7 +32,7 @@ async function getDropDownOptions(settings, value) {
         args: {
           columns: ['id', settings.friendlyColumnName],
           queryModifier: settings.queryModifier,
-          queryModifierArgs: { settings, value },
+          queryModifierArgs: {settings, value},
         },
       });
 
@@ -26,7 +40,7 @@ async function getDropDownOptions(settings, value) {
         throw new Error('Network response was not ok');
       }
 
-      response.data.rows.push({ id: null, name: 'None' });
+      response.data.rows.push({id: null, name: 'None'});
 
       return response.data.rows;
     } catch (err) {
@@ -35,7 +49,7 @@ async function getDropDownOptions(settings, value) {
   }
 }
 
-export function edit({ columnId, settings, value, handleChange, ...props }) {
+export function edit({columnId, settings, value, handleChange, ...props}) {
   const navigate = useNavigate();
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [reload, setReload] = useState(1);
@@ -62,46 +76,36 @@ export function edit({ columnId, settings, value, handleChange, ...props }) {
     console.log(props);
     return <div>Loading...</div>;
   }
-
+  console.log(value, columnId);
+  console.log(dropdownOptions, columnId);
   return (
     <>
-      <Dropdown
-        id={columnId}
-        value={value}
-        onChange={(e) => {
-          handleChange(columnId, e.value);
+      <Select
+        value={value?.toString()}
+        onValueChange={(e) => {
+          console.log(e);
+          handleChange(columnId, e);
         }}
-        optionLabel={settings.friendlyColumnName}
-        optionValue="id"
-        options={dropdownOptions}
-        className="w-full md:w-14rem"
-        size={settings.fieldWidth}
+        // size={settings.fieldWidth}
         key={columnId}
-        filter={filter}
-      />
-      <Button
-        icon="pi pi-external-link"
-        className="ml-1"
-        onClick={() => {
-          navigate(`/${settings.joinDb}/${settings.join}/${value}`);
-        }}
-        tooltip="View related record"
-        key="viewRelatedRecord"
-      />
-      {settings.referenceCreate && (
-        <CreateRecord
-          db={settings.joinDb}
-          table={settings.join}
-          onClose={async (id) => {
-            if (id) {
-              forceReload();
-              handleChange(columnId, id);
-            }
-          }}
-          closeOnCreate={true}
-          header="Create Related Record"
-        />
-      )}
+        placeholder={settings.friendlyColumnName}
+      >
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {dropdownOptions.map((item) => (
+              <SelectItem
+                value={`${item.id}`}
+                key={item[settings.friendlyColumnName]}
+              >
+                {item[settings.friendlyColumnName]}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </>
   );
 }

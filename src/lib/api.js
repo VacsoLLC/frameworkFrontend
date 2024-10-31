@@ -5,6 +5,10 @@ let globalCache = {};
 class API {
   constructor() {}
 
+  authenticated() {
+    return useUserStore.getState().authenticated;
+  }
+
   async waitForAuthentication() {
     const isAuthenticated = useUserStore.getState().isAuthenticated();
     if (isAuthenticated) return;

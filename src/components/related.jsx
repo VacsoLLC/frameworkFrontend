@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useBackend } from '../lib/usebackend.js';
-
-import { TabView, TabPanel } from 'primereact/tabview';
+import React, {useState, useEffect, useRef} from 'react';
+import {useBackend} from '../lib/usebackend.js';
 
 import DataTable from './datatable.jsx';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs.jsx';
 
-export default function Related({ db, table, recordId, reload, forceReload }) {
+export default function Related({db, table, recordId, reload, forceReload}) {
   const [tables, loading] = useBackend({
     packageName: db,
     className: table,
@@ -39,51 +38,63 @@ export default function Related({ db, table, recordId, reload, forceReload }) {
             break;
         }
 
-        childTable.where.push({ [columna]: right });
+        childTable.where.push({[columna]: right});
       }
     }
 
     return tablesTemp;
   };
 
-  console.log('Related', db, table, recordId, tables);
-
   if (loading) {
     console.log('ASDFASDFASDF', 'LOADING');
     return <></>;
   }
 
-  console.log('ASDFASDFASDF', table);
+  const getTabKey = (tab) => {
+    return `${table}${tab.tabName}${tab.table ?? ''}${
+      Object.keys(tab.columnmap)[0]
+    }`;
+  };
+
+  const defaultTab =
+    tables && tables.length > 0 ? getTabKey(tables?.[0]) : null;
 
   return (
-    <>
-      <TabView key={table + 'related'}>
-        {tables &&
-          tables.length > 0 &&
-          tables.map((childTable) => {
-            return (
-              <TabPanel
-                header={childTable.tabName}
-                key={
-                  table +
-                  childTable.tabName +
-                  Object.keys(childTable.columnmap)[0]
-                } // use the first column we join on as the key
+    <Tabs
+      defaultValue={defaultTab}
+      className="m-4 p-4 border-2 rounded-lg border-slate-200"
+    >
+      {tables && tables.length > 0 ? (
+        <>
+          <TabsList className="w-100">
+            {tables.map((childTable) => (
+              <TabsTrigger
+                value={getTabKey(childTable)}
+                key={getTabKey(childTable)}
               >
-                <DataTable
-                  db={childTable.db}
-                  table={childTable.table}
-                  where={childTable.where}
-                  closeOnCreate={true}
-                  reload={reload}
-                  forceReload={forceReload}
-                  key={table + childTable.tabName + childTable.table}
-                  child={true}
-                />
-              </TabPanel>
-            );
-          })}
-      </TabView>
-    </>
+                {childTable.tabName}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {tables.map((childTable) => (
+            <TabsContent
+              value={getTabKey(childTable)}
+              key={getTabKey(childTable)}
+            >
+              <DataTable
+                db={childTable.db}
+                table={childTable.table}
+                where={childTable.where}
+                closeOnCreate={true}
+                reload={reload}
+                forceReload={forceReload}
+                key={table + childTable.tabName + childTable.table}
+                child={true}
+              />
+            </TabsContent>
+          ))}
+        </>
+      ) : null}
+    </Tabs>
   );
 }

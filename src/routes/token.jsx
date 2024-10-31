@@ -23,7 +23,7 @@ export default function Token() {
   React.useEffect(() => {
     if (token) {
       setToken(token);
-      navigate('/', { replace: true });
+      navigate('/', {replace: true});
     } else {
       setError('No token received');
     }

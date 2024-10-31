@@ -1,6 +1,12 @@
 import React from 'react';
-import { Tooltip } from 'primereact/tooltip';
 import Fields from './fields/index.jsx';
+import {Label} from './ui/label.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip.jsx';
 
 /**
  * Form Component
@@ -69,32 +75,48 @@ export default function Form({
 
   return (
     <>
-      <Tooltip target=".tooltip" />
-      <form onSubmit={(e) => e.preventDefault()}>
-        {Object.entries(schema || {}).map(([columnId, settings]) => (
-          <div className="field grid" key={columnId}>
-            <label
-              htmlFor={columnId}
-              className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
-              style={{ width: '200px' }}
+      <TooltipProvider>
+        {/* <Tooltip target=".tooltip" /> */}
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="space-y-6 w-full mt-4"
+          style={{maxWidth: '800px'}}
+        >
+          {Object.entries(schema || {}).map(([columnId, settings]) => (
+            <div
+              className="flex items-center justify-center space-x-4"
+              style={{marginTop: '12px'}}
+              key={columnId}
             >
-              <div
-                data-pr-tooltip={
-                  (settings.helpText ? settings.helpText : '') +
-                  (settings.required ? ' This field is required.' : '')
-                }
-                data-pr-position="top"
-                className="tooltip"
-              >
-                {settings.friendlyName || columnId}
-                {settings.required && <span className="text-danger"> *</span>}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Label htmlFor={columnId} className="w-32 text-right">
+                    {settings.friendlyName || columnId}
+                    {settings.required && (
+                      <span className="text-danger"> *</span>
+                    )}
+                  </Label>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {(settings.helpText ? settings.helpText : '') +
+                      (settings.required ? ' This field is required.' : '')}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+              <div className="flex-grow flex items-center space-x-2">
+                {renderInputField(columnId, settings)}
               </div>
-            </label>
-            <div className="col">{renderInputField(columnId, settings)}</div>
+            </div>
+          ))}
+          <div className="flex items-center justify-center space-x-4">
+            <div className="w-32"></div>
+            <div className="flex-grow flex items-center space-x-2">
+              {children}
+            </div>
           </div>
-        ))}
-        {children}
-      </form>
+        </form>
+      </TooltipProvider>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { InputTextarea } from 'primereact/inputtextarea';
+import {Textarea} from '../ui/textarea';
 
 export function edit({
   columnId,
@@ -9,18 +9,18 @@ export function edit({
   handleChange,
 }) {
   return (
-    <InputTextarea
+    <Textarea
       id={columnId}
       name={columnId}
       placeholder={settings.helpText}
       onChange={(e) => handleChange(columnId, e.target.value)}
       value={value || ''}
       key={columnId}
-      style={{ height: '100px' }}
+      style={{height: '100px'}}
     />
   );
 }
 
-export function read({ value }) {
+export function read({value}) {
   return <pre>{value}</pre>;
 }

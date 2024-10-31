@@ -1,5 +1,5 @@
-import { Checkbox } from 'primereact/checkbox';
-import { Dropdown } from 'primereact/dropdown';
+import {Checkbox} from '../ui/checkbox';
+import {Select, SelectContent, SelectTrigger, SelectValue} from '../ui/select';
 
 export function edit({
   columnId,
@@ -12,8 +12,8 @@ export function edit({
     <Checkbox
       id={columnId}
       name={columnId}
-      onChange={(e) => {
-        handleChange(columnId, e.target.checked ? 1 : 0);
+      onCheckedChange={(checked) => {
+        handleChange(columnId, checked ? 1 : 0);
       }}
       checked={value ? true : false}
     />
@@ -24,21 +24,28 @@ export function read(props) {
   return <>{props.value ? 'Yes' : 'No'}</>;
 }
 
-export function filter({ columnId, value, onFilterElementChange, ...props }) {
+export function filter({columnId, value, onFilterElementChange, ...props}) {
   return (
-    <Dropdown
+    <Select
       value={value}
-      optionValue="value"
-      optionLabel="label"
-      onChange={(e) => {
-        onFilterElementChange(columnId, e.value, 'equals');
+      placeholder={lavel}
+      onValueChange={(val) => {
+        onFilterElementChange(columnId, val, 'equals');
       }}
-      options={[
-        { label: 'All', value: '' },
-        { label: 'Yes', value: '1' },
-        { label: 'No', value: '0' },
-      ]}
-    />
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Theme" />
+      </SelectTrigger>
+      <SelectContent>
+        {[
+          {label: 'All', value: ''},
+          {label: 'Yes', value: '1'},
+          {label: 'No', value: '0'},
+        ].map((item) => {
+          return <SelectItem value={item.value}>{item.label}</SelectItem>;
+        })}
+      </SelectContent>
+    </Select>
   );
 }
 

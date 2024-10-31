@@ -1,1 +1,1 @@
-- Update to support mobile devices better. 
+- Update to support mobile devices better.
