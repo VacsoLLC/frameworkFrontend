@@ -7,6 +7,7 @@ import Token from './routes/token.jsx';
 import Home from './routes/home.jsx';
 import CreateRecord from './routes/createrecord.jsx';
 import Search from './routes/search.jsx';
+import Action from './routes/action.jsx';
 
 import './main.css';
 import './output.css';
@@ -45,6 +46,10 @@ function Frontend({views}) {
         {
           path: '/:db/:table/view/:view/:recordId', //core/user/otherrecordview/1
           element: <View views={views} />,
+        },
+        {
+          path: '/:packageName/:className/action/:methodName/:recordId',
+          element: <Action />,
         },
       ],
     },
