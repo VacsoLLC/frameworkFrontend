@@ -57,12 +57,9 @@ export default function AddRecordButton({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <Dialog
-        open={showDialog}
-        onOpenChange={closeDialog}
-        style={{width: '50vw'}}
-      >
-        <DialogContent>
+
+      <Dialog open={showDialog} onOpenChange={closeDialog}>
+        <DialogContent className="max-w-[850px] w-[90vw]">
           <DialogHeader>
             <DialogTitle>{header}</DialogTitle>
           </DialogHeader>
