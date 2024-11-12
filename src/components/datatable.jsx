@@ -241,7 +241,7 @@ export default function DataTableExtended({
               onClick={() => {
                 onSortChange(
                   column.id,
-                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC'
+                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
                 );
               }}
             >
@@ -344,7 +344,7 @@ export default function DataTableExtended({
           className="mx-1"
         >
           {i}
-        </Button>
+        </Button>,
       );
     }
 
@@ -375,7 +375,7 @@ export default function DataTableExtended({
                             onFilterElementChange(
                               header.column.id,
                               e.target.value,
-                              lazyState.filters[header.column.id]?.matchMode
+                              lazyState.filters[header.column.id]?.matchMode,
                             );
                           }}
                           key={header.column.id}
@@ -407,7 +407,7 @@ export default function DataTableExtended({
                                   onFilterElementChange(
                                     header.column.id,
                                     lazyState.filters[header.column.id]?.value,
-                                    option
+                                    option,
                                   )
                                 }
                                 className={`flex items-center justify-between ${
@@ -432,13 +432,13 @@ export default function DataTableExtended({
                             lazyState.filters[header.column.id]?.value &&
                               lazyState.filters[header.column.id]?.matchMode
                               ? 'opacity-100'
-                              : 'opacity-0'
+                              : 'opacity-0',
                           )}
                           onClick={() =>
                             onFilterElementChange(
                               header.column.id,
                               '',
-                              lazyState.filters[header.column.id]?.matchMode
+                              lazyState.filters[header.column.id]?.matchMode,
                             )
                           }
                         >
