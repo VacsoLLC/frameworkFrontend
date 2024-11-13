@@ -10,6 +10,25 @@ export function clearCache() {
 }
 
 // This handles calls to the backend. This is a high level interface that handles common react stuff for you. api.fetch is a low level interface that you can use if you want to handle the backend calls yourself, but it is not recommended.
+/**
+ * Custom hook to interact with backend API.
+ *
+ * @param {Object} options - The options for the backend call.
+ * @param {string} options.packageName - The package name to call.
+ * @param {string} options.className - The class name to call.
+ * @param {string} options.methodName - The method name to call.
+ * @param {string|boolean} [options.recordId=false] - The record ID, optional. If not provided, the method will be called without a record ID.
+ * @param {Object} [options.args={}] - Arguments sent to the method.
+ * @param {number} [options.reload=1] - If this value changes, a refresh will be forced.
+ * @param {boolean} [options.cache=false] - If true, the data will be cached.
+ * @param {Function|boolean} [options.filter=false] - A function to filter the data any time it is retrieved from the server, before it is stored and returned.
+ * @param {boolean} [options.clear=false] - If true, the data will be cleared.
+ * @param {boolean} [options.skip=false] - If true, the call will be skipped.
+ * @param {boolean} [options.queueing=false] - If true, the call will be queued if another call is in progress. Useful for calls triggered by user input.
+ * @param {number} [options.timeout=30000] - The timeout in milliseconds.
+ *
+ * @returns {[any, boolean, any]} - Returns an array containing the response data, loading state, and error state.
+ */
 export function useBackend({
   packageName, // The package name to call
   className, // The class name to call
@@ -36,7 +55,7 @@ export function useBackend({
   console.log(
     'usebackend userId',
     `/api/${packageName}/${className}/${methodName}`,
-    userId,
+    userId
   );
 
   React.useEffect(() => {
@@ -79,7 +98,7 @@ export function useBackend({
       console.log(
         `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
         response,
-        arguments,
+        arguments
       );
 
       if (filter) {
@@ -106,6 +125,7 @@ export function useBackend({
     reload,
     userId,
     authenticated,
+    recordId,
   ]);
 
   useEffect(() => {
