@@ -15,8 +15,14 @@ export default function Action() {
     args: {},
   });
 
-  if (data && data.data && data.data.navigate) {
-    navigate(data.data.navigate);
+  if (data && data.data) {
+    if (data.data.navigate) {
+      navigate(data.data.navigate);
+    }
+
+    if (data.data.message) {
+      return <h1>{data.data.message}</h1>;
+    }
   }
 
   return (
