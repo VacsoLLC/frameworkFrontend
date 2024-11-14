@@ -84,6 +84,11 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
       <Select
         value={value?.toString()}
         onValueChange={(e) => {
+          if (e == '') {
+            // none e == 'null'... if '', its an erronious update. I'm probably doing someting wrong, but for the life of me I can't figure out what.
+            return;
+          }
+
           console.log(e);
           handleChange(columnId, e);
         }}
@@ -97,25 +102,48 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         <SelectContent>
           <SelectGroup>
             {dropdownOptions.map((item) => (
-              <SelectItem
-                value={`${item.id}`}
-                key={item[settings.friendlyColumnName]}
-              >
+              <SelectItem value={`${item.id}`} key={item.id}>
                 {item[settings.friendlyColumnName]}
               </SelectItem>
             ))}
           </SelectGroup>
         </SelectContent>
       </Select>
-      <Button
-        size="sm"
-        onClick={() =>
-          navigate(`/${settings.joinDb}/${settings.join}/${value}`)
-        }
-        disabled={!value}
-      >
-        <SquareArrowOutUpRight size={16} />
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              onClick={() =>
+                navigate(`/${settings.joinDb}/${settings.join}/${value}`)
+              }
+              disabled={!value}
+            >
+              <SquareArrowOutUpRight size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>
+              Go to referenced record. DB: {settings.joinDb} Table:{' '}
+              {settings.join} Record: {value}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      {settings.referenceCreate && (
+        <CreateRecord
+          db={settings.joinDb}
+          table={settings.join}
+          onClose={async (id) => {
+            if (id) {
+              forceReload();
+              handleChange(columnId, id);
+            }
+          }}
+          closeOnCreate={true}
+          header="Create Related Record"
+        />
+      )}
     </>
   );
 }
