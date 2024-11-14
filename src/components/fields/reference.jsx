@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {RefreshCcw, SquareArrowOutUpRight} from 'lucide-react';
 
 import CreateRecord from '../buttons/createrecord.jsx';
 import {
@@ -106,6 +107,15 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           </SelectGroup>
         </SelectContent>
       </Select>
+      <Button
+        size="sm"
+        onClick={() =>
+          navigate(`/${settings.joinDb}/${settings.join}/${value}`)
+        }
+        disabled={!value}
+      >
+        <SquareArrowOutUpRight size={16} />
+      </Button>
     </>
   );
 }
