@@ -67,7 +67,7 @@ export default function Record({
           if (settings.defaultValue !== undefined) {
             initialData[columnId] = settings.defaultValue;
           }
-        },
+        }
       );
       // Apply any pre-filled values from 'where'
       where.forEach((whereClause) => {
@@ -106,7 +106,7 @@ export default function Record({
         if (settings.columnType === 'datetime') {
           postData[columnId] = unFormatDateTime(formData[columnId]); // TODO: get rid of this. may not actually be needed
         }
-      },
+      }
     );
 
     try {
@@ -171,7 +171,7 @@ export default function Record({
         acc[columnId] = settings;
         return acc;
       },
-      {},
+      {}
     );
   }, [schema, table, newRecord, where]);
 
@@ -179,7 +179,7 @@ export default function Record({
   if (loading || recordLoading || schemaLoading || buttonsLoading) return <></>;
 
   return (
-    <div className="mt-4 ml-4">
+    <div className="m-4">
       <Toaster />
       {showHeader ? (
         <h2 className="text-2xl font-semibold">
@@ -196,51 +196,40 @@ export default function Record({
         newRecord={newRecord}
         recordId={recordId}
       >
-        <div className="field grid" key="submitbutton">
-          <div
-            className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
-            style={{width: '200px'}}
-          ></div>
-          <div className="col ml-16">
-            {newRecord && (
+        {newRecord && (
+          <>
+            <Button type="submit" onClick={() => handleSubmit({close: false})}>
+              Create
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              className="ml-4"
+            >
+              Cancel
+            </Button>
+          </>
+        )}
+        <div className="flex flex-wrap">
+          {!newRecord &&
+            buttons?.data &&
+            Object.entries(buttons.data).map(([key, button]) => (
               <>
-                <Button
-                  type="submit"
-                  onClick={() => handleSubmit({close: false})}
-                >
-                  Create
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={onClose}
-                  className="ml-4"
-                >
-                  Cancel
-                </Button>
+                <ActionButton
+                  button={button}
+                  key={key}
+                  db={db}
+                  table={table}
+                  recordId={recordId}
+                  forceReload={forceReload}
+                  reload={reload}
+                  formData={formData}
+                  columns={schema.data.schema}
+                />
+                {button.newLine && <div className="w-full" />}
               </>
-            )}
-            <div className="flex flex-wrap">
-              {!newRecord &&
-                buttons?.data &&
-                Object.entries(buttons.data).map(([key, button]) => (
-                  <>
-                    <ActionButton
-                      button={button}
-                      key={key}
-                      db={db}
-                      table={table}
-                      recordId={recordId}
-                      forceReload={forceReload}
-                      reload={reload}
-                      formData={formData}
-                      columns={schema.data.schema}
-                    />
-                    {button.newLine && <div className="w-full" />}
-                  </>
-                ))}
-            </div>
-          </div>
+            ))}
         </div>
       </Form>
     </div>

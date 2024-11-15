@@ -79,38 +79,39 @@ export default function Form({
         {/* <Tooltip target=".tooltip" /> */}
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="space-y-6 w-full mt-4"
-          style={{maxWidth: '800px'}}
+          className="space-y-2 w-full mt-4"
+          style={{maxWidth: '1000px'}}
         >
           {Object.entries(schema || {}).map(([columnId, settings]) => (
             <div
               className="flex items-center justify-center space-x-4"
-              style={{marginTop: '12px'}}
               key={columnId}
             >
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Label htmlFor={columnId} className="w-32 text-right">
-                    {settings.friendlyName || columnId}
-                    {settings.required && (
-                      <span className="text-danger"> *</span>
-                    )}
-                  </Label>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {(settings.helpText ? settings.helpText : '') +
-                      (settings.required ? ' This field is required.' : '')}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
+              <div className="w-[150px] text-right shrink-0">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Label htmlFor={columnId} className="">
+                      {settings.friendlyName || columnId}
+                      {settings.required && (
+                        <span className="text-danger"> *</span>
+                      )}
+                    </Label>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      {(settings.helpText ? settings.helpText : '') +
+                        (settings.required ? ' This field is required.' : '')}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <div className="flex-grow flex items-center space-x-2">
                 {renderInputField(columnId, settings)}
               </div>
             </div>
           ))}
           <div className="flex items-center justify-center space-x-4">
-            <div className="w-32"></div>
+            <div className="w-[150px] text-right shrink-0"> </div>
             <div className="flex-grow flex items-center space-x-2">
               {children}
             </div>
