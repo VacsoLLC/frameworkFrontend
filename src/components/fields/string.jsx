@@ -4,7 +4,6 @@ export function edit({
   columnId,
   settings,
   dropdownOptions,
-
   value,
   handleChange,
 }) {

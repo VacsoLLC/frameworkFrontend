@@ -7,7 +7,8 @@ import * as boolean from './boolean';
 import * as datetime from './datetime';
 
 import * as file from './file';
-
+import * as email from './email';
+import * as phone from './phone';
 export default {
   reference,
   string,
@@ -17,4 +18,6 @@ export default {
   datetime,
   boolean,
   file,
+  email,
+  phone,
 };
