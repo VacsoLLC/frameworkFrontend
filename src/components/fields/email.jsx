@@ -46,24 +46,5 @@ export function edit({
 }
 
 export function read({value}) {
-  return (
-    <div className="flex items-center gap-2">
-      {/* <a href={`tel:${value}`} onKeyDown={(e) => e.preventDefault()}>
-        {value}
-      </a> */}
-      {value}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <a href={`mailto:${value}`} onKeyDown={(e) => e.preventDefault()}>
-              <Send size={14} />
-            </a>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Send email</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
-  );
+  return value;
 }
