@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip';
+import {Button} from '../ui/button';
 
 export function edit({
   columnId,
@@ -15,16 +16,32 @@ export function edit({
   handleChange,
 }) {
   return (
-    <Input
-      id={columnId}
-      name={columnId}
-      type="email"
-      placeholder={settings.helpText}
-      onChange={(e) => handleChange(columnId, e.target.value)}
-      value={value || ''}
-      size={settings.fieldWidth}
-      key={columnId}
-    />
+    <>
+      <Input
+        id={columnId}
+        name={columnId}
+        type="email"
+        placeholder={settings.helpText}
+        onChange={(e) => handleChange(columnId, e.target.value)}
+        value={value || ''}
+        size={settings.fieldWidth}
+        key={columnId}
+      />
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button>
+              <a href={`mailto:${value}`} onKeyDown={(e) => e.preventDefault()}>
+                <Send size={14} />
+              </a>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Send email</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </>
   );
 }
 
