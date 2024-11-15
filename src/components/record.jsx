@@ -5,7 +5,6 @@ import useUserStore from '../stores/user.js';
 import Form from './form.jsx';
 import ActionButton from './buttons/actionbutton.jsx';
 import {formatDateTime, unFormatDateTime} from './util.js';
-import './record.css';
 import {Button} from './ui/button.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';

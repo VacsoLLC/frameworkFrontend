@@ -1,3 +1,4 @@
+/* This file is purposely not imported. Dont import it. The tailwind and base theme should come from whatever project imports this library. Leaving this for ShadCN's benifit. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

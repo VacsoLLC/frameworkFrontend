@@ -10,8 +10,6 @@ import Search from './routes/search.jsx';
 import Action from './routes/action.jsx';
 
 import './main.css';
-import './output.css';
-import './global.css';
 
 function Frontend({views}) {
   const router = createBrowserRouter([

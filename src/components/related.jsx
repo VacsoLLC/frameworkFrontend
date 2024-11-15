@@ -62,7 +62,7 @@ export default function Related({db, table, recordId, reload, forceReload}) {
   return (
     <Tabs
       defaultValue={defaultTab}
-      className="m-4 p-4 border-2 rounded-lg border-slate-200"
+      className="m-4 p-4 border rounded-lg border-slate-200"
     >
       {tables && tables.length > 0 ? (
         <>
