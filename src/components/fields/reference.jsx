@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {RefreshCcw, SquareArrowOutUpRight, X} from 'lucide-react';
 
 import CreateRecord from '../buttons/createrecord.jsx';
 import {
@@ -40,7 +41,7 @@ async function getDropDownOptions(settings, value) {
         throw new Error('Network response was not ok');
       }
 
-      response.data.rows.push({id: null, name: 'None'});
+      response.data.rows.push({id: 'null', name: 'None'});
 
       return response.data.rows;
     } catch (err) {
@@ -53,6 +54,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
   const navigate = useNavigate();
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [reload, setReload] = useState(1);
+  console.log(`${columnId}: ${value} ${typeof value}`, dropdownOptions);
 
   const forceReload = () => {
     setReload((prev) => prev + 1);
@@ -76,15 +78,26 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
     console.log(props);
     return <div>Loading...</div>;
   }
-  console.log(value, columnId);
-  console.log(dropdownOptions, columnId);
+
+  const handleClear = () => {
+    //setValue('');
+  };
+
   return (
     <>
       <Select
-        value={value?.toString()}
+        value={value?.toString()} // shadcn can only deal with strings. https://github.com/shadcn-ui/ui/issues/772
         onValueChange={(e) => {
-          console.log(e);
-          handleChange(columnId, e);
+          if (e == '') {
+            // if '', its an erronious update. I'm probably doing someting wrong, but for the life of me I can't figure out what.
+            return;
+          }
+
+          if (e == 'null') {
+            handleChange(columnId, null);
+          } else {
+            handleChange(columnId, e);
+          }
         }}
         // size={settings.fieldWidth}
         key={columnId}
@@ -96,16 +109,49 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         <SelectContent>
           <SelectGroup>
             {dropdownOptions.map((item) => (
-              <SelectItem
-                value={`${item.id}`}
-                key={item[settings.friendlyColumnName]}
-              >
+              <SelectItem value={`${item.id}`} key={item.id}>
                 {item[settings.friendlyColumnName]}
               </SelectItem>
             ))}
           </SelectGroup>
         </SelectContent>
       </Select>
+
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              onClick={() =>
+                navigate(`/${settings.joinDb}/${settings.join}/${value}`)
+              }
+              disabled={!value}
+            >
+              <SquareArrowOutUpRight size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>
+              Go to referenced record. DB: {settings.joinDb} Table:{' '}
+              {settings.join} Record: {value}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      {settings.referenceCreate && (
+        <CreateRecord
+          db={settings.joinDb}
+          table={settings.join}
+          onClose={async (id) => {
+            if (id) {
+              forceReload();
+              handleChange(columnId, id);
+            }
+          }}
+          closeOnCreate={true}
+          header="Create Related Record"
+        />
+      )}
     </>
   );
 }
