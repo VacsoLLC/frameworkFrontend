@@ -30,7 +30,7 @@ export function edit({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button disabled={!value}>
+            <Button disabled={!value} asChild>
               <a
                 href={`tel:${value}`}
                 onKeyDown={(e) => {

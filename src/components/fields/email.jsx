@@ -30,8 +30,8 @@ export function edit({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button>
-              <a href={`mailto:${value}`} onKeyDown={(e) => e.preventDefault()}>
+            <Button asChild>
+              <a href={`mailto:${value}`}>
                 <Send size={14} />
               </a>
             </Button>
