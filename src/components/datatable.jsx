@@ -4,6 +4,8 @@ import CreateRecordButton from './buttons/createrecord.jsx';
 import {useBackend} from '../lib/usebackend.js';
 import fields from './fields';
 
+import {useQueryState, parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
+
 import {
   Table,
   TableBody,
@@ -37,6 +39,7 @@ import {
   Filter,
   FilterXIcon,
   Loader2,
+  ReceiptRussianRuble,
   RefreshCcw,
   X,
 } from 'lucide-react';
@@ -47,11 +50,6 @@ import {cn} from '../lib/utils.js';
 const DEFAULT_LIMIT = 20;
 
 const defaultLazyState = {
-  offset: 0,
-  limit: DEFAULT_LIMIT,
-  page: 1,
-  sortField: 'id',
-  sortOrder: 1,
   filters: {},
 };
 
@@ -110,9 +108,24 @@ export default function DataTableExtended({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
+  //const [currentPage, setCurrentPage] = useState(1);
 
   const [lazyState, setLazyState] = useState(defaultLazyState);
+  const [sortOrder, setSortOrder] = useQueryState(
+    'sortOrder',
+    parseAsString.withDefault('DESC')
+  );
+  const [sortField, setSortField] = useQueryState(
+    'sortField',
+    parseAsString.withDefault('id')
+  );
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+
+  // Future Feature: Allow the user to change the limit via the gui
+  const [limit, setLimit] = useQueryState(
+    'limit',
+    parseAsInteger.withDefault(DEFAULT_LIMIT)
+  );
 
   const [schema] = useBackend({
     packageName: db,
@@ -123,10 +136,10 @@ export default function DataTableExtended({
 
   const [rowsGetArgs, setRowGetArgs] = useState({
     where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
-    sortField: lazyState.sortField,
-    sortOrder: lazyState.sortOrder > 0 ? 'DESC' : 'ASC',
-    limit: lazyState.limit,
-    offset: lazyState.offset,
+    sortField,
+    sortOrder,
+    limit,
+    offset: (page - 1) * limit,
     returnCount: true,
   });
 
@@ -161,33 +174,18 @@ export default function DataTableExtended({
 
   useEffect(() => {
     // update the state for the server call
-    const sortOrder = lazyState.sortOrder === 'ASC' ? 1 : -1;
     setRowGetArgs((prevRowsGetArgs) => {
       return {
         ...prevRowsGetArgs,
-        offset: lazyState.offset,
-        limit: lazyState.limit,
-        sortField: lazyState.sortField,
-        sortOrder: sortOrder > 0 ? 'ASC' : 'DESC',
+        offset: (page - 1) * limit,
+        limit,
+        sortField,
+        sortOrder,
         returnCount: true,
         where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
       };
     });
-  }, [lazyState]);
-
-  const onLazyStateChange = (e) => {
-    // update the state for the datatable component
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        offset: e.first,
-        limit: e.rows,
-        sortField: e.sortField,
-        sortOrder: e.sortOrder,
-        filters: e.filters,
-      };
-    });
-  };
+  }, [lazyState, sortOrder, sortField, page, limit]);
 
   const onFilterElementChange = (columnId, value, matchMode) => {
     setLazyState((prevLazyState) => {
@@ -205,13 +203,8 @@ export default function DataTableExtended({
   };
 
   const onSortChange = (field, order) => {
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        sortField: field,
-        sortOrder: order,
-      };
-    });
+    setSortField(field);
+    setSortOrder(order);
   };
 
   const columns = Object.entries(schema?.data?.schema || {})
@@ -223,10 +216,9 @@ export default function DataTableExtended({
     .map(([columnId, settings]) => ({
       accessorKey: columnId,
       header: ({column}) => {
-        const currentSortField =
-          lazyState.sortField === column.id ? column.id : null;
+        const currentSortField = sortField === column.id ? column.id : null;
         const currentSortOrder = currentSortField
-          ? lazyState.sortOrder === 'ASC'
+          ? sortOrder === 'ASC'
             ? 'ASC'
             : 'DESC'
           : null;
@@ -241,7 +233,7 @@ export default function DataTableExtended({
               onClick={() => {
                 onSortChange(
                   column.id,
-                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
+                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC'
                 );
               }}
             >
@@ -313,21 +305,16 @@ export default function DataTableExtended({
       </div>
     </div>
   );
-  const totalPages = Math.ceil((rows?.data?.count ?? 0) / lazyState.limit);
+  const totalPages = Math.ceil((rows?.data?.count ?? 0) / limit);
   const onPageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        offset: (pageNumber - 1) * prevLazyState.limit,
-      };
-    });
+    //setCurrentPage(pageNumber);
+    setPage(pageNumber);
   };
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
@@ -338,13 +325,13 @@ export default function DataTableExtended({
       pageNumbers.push(
         <Button
           key={i}
-          variant={i === currentPage ? 'default' : 'outline'}
+          variant={i === page ? 'default' : 'ghost'}
           size="sm"
           onClick={() => onPageChange(i)}
           className="mx-1"
         >
           {i}
-        </Button>,
+        </Button>
       );
     }
 
@@ -375,7 +362,7 @@ export default function DataTableExtended({
                             onFilterElementChange(
                               header.column.id,
                               e.target.value,
-                              lazyState.filters[header.column.id]?.matchMode,
+                              lazyState.filters[header.column.id]?.matchMode
                             );
                           }}
                           key={header.column.id}
@@ -407,7 +394,7 @@ export default function DataTableExtended({
                                   onFilterElementChange(
                                     header.column.id,
                                     lazyState.filters[header.column.id]?.value,
-                                    option,
+                                    option
                                   )
                                 }
                                 className={`flex items-center justify-between ${
@@ -422,8 +409,6 @@ export default function DataTableExtended({
                             ))}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        {/* lazyState.filters[header.column.id]?.value &&
-                        lazyState.filters[header.column.id]?.matchMode && */}
                         <Button
                           variant="ghost"
                           size="icon"
@@ -432,13 +417,13 @@ export default function DataTableExtended({
                             lazyState.filters[header.column.id]?.value &&
                               lazyState.filters[header.column.id]?.matchMode
                               ? 'opacity-100'
-                              : 'opacity-0',
+                              : 'opacity-0'
                           )}
                           onClick={() =>
                             onFilterElementChange(
                               header.column.id,
                               '',
-                              lazyState.filters[header.column.id]?.matchMode,
+                              lazyState.filters[header.column.id]?.matchMode
                             )
                           }
                         >
@@ -487,18 +472,18 @@ export default function DataTableExtended({
         </Table>
         <div className="flex items-center justify-center space-x-2 m-2">
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={() => onPageChange(1)}
-            disabled={currentPage === 1}
+            disabled={page === 1}
           >
             <ChevronsLeft className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
+            onClick={() => onPageChange(page - 1)}
+            disabled={page === 1}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -506,18 +491,18 @@ export default function DataTableExtended({
           {renderPageNumbers()}
 
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
+            onClick={() => onPageChange(page + 1)}
+            disabled={page === totalPages}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={() => onPageChange(totalPages)}
-            disabled={currentPage === totalPages}
+            disabled={page === totalPages}
           >
             <ChevronsRight className="h-4 w-4" />
           </Button>

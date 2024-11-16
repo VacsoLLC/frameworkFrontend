@@ -196,7 +196,7 @@ export default function Record({
         recordId={recordId}
       >
         {newRecord && (
-          <>
+          <div>
             <Button type="submit" onClick={() => handleSubmit({close: false})}>
               Create
             </Button>
@@ -208,7 +208,7 @@ export default function Record({
             >
               Cancel
             </Button>
-          </>
+          </div>
         )}
         <div className="flex flex-wrap">
           {!newRecord &&

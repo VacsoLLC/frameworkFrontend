@@ -13,14 +13,12 @@ export default function ViewRecord() {
   };
 
   return (
-    <>
-      <Record
-        db={db}
-        table={table}
-        recordId={parseInt(recordId)}
-        reload={reload}
-        forceReload={forceReload}
-      />
-    </>
+    <Record
+      db={db}
+      table={table}
+      recordId={parseInt(recordId)}
+      reload={reload}
+      forceReload={forceReload}
+    />
   );
 }

@@ -4,6 +4,8 @@ import {useBackend} from '../lib/usebackend.js';
 import DataTable from './datatable.jsx';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs.jsx';
 
+import {useQueryState} from 'nuqs';
+
 export default function Related({db, table, recordId, reload, forceReload}) {
   const [tables, loading] = useBackend({
     packageName: db,
@@ -13,6 +15,8 @@ export default function Related({db, table, recordId, reload, forceReload}) {
     filter: (data) => prepTables(data),
     reload,
   });
+
+  const [tabName, setTabName] = useQueryState('tabName');
 
   const prepTables = (response) => {
     const tablesTemp = [...response.data]; // copy the cached response since we're going to modify it.
@@ -46,7 +50,6 @@ export default function Related({db, table, recordId, reload, forceReload}) {
   };
 
   if (loading) {
-    console.log('ASDFASDFASDF', 'LOADING');
     return <></>;
   }
 
@@ -63,6 +66,11 @@ export default function Related({db, table, recordId, reload, forceReload}) {
     <Tabs
       defaultValue={defaultTab}
       className="m-4 p-4 border rounded-lg border-slate-200"
+      value={tabName || defaultTab}
+      onValueChange={(value) => {
+        console.log('VALUE', value);
+        setTabName(value);
+      }}
     >
       {tables && tables.length > 0 ? (
         <>

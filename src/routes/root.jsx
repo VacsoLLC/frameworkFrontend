@@ -80,7 +80,7 @@ export default function Root() {
   ];
 
   return (
-    <>
+    <div>
       <Dialog open={errorMessage} onOpenChange={clearErrorMessage}>
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
@@ -110,7 +110,7 @@ export default function Root() {
       <Login>
         <Outlet />
       </Login>
-    </>
+    </div>
   );
 }
 
@@ -118,7 +118,7 @@ function buildMenu(items, navigate) {
   let output = [];
 
   for (const item of Object.keys(items).sort(
-    (a, b) => items[a].order - items[b].order,
+    (a, b) => items[a].order - items[b].order
   )) {
     let itemoutput = {};
 
