@@ -1,4 +1,4 @@
-import {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect, useMemo, useRef} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import CreateRecordButton from './buttons/createrecord.jsx';
 import {useBackend} from '../lib/usebackend.js';
@@ -101,7 +101,6 @@ export default function DataTableExtended({
   db,
   table,
   closeOnCreate = false,
-  where = [],
   reload,
   forceReload,
   child = false, // is this a child table?
@@ -109,12 +108,14 @@ export default function DataTableExtended({
   const location = useLocation();
   const navigate = useNavigate();
   //const [currentPage, setCurrentPage] = useState(1);
+  const stateRef = useRef(location.state);
 
   const [lazyState, setLazyState] = useState(defaultLazyState);
   const [sortOrder, setSortOrder] = useQueryState(
     'sortOrder',
     parseAsString.withDefault('DESC')
   );
+
   const [sortField, setSortField] = useQueryState(
     'sortField',
     parseAsString.withDefault('id')
@@ -134,31 +135,42 @@ export default function DataTableExtended({
     cache: true,
   });
 
-  const [rowsGetArgs, setRowGetArgs] = useState({
-    where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
-    sortField,
-    sortOrder,
-    limit,
-    offset: (page - 1) * limit,
-    returnCount: true,
-  });
+  const [tableName, setTableName] = useQueryState(
+    'tableName',
+    parseAsString.withDefault(
+      location?.state?.tableHeader || schema?.data?.name
+    )
+  );
+
+  const [where, setWhereClause] = useQueryState(
+    'where',
+    parseAsString.withDefault('[]')
+  );
+
+  let whereParsed = [];
+
+  if (where) {
+    try {
+      whereParsed = JSON.parse(where);
+    } catch (e) {
+      console.error('Error parsing where clause', e);
+    }
+  }
 
   const [rows, loading] = useBackend({
     packageName: db,
     className: table,
     methodName: 'rowsGet',
-    args: rowsGetArgs,
+    args: {
+      where: [...whereParsed, ...generateLazyWhere(lazyState.filters, schema)],
+      sortField,
+      sortOrder,
+      limit,
+      offset: (page - 1) * limit,
+      returnCount: true,
+    },
     reload,
   });
-
-  useEffect(() => {
-    setRowGetArgs((prevRowsGetArgs) => {
-      return {
-        ...prevRowsGetArgs,
-        where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
-      };
-    });
-  }, [where]);
 
   useEffect(() => {
     if (!schema) return;
@@ -171,21 +183,6 @@ export default function DataTableExtended({
       }, {}),
     }));
   }, [schema]);
-
-  useEffect(() => {
-    // update the state for the server call
-    setRowGetArgs((prevRowsGetArgs) => {
-      return {
-        ...prevRowsGetArgs,
-        offset: (page - 1) * limit,
-        limit,
-        sortField,
-        sortOrder,
-        returnCount: true,
-        where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
-      };
-    });
-  }, [lazyState, sortOrder, sortField, page, limit]);
 
   const onFilterElementChange = (columnId, value, matchMode) => {
     setLazyState((prevLazyState) => {
@@ -281,10 +278,9 @@ export default function DataTableExtended({
   const header = (
     <div className="flex flex-wrap align-middle justify-between">
       <div className="flex items-end">
-        <span className="text-xl text-900 font-bold ml-1">
-          {location?.state?.tableHeader || schema?.data?.name}
-        </span>
+        <span className="text-xl text-900 font-bold ml-1">{tableName}</span>
       </div>
+
       <div>
         <span className="mr-1">
           <CreateRecordButton
@@ -470,7 +466,7 @@ export default function DataTableExtended({
             </TableRow>
           )}
         </Table>
-        <div className="flex items-center justify-center space-x-2 m-2">
+        <div className="flex items-center justify-center space-x-2 m-1">
           <Button
             variant="ghost"
             size="icon"

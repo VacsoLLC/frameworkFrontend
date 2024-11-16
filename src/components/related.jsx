@@ -65,16 +65,17 @@ export default function Related({db, table, recordId, reload, forceReload}) {
   return (
     <Tabs
       defaultValue={defaultTab}
-      className="m-4 p-4 border rounded-lg border-slate-200"
+      className="m-2 p-0 border rounded-lg border-slate-200"
       value={tabName || defaultTab}
       onValueChange={(value) => {
         console.log('VALUE', value);
+        removeUrlParams(['sortField', 'sortOrder', 'limit', 'page', 'limit']); // Remove table sort params when switching tabs
         setTabName(value);
       }}
     >
       {tables && tables.length > 0 ? (
         <>
-          <TabsList className="w-100">
+          <TabsList className="w-100 m-2">
             {tables.map((childTable) => (
               <TabsTrigger
                 value={getTabKey(childTable)}
@@ -105,4 +106,22 @@ export default function Related({db, table, recordId, reload, forceReload}) {
       ) : null}
     </Tabs>
   );
+}
+
+function removeUrlParams(paramsToRemove) {
+  // Get current URL search params
+  const searchParams = new URLSearchParams(window.location.search);
+
+  // Remove each specified parameter
+  paramsToRemove.forEach((param) => {
+    searchParams.delete(param);
+  });
+
+  // Construct new URL
+  const newQueryString = searchParams.toString();
+  const newUrl =
+    window.location.pathname + (newQueryString ? `?${newQueryString}` : '');
+
+  // Update URL without reloading the page
+  window.history.replaceState({}, '', newUrl);
 }

@@ -37,6 +37,7 @@ export default function Root() {
     clear: !authenticated,
     args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
   });
+
   const sendToast = (toastObject) => {
     console.log(toastObject, 'toast');
     shadToast({
@@ -106,6 +107,7 @@ export default function Root() {
         userItems={userItems}
         onSearch={(val) => navigate(`/search?value=${val}`)}
       />
+
       {/* <Menubar model={newItems} className="mb-1" end={end} /> */}
       <Login>
         <Outlet />
@@ -132,13 +134,15 @@ function buildMenu(items, navigate) {
     if (items[item].view) {
       itemoutput.command = () => {
         startTransition(() => {
-          navigate(items[item].navigate, {
-            state: {
-              view: items[item].view,
-              filter: items[item].filter,
-              tableHeader: items[item].label,
-            },
-          });
+          navigate(
+            items[item].navigate +
+              `/?tableName=${items[item].label}&where=${JSON.stringify(
+                items[item].filter
+              )}&view=${items[item].view}`,
+            {
+              state: {},
+            }
+          );
         });
       };
     }
