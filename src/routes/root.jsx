@@ -37,6 +37,7 @@ export default function Root() {
     clear: !authenticated,
     args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
   });
+  
   const sendToast = (toastObject) => {
     console.log(toastObject, 'toast');
     shadToast({
