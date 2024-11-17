@@ -14,6 +14,14 @@ import {
   TableHeader,
   TableRow,
 } from './ui/table.jsx';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 import {
   useReactTable,
   getCoreRowModel,
@@ -403,42 +411,68 @@ export default function DataTableExtended({
             </TableRow>
           )}
         </Table>
-        <div className="flex items-center justify-center space-x-2 m-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onPageChange(1)}
-            disabled={page === 1}
-          >
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onPageChange(page - 1)}
-            disabled={page === 1}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
 
-          {renderPageNumbers()}
+        <div className="flex items-center justify-between px-2 py-4">
+          <div className="w-1/3" /> {/* Spacer */}
+          <div className="flex items-center justify-center space-x-2 w-1/3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(1)}
+              disabled={page === 1}
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(page - 1)}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onPageChange(page + 1)}
-            disabled={page === totalPages}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onPageChange(totalPages)}
-            disabled={page === totalPages}
-          >
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
+            {renderPageNumbers()}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(page + 1)}
+              disabled={page === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(totalPages)}
+              disabled={page === totalPages}
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="w-1/3 flex justify-end">
+            <div className="flex items-center justify-end space-x-2 w-1/3">
+              <div className="text-sm mr-1 font-medium">Rows</div>
+              <Select
+                value={limit.toString()}
+                onValueChange={(value) => {
+                  setLimit(value);
+                }}
+              >
+                <SelectTrigger className="w-[70px]">
+                  <SelectValue placeholder={limit} />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 50, 100, 500].map((value) => (
+                    <SelectItem key={value} value={value.toString()}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
