@@ -265,7 +265,7 @@ export default function DataTableExtended({
   const header = (
     <div className="flex flex-wrap align-middle justify-between">
       <div className="flex items-end">
-        <span className="text-xl text-900 font-bold ml-1">{tableName}</span>
+        <span className="text-2xl text-900 font-bold ml-1">{tableName}</span>
       </div>
 
       <div>
