@@ -21,6 +21,7 @@ const getMenuItemForDropdown = (subItem) => {
         subItem.command();
       }}
       className="cursor-pointer p-2 my-2"
+      key={subItem.label}
     >
       <CustomIcon name={subItem.icon} className={'mx-1'} />
       {subItem.label}
@@ -31,7 +32,7 @@ const getMenuItemForDropdown = (subItem) => {
 const getDropdownForItem = (item) => {
   console.log(item);
   return (
-    <DropdownMenu>
+    <DropdownMenu key={item.label}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost">
           <CustomIcon name={item.icon} className={'mx-1'} />
@@ -63,6 +64,7 @@ export default function TopNavbar({navItems, onSearch, userItems}) {
                   asChild
                   onClick={navItem.command}
                   className="cursor-pointer"
+                  key={navItem.label}
                 >
                   <a>{navItem.label}</a>
                 </Button>
