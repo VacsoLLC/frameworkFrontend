@@ -1,6 +1,7 @@
 import * as React from 'react';
 import DataTable from '../components/datatable.jsx';
 import {Routes, Route, useParams, useLocation} from 'react-router-dom';
+import {useQueryState} from 'nuqs';
 
 export default function Root() {
   const {db, table} = useParams();
@@ -11,6 +12,8 @@ export default function Root() {
     setReload(reload + 1);
   };
 
+  const [tableName, setTableName] = useQueryState('tableName');
+
   return (
     <React.Suspense>
       <DataTable
@@ -18,7 +21,7 @@ export default function Root() {
         table={table}
         reload={reload}
         forceReload={forceReload}
-        key={`${db}.${table}`}
+        key={`${db}.${table}.${tableName}`}
       />
     </React.Suspense>
   );

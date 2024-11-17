@@ -69,7 +69,14 @@ export default function Related({db, table, recordId, reload, forceReload}) {
       value={tabName || defaultTab}
       onValueChange={(value) => {
         console.log('VALUE', value);
-        removeUrlParams(['sortField', 'sortOrder', 'limit', 'page', 'limit']); // Remove table sort params when switching tabs
+        removeUrlParams([
+          'sortField',
+          'sortOrder',
+          'limit',
+          'page',
+          'limit',
+          'filter',
+        ]); // Remove table sort params when switching tabs
         setTabName(value);
       }}
     >

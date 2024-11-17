@@ -49,53 +49,45 @@ import {cn} from '../lib/utils.js';
 
 const DEFAULT_LIMIT = 20;
 
-const defaultLazyState = {
-  filters: {},
-};
+function convertToWhere(filter) {
+  let filterWhere = [];
 
-// generate a where from the lazyState
-const generateLazyWhere = (filters, schema) => {
-  const tempWhere = [];
+  for (const key in filter) {
+    const columnPath = key;
+    const value = filter[key].value;
+    const matchMode = filter[key].matchMode;
 
-  if (schema && schema.data && schema.data.schema) {
-    for (const [key, value] of Object.entries(filters)) {
-      if (
-        value.value !== undefined &&
-        value.value !== '' &&
-        value.value !== null
-      ) {
-        const columnName =
-          schema.data.schema[key].tableAlias +
-          '.' +
-          schema.data.schema[key].actualColumnName;
-        switch (value.matchMode) {
-          case 'startsWith':
-            tempWhere.push([columnName, 'like', `${value.value}%`]);
-            break;
-          case 'endsWith':
-            tempWhere.push([columnName, 'like', `%${value.value}`]);
-            break;
-          case 'contains':
-            tempWhere.push([columnName, 'like', `%${value.value}%`]);
-            break;
-          case 'notContains':
-            tempWhere.push([columnName, 'not like', `%${value.value}%`]);
-            break;
-          case 'equals':
-            tempWhere.push([columnName, '=', value.value]);
-            break;
-          case 'notEquals':
-            tempWhere.push([columnName, '!=', value.value]);
-            break;
-          default:
-            throw new Error('Unknown matchMode');
-        }
-      }
+    if (!value) {
+      continue;
     }
-  }
 
-  return tempWhere;
-};
+    let tempFilter = null;
+    switch (matchMode) {
+      case 'startsWith':
+        tempFilter = [columnPath, 'like', `${value}%`];
+        break;
+      case 'endsWith':
+        tempFilter = [columnPath, 'like', `%${value}`];
+        break;
+      case 'contains':
+        tempFilter = [columnPath, 'like', `%${value}%`];
+        break;
+      case 'notContains':
+        tempFilter = [columnPath, 'not like', `%${value}%`];
+        break;
+      case 'equals':
+        tempFilter = [columnPath, '=', value];
+        break;
+      case 'notEquals':
+        tempFilter = [columnPath, '!=', value];
+        break;
+      default:
+        throw new Error('Unknown matchMode');
+    }
+    filterWhere.push(tempFilter);
+  }
+  return filterWhere;
+}
 
 export default function DataTableExtended({
   db,
@@ -107,10 +99,7 @@ export default function DataTableExtended({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  //const [currentPage, setCurrentPage] = useState(1);
-  const stateRef = useRef(location.state);
 
-  const [lazyState, setLazyState] = useState(defaultLazyState);
   const [sortOrder, setSortOrder] = useQueryState(
     'sortOrder',
     parseAsString.withDefault('DESC')
@@ -157,12 +146,19 @@ export default function DataTableExtended({
     }
   }
 
+  const [newFilter, setNewFilter] = useQueryState(
+    'filter',
+    parseAsJson((tmp) => {
+      return tmp;
+    }).withDefault({})
+  );
+
   const [rows, loading] = useBackend({
     packageName: db,
     className: table,
     methodName: 'rowsGet',
     args: {
-      where: [...whereParsed, ...generateLazyWhere(lazyState.filters, schema)],
+      where: [...whereParsed, ...convertToWhere(newFilter)],
       sortField,
       sortOrder,
       limit,
@@ -172,30 +168,22 @@ export default function DataTableExtended({
     reload,
   });
 
-  useEffect(() => {
-    if (!schema) return;
-
-    setLazyState((prevLazyState) => ({
-      ...prevLazyState,
-      filters: Object.keys(schema.data.schema).reduce((acc, key) => {
-        acc[key] = {value: '', matchMode: 'contains'};
-        return acc;
-      }, {}),
-    }));
-  }, [schema]);
-
   const onFilterElementChange = (columnId, value, matchMode) => {
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        filters: {
-          ...prevLazyState.filters,
-          [columnId]: {
-            value,
-            matchMode,
-          },
-        },
-      };
+    console.log('Filter Changed!', columnId, value, matchMode);
+
+    if (!value && !matchMode) {
+      setNewFilter((prev) => {
+        const newFilter = {...prev};
+        delete newFilter[columnId];
+        return newFilter;
+      });
+      return;
+    }
+
+    setNewFilter((prev) => {
+      const newFilter = {...prev};
+      newFilter[columnId] = {value, matchMode};
+      return newFilter;
     });
   };
 
@@ -219,7 +207,7 @@ export default function DataTableExtended({
             ? 'ASC'
             : 'DESC'
           : null;
-        console.log(currentSortField, currentSortOrder);
+        console.log('tripptest666', currentSortField, currentSortOrder);
         return (
           <div className="flex items-center justify-between p-0">
             <div className="text-black">{settings.friendlyName}</div>
@@ -252,7 +240,7 @@ export default function DataTableExtended({
         const value = row.getValue(columnId);
         return fields[settings.fieldType]?.read
           ? fields[settings.fieldType].read({
-              value,
+              value: value,
               valueFriendly: value,
               settings,
             })
@@ -351,82 +339,31 @@ export default function DataTableExtended({
                         })}
 
                     {header.column.getCanFilter() ? (
-                      <div className="flex items-center space-x-2 my-1">
-                        <Input
-                          value={lazyState.filters[header.column.id]?.value}
-                          onChange={(e) => {
-                            onFilterElementChange(
-                              header.column.id,
-                              e.target.value,
-                              lazyState.filters[header.column.id]?.matchMode
-                            );
-                          }}
-                          key={header.column.id}
-                          className="max-w-sm"
-                        />
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <Filter className="h-4 w-4" />
-                              <span className="sr-only">Open filter menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {[
-                              'contains',
-                              'startsWith',
-                              'endsWith',
-                              'equals',
-                              'notEquals',
-                              'notContains',
-                            ].map((option) => (
-                              <DropdownMenuItem
-                                key={option}
-                                onSelect={() =>
-                                  onFilterElementChange(
-                                    header.column.id,
-                                    lazyState.filters[header.column.id]?.value,
-                                    option
-                                  )
-                                }
-                                className={`flex items-center justify-between ${
-                                  option ===
-                                  lazyState.filters[header.column.id]?.matchMode
-                                    ? 'bg-primary/10'
-                                    : ''
-                                }`}
-                              >
-                                {option}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={cn(
-                            'h-8 w-8 p-2 transition-opacity duration-200',
-                            lazyState.filters[header.column.id]?.value &&
-                              lazyState.filters[header.column.id]?.matchMode
-                              ? 'opacity-100'
-                              : 'opacity-0'
-                          )}
-                          onClick={() =>
-                            onFilterElementChange(
-                              header.column.id,
-                              '',
-                              lazyState.filters[header.column.id]?.matchMode
-                            )
-                          }
-                        >
-                          <FilterXIcon className="h-4 w-4" />
-                          <span className="sr-only">Clear filter</span>
-                        </Button>
-                      </div>
+                      <HeaderFilter
+                        key={header.column.id}
+                        column={
+                          schema.data.schema[header.column.id].tableAlias +
+                          '.' +
+                          schema.data.schema[header.column.id].actualColumnName
+                        }
+                        onChange={onFilterElementChange}
+                        value={
+                          newFilter[
+                            schema.data.schema[header.column.id].tableAlias +
+                              '.' +
+                              schema.data.schema[header.column.id]
+                                .actualColumnName
+                          ]?.value
+                        }
+                        matchMode={
+                          newFilter[
+                            schema.data.schema[header.column.id].tableAlias +
+                              '.' +
+                              schema.data.schema[header.column.id]
+                                .actualColumnName
+                          ]?.matchMode
+                        }
+                      />
                     ) : null}
                   </TableHead>
                 ))}
@@ -505,5 +442,65 @@ export default function DataTableExtended({
         </div>
       </div>
     </div>
+  );
+}
+
+function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
+  return (
+    <>
+      <div className="flex items-center space-x-2 my-1">
+        <Input
+          value={value}
+          onChange={(e) => {
+            onChange(column, e.target.value, matchMode);
+          }}
+          className="max-w-sm"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Filter className="h-4 w-4" />
+              <span className="sr-only">Open filter menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {[
+              'contains',
+              'startsWith',
+              'endsWith',
+              'equals',
+              'notEquals',
+              'notContains',
+            ].map((option) => (
+              <DropdownMenuItem
+                key={option}
+                onSelect={(e) => {
+                  onChange(column, value, option);
+                }}
+                className={`flex items-center justify-between ${
+                  option === matchMode ? 'bg-primary/10' : ''
+                }`}
+              >
+                {option}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            'h-8 w-8 p-2 transition-opacity duration-200',
+            value || matchMode != 'contains' ? 'opacity-100' : 'opacity-0'
+          )}
+          onClick={() => {
+            onChange(column, '', '');
+          }}
+        >
+          <FilterXIcon className="h-4 w-4" />
+          <span className="sr-only">Clear filter</span>
+        </Button>
+      </div>
+    </>
   );
 }
