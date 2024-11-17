@@ -13,7 +13,7 @@ export default function ViewRecord() {
   };
 
   return (
-    <>
+    <div>
       <React.Suspense fallback={<div></div>}>
         <Record
           db={db}
@@ -35,6 +35,6 @@ export default function ViewRecord() {
           </div>
         </React.Suspense>
       </React.Suspense>
-    </>
+    </div>
   );
 }

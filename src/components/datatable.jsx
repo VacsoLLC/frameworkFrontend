@@ -1,8 +1,10 @@
-import {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect, useMemo, useRef} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import CreateRecordButton from './buttons/createrecord.jsx';
 import {useBackend} from '../lib/usebackend.js';
 import fields from './fields';
+
+import {useQueryState, parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
 
 import {
   Table,
@@ -12,6 +14,14 @@ import {
   TableHeader,
   TableRow,
 } from './ui/table.jsx';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 import {
   useReactTable,
   getCoreRowModel,
@@ -37,6 +47,7 @@ import {
   Filter,
   FilterXIcon,
   Loader2,
+  ReceiptRussianRuble,
   RefreshCcw,
   X,
 } from 'lucide-react';
@@ -46,73 +57,72 @@ import {cn} from '../lib/utils.js';
 
 const DEFAULT_LIMIT = 20;
 
-const defaultLazyState = {
-  offset: 0,
-  limit: DEFAULT_LIMIT,
-  page: 1,
-  sortField: 'id',
-  sortOrder: 1,
-  filters: {},
-};
+function convertToWhere(filter) {
+  let filterWhere = [];
 
-// generate a where from the lazyState
-const generateLazyWhere = (filters, schema) => {
-  const tempWhere = [];
+  for (const key in filter) {
+    const columnPath = key;
+    const value = filter[key].value;
+    const matchMode = filter[key].matchMode;
 
-  if (schema && schema.data && schema.data.schema) {
-    for (const [key, value] of Object.entries(filters)) {
-      if (
-        value.value !== undefined &&
-        value.value !== '' &&
-        value.value !== null
-      ) {
-        const columnName =
-          schema.data.schema[key].tableAlias +
-          '.' +
-          schema.data.schema[key].actualColumnName;
-        switch (value.matchMode) {
-          case 'startsWith':
-            tempWhere.push([columnName, 'like', `${value.value}%`]);
-            break;
-          case 'endsWith':
-            tempWhere.push([columnName, 'like', `%${value.value}`]);
-            break;
-          case 'contains':
-            tempWhere.push([columnName, 'like', `%${value.value}%`]);
-            break;
-          case 'notContains':
-            tempWhere.push([columnName, 'not like', `%${value.value}%`]);
-            break;
-          case 'equals':
-            tempWhere.push([columnName, '=', value.value]);
-            break;
-          case 'notEquals':
-            tempWhere.push([columnName, '!=', value.value]);
-            break;
-          default:
-            throw new Error('Unknown matchMode');
-        }
-      }
+    if (!value) {
+      continue;
     }
-  }
 
-  return tempWhere;
-};
+    let tempFilter = null;
+    switch (matchMode) {
+      case 'startsWith':
+        tempFilter = [columnPath, 'like', `${value}%`];
+        break;
+      case 'endsWith':
+        tempFilter = [columnPath, 'like', `%${value}`];
+        break;
+      case 'contains':
+        tempFilter = [columnPath, 'like', `%${value}%`];
+        break;
+      case 'notContains':
+        tempFilter = [columnPath, 'not like', `%${value}%`];
+        break;
+      case 'equals':
+        tempFilter = [columnPath, '=', value];
+        break;
+      case 'notEquals':
+        tempFilter = [columnPath, '!=', value];
+        break;
+      default:
+        throw new Error('Unknown matchMode');
+    }
+    filterWhere.push(tempFilter);
+  }
+  return filterWhere;
+}
 
 export default function DataTableExtended({
   db,
   table,
   closeOnCreate = false,
-  where = [],
   reload,
   forceReload,
   child = false, // is this a child table?
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const [lazyState, setLazyState] = useState(defaultLazyState);
+  const [sortOrder, setSortOrder] = useQueryState(
+    'sortOrder',
+    parseAsString.withDefault('DESC')
+  );
+
+  const [sortField, setSortField] = useQueryState(
+    'sortField',
+    parseAsString.withDefault('id')
+  );
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+
+  const [limit, setLimit] = useQueryState(
+    'limit',
+    parseAsInteger.withDefault(DEFAULT_LIMIT)
+  );
 
   const [schema] = useBackend({
     packageName: db,
@@ -121,97 +131,64 @@ export default function DataTableExtended({
     cache: true,
   });
 
-  const [rowsGetArgs, setRowGetArgs] = useState({
-    where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
-    sortField: lazyState.sortField,
-    sortOrder: lazyState.sortOrder > 0 ? 'DESC' : 'ASC',
-    limit: lazyState.limit,
-    offset: lazyState.offset,
-    returnCount: true,
-  });
+  const [tableName, setTableName] = useQueryState(
+    'tableName',
+    parseAsString.withDefault(
+      location?.state?.tableHeader || schema?.data?.name
+    )
+  );
+
+  const [where, setWhereClause] = useQueryState(
+    'where',
+    parseAsJson((tmp) => {
+      return tmp;
+    }).withDefault([])
+  );
+
+  const [filter, setFilter] = useQueryState(
+    'filter',
+    parseAsJson((tmp) => {
+      return tmp;
+    }).withDefault({})
+  );
 
   const [rows, loading] = useBackend({
     packageName: db,
     className: table,
     methodName: 'rowsGet',
-    args: rowsGetArgs,
+    args: {
+      where: [...where, ...convertToWhere(filter)],
+      sortField,
+      sortOrder,
+      limit,
+      offset: (page - 1) * limit,
+      returnCount: true,
+    },
     reload,
   });
 
-  useEffect(() => {
-    setRowGetArgs((prevRowsGetArgs) => {
-      return {
-        ...prevRowsGetArgs,
-        where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
-      };
-    });
-  }, [where]);
-
-  useEffect(() => {
-    if (!schema) return;
-
-    setLazyState((prevLazyState) => ({
-      ...prevLazyState,
-      filters: Object.keys(schema.data.schema).reduce((acc, key) => {
-        acc[key] = {value: '', matchMode: 'contains'};
-        return acc;
-      }, {}),
-    }));
-  }, [schema]);
-
-  useEffect(() => {
-    // update the state for the server call
-    const sortOrder = lazyState.sortOrder === 'ASC' ? 1 : -1;
-    setRowGetArgs((prevRowsGetArgs) => {
-      return {
-        ...prevRowsGetArgs,
-        offset: lazyState.offset,
-        limit: lazyState.limit,
-        sortField: lazyState.sortField,
-        sortOrder: sortOrder > 0 ? 'ASC' : 'DESC',
-        returnCount: true,
-        where: [...where, ...generateLazyWhere(lazyState.filters, schema)],
-      };
-    });
-  }, [lazyState]);
-
-  const onLazyStateChange = (e) => {
-    // update the state for the datatable component
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        offset: e.first,
-        limit: e.rows,
-        sortField: e.sortField,
-        sortOrder: e.sortOrder,
-        filters: e.filters,
-      };
-    });
-  };
-
   const onFilterElementChange = (columnId, value, matchMode) => {
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        filters: {
-          ...prevLazyState.filters,
-          [columnId]: {
-            value,
-            matchMode,
-          },
-        },
-      };
+    console.log('Filter Changed!', columnId, value, matchMode);
+
+    if (!value && !matchMode) {
+      setFilter((prev) => {
+        const newFilter = {...prev};
+        delete newFilter[columnId];
+        return newFilter;
+      });
+      return;
+    }
+
+    setFilter((prev) => {
+      const newFilter = {...prev};
+      newFilter[columnId] = {value, matchMode};
+      return newFilter;
     });
   };
 
   const onSortChange = (field, order) => {
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        sortField: field,
-        sortOrder: order,
-      };
-    });
+    setSortField(field);
+    setSortOrder(order);
   };
 
   const columns = Object.entries(schema?.data?.schema || {})
@@ -223,14 +200,13 @@ export default function DataTableExtended({
     .map(([columnId, settings]) => ({
       accessorKey: columnId,
       header: ({column}) => {
-        const currentSortField =
-          lazyState.sortField === column.id ? column.id : null;
+        const currentSortField = sortField === column.id ? column.id : null;
         const currentSortOrder = currentSortField
-          ? lazyState.sortOrder === 'ASC'
+          ? sortOrder === 'ASC'
             ? 'ASC'
             : 'DESC'
           : null;
-        console.log(currentSortField, currentSortOrder);
+        console.log('tripptest666', currentSortField, currentSortOrder);
         return (
           <div className="flex items-center justify-between p-0">
             <div className="text-black">{settings.friendlyName}</div>
@@ -241,7 +217,7 @@ export default function DataTableExtended({
               onClick={() => {
                 onSortChange(
                   column.id,
-                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
+                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC'
                 );
               }}
             >
@@ -263,7 +239,7 @@ export default function DataTableExtended({
         const value = row.getValue(columnId);
         return fields[settings.fieldType]?.read
           ? fields[settings.fieldType].read({
-              value,
+              value: value,
               valueFriendly: value,
               settings,
             })
@@ -289,10 +265,9 @@ export default function DataTableExtended({
   const header = (
     <div className="flex flex-wrap align-middle justify-between">
       <div className="flex items-end">
-        <span className="text-xl text-900 font-bold ml-1">
-          {location?.state?.tableHeader || schema?.data?.name}
-        </span>
+        <span className="text-xl text-900 font-bold ml-1">{tableName}</span>
       </div>
+
       <div>
         <span className="mr-1">
           <CreateRecordButton
@@ -313,21 +288,15 @@ export default function DataTableExtended({
       </div>
     </div>
   );
-  const totalPages = Math.ceil((rows?.data?.count ?? 0) / lazyState.limit);
+  const totalPages = Math.ceil((rows?.data?.count ?? 0) / limit);
   const onPageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    setLazyState((prevLazyState) => {
-      return {
-        ...prevLazyState,
-        offset: (pageNumber - 1) * prevLazyState.limit,
-      };
-    });
+    setPage(pageNumber);
   };
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
@@ -338,13 +307,13 @@ export default function DataTableExtended({
       pageNumbers.push(
         <Button
           key={i}
-          variant={i === currentPage ? 'default' : 'outline'}
+          variant={i === page ? 'default' : 'ghost'}
           size="sm"
           onClick={() => onPageChange(i)}
           className="mx-1"
         >
           {i}
-        </Button>,
+        </Button>
       );
     }
 
@@ -368,84 +337,31 @@ export default function DataTableExtended({
                         })}
 
                     {header.column.getCanFilter() ? (
-                      <div className="flex items-center space-x-2 my-1">
-                        <Input
-                          value={lazyState.filters[header.column.id]?.value}
-                          onChange={(e) => {
-                            onFilterElementChange(
-                              header.column.id,
-                              e.target.value,
-                              lazyState.filters[header.column.id]?.matchMode,
-                            );
-                          }}
-                          key={header.column.id}
-                          className="max-w-sm"
-                        />
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <Filter className="h-4 w-4" />
-                              <span className="sr-only">Open filter menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {[
-                              'contains',
-                              'startsWith',
-                              'endsWith',
-                              'equals',
-                              'notEquals',
-                              'notContains',
-                            ].map((option) => (
-                              <DropdownMenuItem
-                                key={option}
-                                onSelect={() =>
-                                  onFilterElementChange(
-                                    header.column.id,
-                                    lazyState.filters[header.column.id]?.value,
-                                    option,
-                                  )
-                                }
-                                className={`flex items-center justify-between ${
-                                  option ===
-                                  lazyState.filters[header.column.id]?.matchMode
-                                    ? 'bg-primary/10'
-                                    : ''
-                                }`}
-                              >
-                                {option}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        {/* lazyState.filters[header.column.id]?.value &&
-                        lazyState.filters[header.column.id]?.matchMode && */}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={cn(
-                            'h-8 w-8 p-2 transition-opacity duration-200',
-                            lazyState.filters[header.column.id]?.value &&
-                              lazyState.filters[header.column.id]?.matchMode
-                              ? 'opacity-100'
-                              : 'opacity-0',
-                          )}
-                          onClick={() =>
-                            onFilterElementChange(
-                              header.column.id,
-                              '',
-                              lazyState.filters[header.column.id]?.matchMode,
-                            )
-                          }
-                        >
-                          <FilterXIcon className="h-4 w-4" />
-                          <span className="sr-only">Clear filter</span>
-                        </Button>
-                      </div>
+                      <HeaderFilter
+                        key={header.column.id}
+                        column={
+                          schema.data.schema[header.column.id].tableAlias +
+                          '.' +
+                          schema.data.schema[header.column.id].actualColumnName
+                        }
+                        onChange={onFilterElementChange}
+                        value={
+                          filter[
+                            schema.data.schema[header.column.id].tableAlias +
+                              '.' +
+                              schema.data.schema[header.column.id]
+                                .actualColumnName
+                          ]?.value
+                        }
+                        matchMode={
+                          filter[
+                            schema.data.schema[header.column.id].tableAlias +
+                              '.' +
+                              schema.data.schema[header.column.id]
+                                .actualColumnName
+                          ]?.matchMode
+                        }
+                      />
                     ) : null}
                   </TableHead>
                 ))}
@@ -485,44 +401,130 @@ export default function DataTableExtended({
             </TableRow>
           )}
         </Table>
-        <div className="flex items-center justify-center space-x-2 m-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onPageChange(1)}
-            disabled={currentPage === 1}
-          >
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
 
-          {renderPageNumbers()}
+        <div className="flex items-center justify-between px-2 py-4">
+          <div className="w-1/3" /> {/* Spacer */}
+          <div className="flex items-center justify-center space-x-2 w-1/3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(1)}
+              disabled={page === 1}
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(page - 1)}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onPageChange(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
+            {renderPageNumbers()}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(page + 1)}
+              disabled={page === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(totalPages)}
+              disabled={page === totalPages}
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="w-1/3 flex justify-end">
+            <div className="flex items-center justify-end space-x-2 w-1/3">
+              <div className="text-sm mr-1 font-medium">Rows</div>
+              <Select
+                value={limit.toString()}
+                onValueChange={(value) => {
+                  setLimit(value);
+                }}
+              >
+                <SelectTrigger className="w-[70px]">
+                  <SelectValue placeholder={limit} />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 50, 100, 500].map((value) => (
+                    <SelectItem key={value} value={value.toString()}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
+  return (
+    <>
+      <div className="flex items-center space-x-2 my-1">
+        <Input
+          value={value}
+          onChange={(e) => {
+            onChange(column, e.target.value, matchMode);
+          }}
+          className="max-w-sm"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Filter className="h-4 w-4" />
+              <span className="sr-only">Open filter menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {[
+              'contains',
+              'startsWith',
+              'endsWith',
+              'equals',
+              'notEquals',
+              'notContains',
+            ].map((option) => (
+              <DropdownMenuItem
+                key={option}
+                onSelect={(e) => {
+                  onChange(column, value, option);
+                }}
+                className={`flex items-center justify-between ${
+                  option === matchMode ? 'bg-primary/10' : ''
+                }`}
+              >
+                {option}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            'h-8 w-8 p-2 transition-opacity duration-200',
+            value || matchMode != 'contains' ? 'opacity-100' : 'opacity-0'
+          )}
+          onClick={() => {
+            onChange(column, '', '');
+          }}
+        >
+          <FilterXIcon className="h-4 w-4" />
+          <span className="sr-only">Clear filter</span>
+        </Button>
+      </div>
+    </>
   );
 }

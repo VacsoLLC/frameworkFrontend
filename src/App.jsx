@@ -1,3 +1,4 @@
+import {NuqsAdapter} from 'nuqs/adapters/react-router';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Root from './routes/root.jsx';
 import Table from './routes/table.jsx';
@@ -59,9 +60,9 @@ function Frontend({views}) {
   //return <>hello</>;
 
   return (
-    <>
+    <NuqsAdapter>
       <RouterProvider router={router} />
-    </>
+    </NuqsAdapter>
   );
 }
 

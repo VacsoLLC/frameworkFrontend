@@ -37,7 +37,7 @@ export default function Root() {
     clear: !authenticated,
     args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
   });
-  
+
   const sendToast = (toastObject) => {
     console.log(toastObject, 'toast');
     shadToast({
@@ -81,7 +81,7 @@ export default function Root() {
   ];
 
   return (
-    <>
+    <div>
       <Dialog open={errorMessage} onOpenChange={clearErrorMessage}>
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
@@ -107,11 +107,12 @@ export default function Root() {
         userItems={userItems}
         onSearch={(val) => navigate(`/search?value=${val}`)}
       />
+
       {/* <Menubar model={newItems} className="mb-1" end={end} /> */}
       <Login>
         <Outlet />
       </Login>
-    </>
+    </div>
   );
 }
 
@@ -119,7 +120,7 @@ function buildMenu(items, navigate) {
   let output = [];
 
   for (const item of Object.keys(items).sort(
-    (a, b) => items[a].order - items[b].order,
+    (a, b) => items[a].order - items[b].order
   )) {
     let itemoutput = {};
 
@@ -133,13 +134,15 @@ function buildMenu(items, navigate) {
     if (items[item].view) {
       itemoutput.command = () => {
         startTransition(() => {
-          navigate(items[item].navigate, {
-            state: {
-              view: items[item].view,
-              filter: items[item].filter,
-              tableHeader: items[item].label,
-            },
-          });
+          navigate(
+            items[item].navigate +
+              `/?tableName=${items[item].label}&where=${JSON.stringify(
+                items[item].filter
+              )}&view=${items[item].view}`,
+            {
+              state: {},
+            }
+          );
         });
       };
     }
