@@ -46,7 +46,16 @@ export default function ActionButton({
   }
 
   if (button.type == 'attach') {
-    return <AttachButton db={db} table={table} recordId={recordId} />;
+    return (
+      <AttachButton
+        db={db}
+        table={table}
+        recordId={recordId}
+        onUploadComplete={() => {
+          forceReload();
+        }}
+      />
+    );
   }
 
   return (

@@ -103,6 +103,7 @@ export default function DataTableExtended({
   reload,
   forceReload,
   child = false, // is this a child table?
+  childWhere = [],
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -156,7 +157,7 @@ export default function DataTableExtended({
     className: table,
     methodName: 'rowsGet',
     args: {
-      where: [...where, ...convertToWhere(filter)],
+      where: [...childWhere, ...where, ...convertToWhere(filter)],
       sortField,
       sortOrder,
       limit,
