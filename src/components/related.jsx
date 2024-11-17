@@ -16,7 +16,15 @@ export default function Related({db, table, recordId, reload, forceReload}) {
     reload,
   });
 
+  const [tableReload, setTableReload] = useState(0);
+
   const [tabName, setTabName] = useQueryState('tabName');
+
+  const forceTableReload = () => {
+    setTableReload((prev) => {
+      return prev + 1;
+    });
+  };
 
   const prepTables = (response) => {
     const tablesTemp = [...response.data]; // copy the cached response since we're going to modify it.
@@ -102,8 +110,8 @@ export default function Related({db, table, recordId, reload, forceReload}) {
                 table={childTable.table}
                 where={childTable.where}
                 closeOnCreate={true}
-                reload={reload}
-                forceReload={forceReload}
+                reload={tableReload}
+                forceReload={forceTableReload}
                 key={table + childTable.tabName + childTable.table}
                 child={true}
               />

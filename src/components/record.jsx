@@ -175,7 +175,8 @@ export default function Record({
   }, [schema, table, newRecord, where]);
 
   if (error) return <p>Error: {error}</p>;
-  if (loading || recordLoading || schemaLoading || buttonsLoading) return <></>;
+  if (!record && (loading || recordLoading || schemaLoading || buttonsLoading))
+    return <></>;
 
   return (
     <div className="m-4">
@@ -200,7 +201,11 @@ export default function Record({
       >
         {newRecord && (
           <div>
-            <Button type="submit" onClick={() => handleSubmit({close: false})}>
+            <Button
+              type="submit"
+              onClick={() => handleSubmit({close: false})}
+              key="Create"
+            >
               Create
             </Button>
             <Button
@@ -208,6 +213,7 @@ export default function Record({
               variant="secondary"
               onClick={onClose}
               className="ml-2"
+              key="Cancel"
             >
               Cancel
             </Button>
