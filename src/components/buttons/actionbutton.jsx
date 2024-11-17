@@ -3,6 +3,13 @@ import ActionModal from '../actionmodal.jsx';
 import AttachButton from './attachbutton.jsx';
 import {Button} from '../ui/button.jsx';
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip.jsx';
+
 const COLOR_TO_VARIANT_MAP = {
   primary: 'default',
   secondary: 'secondary',
@@ -56,15 +63,23 @@ export default function ActionButton({
         recordFormData={formData}
         columns={columns}
       />
-
-      <Button
-        disabled={button.disabled ? true : false}
-        variant={COLOR_TO_VARIANT_MAP[button?.color] ?? 'default'}
-        className="mr-1 mb-1"
-        onClick={onClick}
-      >
-        {button?.label}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger as="span" tabIndex={0}>
+            <Button
+              disabled={button.disabled ? true : false}
+              variant={COLOR_TO_VARIANT_MAP[button?.color] ?? 'default'}
+              className="mr-1 mb-1"
+              onClick={onClick}
+            >
+              {button?.label}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{button.disabled || button?.helpText}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </>
   );
 }

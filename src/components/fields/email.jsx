@@ -1,12 +1,6 @@
-import {Send} from 'lucide-react';
 import {Input} from '../ui/input';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/tooltip';
-import {Button} from '../ui/button';
+
+import IconButton from '../buttons/iconbutton.jsx';
 
 export function edit({
   columnId,
@@ -27,20 +21,14 @@ export function edit({
         size={settings.fieldWidth}
         key={columnId}
       />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button asChild>
-              <a href={`mailto:${value}`}>
-                <Send size={14} />
-              </a>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Send email</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <IconButton
+        icon="Send"
+        tooltip="Send email"
+        onClick={(e) => {
+          e.preventDefault();
+          window.location.href = `mailto:${value}`;
+        }}
+      />
     </>
   );
 }

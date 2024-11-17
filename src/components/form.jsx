@@ -105,7 +105,7 @@ export default function Form({
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex-grow flex items-center space-x-2">
+              <div className="flex-grow flex items-center space-x-1">
                 {renderInputField(columnId, settings)}
               </div>
             </div>

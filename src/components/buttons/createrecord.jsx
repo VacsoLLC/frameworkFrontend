@@ -1,20 +1,15 @@
 import {useState} from 'react';
 
 import CreateRecord from '../record.jsx';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/tooltip.jsx';
-import {Button} from '../ui/button.jsx';
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog.jsx';
-import {Plus} from 'lucide-react';
+
+import IconButton from './iconbutton.jsx';
 
 export default function AddRecordButton({
   db,
@@ -23,6 +18,7 @@ export default function AddRecordButton({
   closeOnCreate,
   header = 'Create Record',
   disabled = false,
+  className,
   where,
 }) {
   const [showDialog, setShowDialog] = useState(false);
@@ -37,26 +33,14 @@ export default function AddRecordButton({
 
   return (
     <>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="sm"
-              onClick={() => {
-                openDialog();
-              }}
-              disabled={disabled}
-              className={disabled ? 'hidden' : ''}
-              key="viewRelatedRecord"
-            >
-              <Plus size={16} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Create record</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <IconButton
+        icon="Plus"
+        tooltip={header}
+        className={className}
+        onClick={() => {
+          openDialog();
+        }}
+      />
 
       <Dialog open={showDialog} onOpenChange={closeDialog}>
         <DialogContent className="max-w-[850px] w-[90vw]">

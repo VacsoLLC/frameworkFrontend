@@ -6,6 +6,13 @@ import useUserStore from '../../stores/user.js';
 import {Button} from '../ui/button.jsx';
 import {Loader2, Upload} from 'lucide-react';
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip.jsx';
+
 /**
  * AttachmentUploader component for handling file uploads
  * @param {Object} props - Component props
@@ -47,7 +54,7 @@ export default function AttachmentUploader({
 
       const response = await api.uploadFiles(
         '/api/core/attachment/upload',
-        formData,
+        formData
       );
 
       if (response.ok) {
@@ -86,19 +93,33 @@ export default function AttachmentUploader({
         className="hidden"
         multiple
       />
-      <Button onClick={handleButtonClick} disabled={uploading} className="">
-        {uploading ? (
-          <>
-            <Loader2 size={16} className="mr-2 h-6 w-6 animate-spin" />
-            Uploading...
-          </>
-        ) : (
-          <>
-            <Upload size={16} className="mr-2" />
-            Upload Files
-          </>
-        )}
-      </Button>
+
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger as="span" tabIndex={0}>
+            <Button
+              onClick={handleButtonClick}
+              disabled={uploading}
+              className=""
+            >
+              {uploading ? (
+                <>
+                  <Loader2 size={16} className="mr-2 h-6 w-6 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload size={16} className="mr-2" />
+                  Upload Files
+                </>
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Attach a file to this record.</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </>
   );
 }

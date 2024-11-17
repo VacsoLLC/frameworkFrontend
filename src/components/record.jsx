@@ -194,6 +194,9 @@ export default function Record({
         key={`${db}${table}${recordId}`}
         newRecord={newRecord}
         recordId={recordId}
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
       >
         {newRecord && (
           <div>
@@ -204,7 +207,7 @@ export default function Record({
               type="button"
               variant="secondary"
               onClick={onClose}
-              className="ml-4"
+              className="ml-2"
             >
               Cancel
             </Button>

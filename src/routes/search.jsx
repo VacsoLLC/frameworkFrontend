@@ -4,7 +4,7 @@ import {useBackend} from '../lib/usebackend.js';
 import {useNavigate} from 'react-router-dom';
 import {Input} from '../components/ui/input.jsx';
 import {Button, buttonVariants} from '../components/ui/button.jsx';
-import {Loader2, X} from 'lucide-react';
+import {Loader2} from 'lucide-react';
 
 const ListTemplate = ({item}) => {
   const [expanded, setExpanded] = useState(false);

@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {RefreshCcw, SquareArrowOutUpRight, X} from 'lucide-react';
 
 import CreateRecord from '../buttons/createrecord.jsx';
 import {
@@ -12,16 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/tooltip';
 
 import {useBackend, callBackend} from '../../lib/usebackend.js';
-import {Button} from '../ui/button.jsx';
-import {CloudCog, ExternalLink} from 'lucide-react';
+import IconButton from '../buttons/iconbutton.jsx';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -117,27 +109,15 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         </SelectContent>
       </Select>
 
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="sm"
-              onClick={() =>
-                navigate(`/${settings.joinDb}/${settings.join}/${value}`)
-              }
-              disabled={!value}
-            >
-              <SquareArrowOutUpRight size={16} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>
-              Go to referenced record. DB: {settings.joinDb} Table:{' '}
-              {settings.join} Record: {value}
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <IconButton
+        icon="SquareArrowOutUpRight"
+        tooltip={`Go to referenced record. DB: ${settings.joinDb} Table: ${settings.join} Record: ${value}`}
+        onClick={() =>
+          navigate(`/${settings.joinDb}/${settings.join}/${value}`)
+        }
+        disabled={!value}
+        className="ml-1"
+      />
       {settings.referenceCreate && (
         <CreateRecord
           db={settings.joinDb}
@@ -150,6 +130,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           }}
           closeOnCreate={true}
           header="Create Related Record"
+          className="ml-1"
         />
       )}
     </>

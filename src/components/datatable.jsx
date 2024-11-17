@@ -6,6 +6,8 @@ import fields from './fields';
 
 import {useQueryState, parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
 
+import IconButton from './buttons/iconbutton.jsx';
+
 import {
   Table,
   TableBody,
@@ -47,12 +49,9 @@ import {
   Filter,
   FilterXIcon,
   Loader2,
-  ReceiptRussianRuble,
-  RefreshCcw,
-  X,
 } from 'lucide-react';
 import {Input} from './ui/input.jsx';
-import {debounce, head} from 'lodash';
+
 import {cn} from '../lib/utils.js';
 
 const DEFAULT_LIMIT = 20;
@@ -269,22 +268,25 @@ export default function DataTableExtended({
       </div>
 
       <div>
-        <span className="mr-1">
-          <CreateRecordButton
-            db={db}
-            table={table}
-            disabled={schema?.data?.readOnly}
-            header={'Create ' + schema?.data?.name}
-            onClose={() => {
-              forceReload();
-            }}
-            where={child ? where : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
-            closeOnCreate={closeOnCreate}
-          />
-        </span>
-        <Button size="sm" onClick={() => forceReload()}>
-          <RefreshCcw size={16} />
-        </Button>
+        <CreateRecordButton
+          db={db}
+          table={table}
+          disabled={schema?.data?.readOnly}
+          header={'Create ' + schema?.data?.name}
+          onClose={() => {
+            forceReload();
+          }}
+          where={child ? where : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
+          closeOnCreate={closeOnCreate}
+          className="ml-1"
+        />
+
+        <IconButton
+          icon="RefreshCcw"
+          tooltip="Refresh data in table"
+          onClick={forceReload}
+          className="ml-1"
+        />
       </div>
     </div>
   );

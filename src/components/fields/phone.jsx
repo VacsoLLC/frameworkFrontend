@@ -1,12 +1,5 @@
-import {Phone, PhoneCall} from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/tooltip';
-import {Button} from '../ui/button';
 import {Input} from '../ui/input';
+import IconButton from '../buttons/iconbutton.jsx';
 
 export function edit({
   columnId,
@@ -27,25 +20,14 @@ export function edit({
         size={settings.fieldWidth}
         key={columnId}
       />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button disabled={!value} asChild>
-              <a
-                href={`tel:${value}`}
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <PhoneCall size={14} />
-              </a>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Call</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <IconButton
+        icon="PhoneCall"
+        tooltip="Dial Number"
+        onClick={(e) => {
+          e.preventDefault();
+          window.location.href = `tel:${value}`;
+        }}
+      />
     </>
   );
 }
