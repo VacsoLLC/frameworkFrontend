@@ -119,7 +119,6 @@ export default function DataTableExtended({
   );
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
 
-  // Future Feature: Allow the user to change the limit via the gui
   const [limit, setLimit] = useQueryState(
     'limit',
     parseAsInteger.withDefault(DEFAULT_LIMIT)
@@ -141,20 +140,12 @@ export default function DataTableExtended({
 
   const [where, setWhereClause] = useQueryState(
     'where',
-    parseAsString.withDefault('[]')
+    parseAsJson((tmp) => {
+      return tmp;
+    }).withDefault([])
   );
 
-  let whereParsed = [];
-
-  if (where) {
-    try {
-      whereParsed = JSON.parse(where);
-    } catch (e) {
-      console.error('Error parsing where clause', e);
-    }
-  }
-
-  const [newFilter, setNewFilter] = useQueryState(
+  const [filter, setFilter] = useQueryState(
     'filter',
     parseAsJson((tmp) => {
       return tmp;
@@ -166,7 +157,7 @@ export default function DataTableExtended({
     className: table,
     methodName: 'rowsGet',
     args: {
-      where: [...whereParsed, ...convertToWhere(newFilter)],
+      where: [...where, ...convertToWhere(filter)],
       sortField,
       sortOrder,
       limit,
@@ -180,7 +171,7 @@ export default function DataTableExtended({
     console.log('Filter Changed!', columnId, value, matchMode);
 
     if (!value && !matchMode) {
-      setNewFilter((prev) => {
+      setFilter((prev) => {
         const newFilter = {...prev};
         delete newFilter[columnId];
         return newFilter;
@@ -188,7 +179,7 @@ export default function DataTableExtended({
       return;
     }
 
-    setNewFilter((prev) => {
+    setFilter((prev) => {
       const newFilter = {...prev};
       newFilter[columnId] = {value, matchMode};
       return newFilter;
@@ -299,7 +290,6 @@ export default function DataTableExtended({
   );
   const totalPages = Math.ceil((rows?.data?.count ?? 0) / limit);
   const onPageChange = (pageNumber) => {
-    //setCurrentPage(pageNumber);
     setPage(pageNumber);
   };
 
@@ -356,7 +346,7 @@ export default function DataTableExtended({
                         }
                         onChange={onFilterElementChange}
                         value={
-                          newFilter[
+                          filter[
                             schema.data.schema[header.column.id].tableAlias +
                               '.' +
                               schema.data.schema[header.column.id]
@@ -364,7 +354,7 @@ export default function DataTableExtended({
                           ]?.value
                         }
                         matchMode={
-                          newFilter[
+                          filter[
                             schema.data.schema[header.column.id].tableAlias +
                               '.' +
                               schema.data.schema[header.column.id]
