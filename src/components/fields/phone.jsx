@@ -20,18 +20,37 @@ export function edit({
         size={settings.fieldWidth}
         key={columnId}
       />
-      <IconButton
-        icon="PhoneCall"
-        tooltip="Dial Number"
-        onClick={(e) => {
-          e.preventDefault();
-          window.location.href = `tel:${value}`;
-        }}
-      />
+      <DialNumber value={value} />
     </>
   );
 }
 
+function DialNumber({value}) {
+  if (!value) {
+    return null;
+  }
+
+  return (
+    <IconButton
+      icon="PhoneCall"
+      tooltip={`Dial ${value}`}
+      onClick={(e) => {
+        e.preventDefault();
+        window.location.href = `tel:${value}`;
+      }}
+      className="ml-1"
+    />
+  );
+}
+
 export function read({value}) {
-  return value;
+  return <>{value}</>;
+}
+
+export function preview({value}) {
+  return (
+    <>
+      {value} <DialNumber value={value} />
+    </>
+  );
 }
