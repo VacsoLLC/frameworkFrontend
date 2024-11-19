@@ -54,6 +54,8 @@ export default function ActionButton({
         onUploadComplete={() => {
           forceReload();
         }}
+        disabled={button.disabled ? true : false}
+        label={button.label}
       />
     );
   }
