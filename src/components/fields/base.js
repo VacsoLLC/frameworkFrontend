@@ -1,3 +1,5 @@
+// this is not used and should probably be removed.
+
 export function edit({
   columnId,
   settings,
@@ -19,10 +21,13 @@ export function edit({
   );
 }
 
-export function read({value}) {
-  return value;
+export function read({valueFriendly}) {
+  return valueFriendly;
 }
 
+export function preview({valueFriendly}) {
+  return valueFriendly;
+}
 export function filter() {
   return null;
 }

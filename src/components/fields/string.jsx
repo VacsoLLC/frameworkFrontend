@@ -23,3 +23,7 @@ export function edit({
 export function read({valueFriendly, value}) {
   return valueFriendly;
 }
+
+export function preview({valueFriendly, value}) {
+  return valueFriendly;
+}
