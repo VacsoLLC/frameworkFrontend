@@ -26,6 +26,8 @@ export default function AttachmentUploader({
   table,
   recordId,
   onUploadComplete,
+  disabled,
+  label = 'Attach Files',
 }) {
   const toast = useUserStore((state) => state.toast);
   const uploadRef = React.useRef(null);
@@ -99,7 +101,7 @@ export default function AttachmentUploader({
           <TooltipTrigger as="span" tabIndex={0}>
             <Button
               onClick={handleButtonClick}
-              disabled={uploading}
+              disabled={uploading || disabled}
               className=""
             >
               {uploading ? (
@@ -110,7 +112,7 @@ export default function AttachmentUploader({
               ) : (
                 <>
                   <Upload size={16} className="mr-2" />
-                  Upload Files
+                  {label}
                 </>
               )}
             </Button>
