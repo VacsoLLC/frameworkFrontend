@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
+import RecordPreview from '../recordpreview.jsx';
+
 import CreateRecord from '../buttons/createrecord.jsx';
 import {
   Select,
@@ -11,6 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+
+import {Button} from '../ui/button.jsx';
+
+import {X} from 'lucide-react';
+
+import {Popover, PopoverContent, PopoverTrigger} from '../ui/popover';
 
 import {useBackend, callBackend} from '../../lib/usebackend.js';
 import IconButton from '../buttons/iconbutton.jsx';
@@ -61,6 +69,8 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
     pull();
   }, [columnId, settings, reload, value]);
 
+  const [open, setOpen] = useState(false);
+
   let filter = false;
   if (dropdownOptions && dropdownOptions.length > 10) {
     filter = true;
@@ -70,10 +80,6 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
     console.log(props);
     return <div>Loading...</div>;
   }
-
-  const handleClear = () => {
-    //setValue('');
-  };
 
   return (
     <>
@@ -108,16 +114,47 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           </SelectGroup>
         </SelectContent>
       </Select>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger>
+          <IconButton
+            icon="Info"
+            disabled={!value}
+            className="ml-1"
+            tooltip="Preview referenced record."
+          />
+        </PopoverTrigger>
+        <PopoverContent className="w-160 p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold text-lg pr-6">
+              Referenced Record Preview
+            </h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              className=" top-2 h-6 w-6 rounded-full"
+              onClick={() => setOpen(false)}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </div>
+          <RecordPreview
+            db={settings.joinDb}
+            table={settings.join}
+            recordId={parseInt(value)}
+            reload={reload}
+            forceReload={forceReload}
+            showHeader={true}
+          />
+        </PopoverContent>
+      </Popover>
 
-      <IconButton
-        icon="SquareArrowOutUpRight"
-        tooltip={`Go to referenced record. DB: ${settings.joinDb} Table: ${settings.join} Record: ${value}`}
-        onClick={() =>
-          navigate(`/${settings.joinDb}/${settings.join}/${value}`)
-        }
-        disabled={!value}
-        className="ml-1"
+      <GoToReference
+        db={settings.joinDb}
+        table={settings.join}
+        recordId={value}
       />
+
       {settings.referenceCreate && (
         <CreateRecord
           db={settings.joinDb}
@@ -133,6 +170,32 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           className="ml-1"
         />
       )}
+    </>
+  );
+}
+
+function GoToReference({db, table, recordId}) {
+  const navigate = useNavigate();
+
+  return (
+    <IconButton
+      icon="SquareArrowOutUpRight"
+      tooltip={`Go to referenced record. DB: ${db} Table: ${table} Record: ${recordId}`}
+      onClick={() => navigate(`/${db}/${table}/${recordId}`)}
+    />
+  );
+}
+
+export function preview({valueFriendly, value, settings, ...props}) {
+  return (
+    <>
+      {valueFriendly}
+
+      <GoToReference
+        db={settings.joinDb}
+        table={settings.join}
+        recordId={value}
+      />
     </>
   );
 }

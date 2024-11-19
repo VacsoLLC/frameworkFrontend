@@ -21,18 +21,38 @@ export function edit({
         size={settings.fieldWidth}
         key={columnId}
       />
-      <IconButton
-        icon="Send"
-        tooltip="Send email"
-        onClick={(e) => {
-          e.preventDefault();
-          window.location.href = `mailto:${value}`;
-        }}
-      />
+      <SendEmail value={value} />
     </>
+  );
+}
+
+function SendEmail({value}) {
+  if (!value?.includes('@')) {
+    return null;
+  }
+
+  return (
+    <IconButton
+      icon="Send"
+      tooltip={`Send email to ${value}`}
+      onClick={(e) => {
+        e.preventDefault();
+        window.location.href = `mailto:${value}`;
+      }}
+      className="ml-1"
+    />
   );
 }
 
 export function read({value}) {
   return value;
+}
+
+export function preview({value}) {
+  return (
+    <>
+      {value}
+      <SendEmail value={value} />
+    </>
+  );
 }
