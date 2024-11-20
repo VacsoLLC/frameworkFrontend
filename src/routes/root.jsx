@@ -14,6 +14,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '../components/ui/dialog.jsx';
 
 export default function Root() {
@@ -52,16 +53,6 @@ export default function Root() {
     setToast(sendToast); // This works. Possibly a bad idea.
   }, []);
 
-  const errorFooter = () => {
-    return (
-      <div>
-        <Button onClick={clearErrorMessage} variant="danger">
-          Ok
-        </Button>
-      </div>
-    );
-  };
-
   const userItems = [
     {
       label: 'Profile',
@@ -91,13 +82,17 @@ export default function Root() {
         >
           <DialogHeader>
             <DialogTitle>Error</DialogTitle>
+            <DialogDescription>
+              <br />
+              The server has reported an error.
+              <br />
+              <br />
+              {errorMessage}
+            </DialogDescription>
           </DialogHeader>
-          The server has reported an error.
-          <br />
-          <br />
-          {errorMessage}
-          <DialogFooter className="sm:justify-start">
-            {errorFooter}
+
+          <DialogFooter>
+            <Button onClick={clearErrorMessage}>Ok</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

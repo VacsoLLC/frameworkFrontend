@@ -24,7 +24,7 @@ class API {
             resolve();
           }
         },
-        (state) => state.authenticated,
+        (state) => state.authenticated
       );
     });
   }
@@ -39,7 +39,7 @@ class API {
     return Promise.race([
       promise,
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out')), timeoutMs),
+        setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
       ),
     ]);
   }
@@ -59,7 +59,7 @@ class API {
     body = {},
     auth = true,
     suppressDialog = false,
-    timeoutMs = 30000,
+    timeoutMs = 30000
   ) {
     while (true) {
       if (auth) {
@@ -78,7 +78,7 @@ class API {
             },
             body: JSON.stringify(body),
           }),
-          timeoutMs,
+          timeoutMs
         );
 
         if (response.status === 401) {
@@ -91,7 +91,7 @@ class API {
 
         if (response.status === 403) {
           throw new Error(
-            'Access Denied: You do not have permission to access this resource.',
+            'Access Denied: You do not have permission to access this resource.'
           );
         }
 
@@ -124,9 +124,17 @@ class API {
           messages: data.messages,
         };
       } catch (error) {
-        if (error.message === 'Request timed out') {
+    if (error.message === 'Request timed out') {
+          if (!suppressDialog)
+            useUserStore
+              .getState()
+              .setErrorMessage(`API call timed out after ${timeoutMs}ms`);
           throw new Error(`API call timed out after ${timeoutMs}ms`);
         }
+        if (!suppressDialog)
+          useUserStore
+            .getState()
+            .setErrorMessage(`API call failed: ${error.message}`);
         throw new Error(`API call failed: ${error.message}`);
       }
     }
@@ -166,7 +174,7 @@ class API {
     ttl = 1000 * 60 * 60,
     auth = true,
     suppressDialog = false,
-    timeoutMs = 30000,
+    timeoutMs = 30000
   ) {
     const cachedData = this.getCached(url, ttl);
     if (cachedData) {
@@ -181,7 +189,7 @@ class API {
       options,
       auth,
       suppressDialog,
-      timeoutMs,
+      timeoutMs
     );
 
     if (response.ok) {
@@ -230,7 +238,7 @@ class API {
 
         const errorData = await response.json();
         throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`,
+          errorData.error || `HTTP error! status: ${response.status}`
         );
       }
       const data = await response.json();

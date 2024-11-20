@@ -41,7 +41,8 @@ export function useBackend({
   clear = false, // If ever true, the data will be cleared.
   skip = false, // If true, the call will be skipped.
   queueing = false, // If true, the call will be queued if another call is in progress. This is useful for calls that are triggered by user input.
-  timeout = 30000, // The timeout in milliseconds
+  timeout = 5000, // The timeout in milliseconds
+  supressDialog = true, // Whether to suppress error dialogs
 }) {
   const [returnValue, setReturnValue] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
@@ -55,7 +56,7 @@ export function useBackend({
   console.log(
     'usebackend userId',
     `/api/${packageName}/${className}/${methodName}`,
-    userId,
+    userId
   );
 
   React.useEffect(() => {
@@ -81,9 +82,21 @@ export function useBackend({
       console.log('usebackend fetching', URL);
       try {
         if (cache) {
-          response = await api.fetchCached(URL, newArgs, true, true, timeout);
+          response = await api.fetchCached(
+            URL,
+            newArgs,
+            true,
+            supressDialog,
+            timeout
+          );
         } else {
-          response = await api.fetch(URL, newArgs, true, true, timeout);
+          response = await api.fetch(
+            URL,
+            newArgs,
+            true,
+            supressDialog,
+            timeout
+          );
         }
       } catch (e) {
         setError(e);
@@ -98,7 +111,7 @@ export function useBackend({
       console.log(
         `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
         response,
-        arguments,
+        arguments
       );
 
       if (filter) {

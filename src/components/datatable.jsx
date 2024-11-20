@@ -164,6 +164,7 @@ export default function DataTableExtended({
       offset: (page - 1) * limit,
       returnCount: true,
     },
+    supressDialog: false,
     reload,
   });
 
