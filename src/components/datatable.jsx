@@ -479,7 +479,7 @@ export default function DataTableExtended({
 function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
   return (
     <>
-      <div className="flex items-center space-x-2 my-1">
+      <div className="flex items-center space-x-1 my-1">
         <Input
           value={value}
           onChange={(e) => {
@@ -496,23 +496,23 @@ function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {[
-              'contains',
-              'startsWith',
-              'endsWith',
-              'equals',
-              'notEquals',
-              'notContains',
+              {label: 'Contains', value: 'contains'},
+              {label: 'Starts With', value: 'startsWith'},
+              {label: 'Ends with', value: 'endsWith'},
+              {label: 'Equals', value: 'equals'},
+              {label: 'Not Equals', value: 'notEquals'},
+              {label: 'No Contains', value: 'notContains'},
             ].map((option) => (
               <DropdownMenuItem
-                key={option}
+                key={option.value}
                 onSelect={(e) => {
-                  onChange(column, value, option);
+                  onChange(column, value, option.value);
                 }}
                 className={`flex items-center justify-between ${
-                  option === matchMode ? 'bg-primary/10' : ''
+                  option.value === matchMode ? 'bg-primary/10' : ''
                 }`}
               >
-                {option}
+                {option.label}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -521,7 +521,7 @@ function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
           variant="ghost"
           size="icon"
           className={cn(
-            'h-8 w-8 p-2 transition-opacity duration-200',
+            'h-8 w-8 transition-opacity duration-200',
             value || matchMode != 'contains' ? 'opacity-100' : 'opacity-0'
           )}
           onClick={() => {
