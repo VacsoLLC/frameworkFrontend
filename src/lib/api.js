@@ -82,7 +82,6 @@ class API {
         );
 
         if (response.status === 401) {
-          console.log('Got 401 for URL: ', url);
           useUserStore.getState().logout();
           this.clearCache();
           console.log(`Received 401, Waiting for re-authentication... `);
@@ -96,14 +95,18 @@ class API {
         }
 
         if (response.status !== 200) {
-          console.log('Failed to fetch URL: ', url);
-          const json = await response.json();
-          if (json.error) {
-            if (!suppressDialog)
-              useUserStore.getState().setErrorMessage(json.error);
-            throw new Error(json.error);
+          let json = {};
+          try {
+            json = await response.json();
+          } catch {
+            throw new Error(`${response.statusText}`);
           }
-          throw new Error(`API call failed with status: ${response.status}`);
+
+          if (json.error) {
+            throw new Error(json.error);
+          } else {
+            throw new Error(`${response.statusText}`);
+          }
         }
 
         const data = await response.json();
@@ -124,18 +127,16 @@ class API {
           messages: data.messages,
         };
       } catch (error) {
-    if (error.message === 'Request timed out') {
+        if (error.message === 'Request timed out') {
           if (!suppressDialog)
             useUserStore
               .getState()
-              .setErrorMessage(`API call timed out after ${timeoutMs}ms`);
-          throw new Error(`API call timed out after ${timeoutMs}ms`);
+              .setErrorMessage(`Action timed out after ${timeoutMs}ms`);
+          throw new Error(`Action timed out after ${timeoutMs}ms`);
         }
         if (!suppressDialog)
-          useUserStore
-            .getState()
-            .setErrorMessage(`API call failed: ${error.message}`);
-        throw new Error(`API call failed: ${error.message}`);
+          useUserStore.getState().setErrorMessage(`${error.message}`);
+        throw new Error(`${error.message}`);
       }
     }
   }

@@ -83,7 +83,7 @@ export default function LoginModal({children}) {
     } catch (error) {
       shadToast({
         title: 'Failed',
-        description: 'Login failed',
+        description: `${error}`,
         duration: 3000,
         variant: 'error',
       });
