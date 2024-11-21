@@ -30,6 +30,7 @@ export default function ActionButton({
   forceReload,
   formData,
   columns,
+  className = '',
 }) {
   const [showModal, setShowModal] = useState(false);
 
@@ -80,7 +81,7 @@ export default function ActionButton({
             <Button
               disabled={button.disabled ? true : false}
               variant={COLOR_TO_VARIANT_MAP[button?.color] ?? 'default'}
-              className="mr-1 mb-1"
+              className={`mr-1 mb-1 ${className}`}
               onClick={onClick}
             >
               {button?.label}
