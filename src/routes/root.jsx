@@ -17,7 +17,7 @@ import {
   DialogDescription,
 } from '../components/ui/dialog.jsx';
 
-export default function Root() {
+export default function Root({views}) {
   const navigate = useNavigate();
   const userMenu = useRef(null);
   //const [newItems, setNewItems] = useState([]);
@@ -71,6 +71,9 @@ export default function Root() {
     },
   ];
 
+  const RootComponentInjection =
+    views?.componentInjection?.root || (() => null);
+
   return (
     <div>
       <Dialog open={errorMessage} onOpenChange={clearErrorMessage}>
@@ -104,6 +107,7 @@ export default function Root() {
       />
 
       {/* <Menubar model={newItems} className="mb-1" end={end} /> */}
+      <RootComponentInjection />
       <Login>
         <Outlet />
       </Login>

@@ -16,7 +16,7 @@ function Frontend({views}) {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <Root />,
+      element: <Root views={views}/>,
       children: [
         {
           path: '/',
