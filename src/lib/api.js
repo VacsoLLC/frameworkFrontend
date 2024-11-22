@@ -35,12 +35,20 @@ class API {
    * @param {number} timeoutMs - The timeout in milliseconds
    * @returns {Promise} - A Promise that rejects if the timeout is reached
    */
-  timeoutPromise(promise, timeoutMs) {
+  timeoutPromise(promise, timeoutMs, message = '') {
     return Promise.race([
       promise,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
-      ),
+      new Promise((_, reject) => {
+        const timeoutId = setTimeout(() => {
+          console.log(`Request timed out. ${message}`);
+          reject(new Error('Request timed out'));
+        }, timeoutMs);
+
+        // When the original promise resolves, clear the timeout
+        promise.finally(() => {
+          clearTimeout(timeoutId);
+        });
+      }),
     ]);
   }
 
@@ -69,6 +77,7 @@ class API {
       const token = useUserStore.getState().token;
 
       try {
+        console.log('Fetching: ', url);
         const response = await this.timeoutPromise(
           fetch(url, {
             method: 'POST',
@@ -78,8 +87,10 @@ class API {
             },
             body: JSON.stringify(body),
           }),
-          timeoutMs
+          timeoutMs,
+          url
         );
+        console.log('Done Fetching: ', url);
 
         if (response.status === 401) {
           useUserStore.getState().logout();

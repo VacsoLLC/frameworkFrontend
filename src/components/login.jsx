@@ -8,7 +8,7 @@ import {Input} from '../components/ui/input';
 import {Label} from '../components/ui/label';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';
-import {Dialog, DialogContent} from './ui/dialog.jsx';
+import {Dialog, DialogContent, DialogTitle} from './ui/dialog.jsx';
 
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
@@ -21,7 +21,14 @@ export default function LoginModal({children}) {
   const setToken = useUserStore((state) => state.setToken);
   const authenticated = useUserStore((state) => state.authenticated);
 
+  const [open, setOpen] = useState(false);
+
   const msgs = useRef(null);
+
+  useEffect(() => {
+    // We used to just use authenticated directly for the open={} on the popup, but it caused bugs. This is a workaround.
+    setOpen(!authenticated);
+  }, [authenticated]);
 
   useEffect(() => {
     const fetchSSOList = async () => {
@@ -91,16 +98,17 @@ export default function LoginModal({children}) {
   };
   return (
     <>
-      <Dialog open={!authenticated} onOpenChange={() => {}}>
+      <Dialog open={open} onOpenChange={() => {}}>
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
           className="[&>button]:hidden w-120"
-          hideClose
         >
+          <DialogTitle>
+            <div className="text-2xl font-bold text-center mb-0">Login</div>
+          </DialogTitle>
           <div className="flex justify-center">
-            <div className="w-96 p-6">
-              <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+            <div className="w-96 p-4">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -143,6 +151,7 @@ export default function LoginModal({children}) {
                       onClick={() => {
                         window.location.href = sso.link;
                       }}
+                      key={sso.name}
                     >
                       {sso.name}
                     </Button>

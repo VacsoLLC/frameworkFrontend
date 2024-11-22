@@ -76,6 +76,7 @@ export default function Root({views}) {
 
   return (
     <div>
+      <RootComponentInjection />
       <Dialog open={errorMessage} onOpenChange={clearErrorMessage}>
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
@@ -106,8 +107,6 @@ export default function Root({views}) {
         onSearch={(val) => navigate(`/search?value=${val}`)}
       />
 
-      {/* <Menubar model={newItems} className="mb-1" end={end} /> */}
-      <RootComponentInjection />
       <Login>
         <Outlet />
       </Login>
