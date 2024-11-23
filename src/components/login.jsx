@@ -96,6 +96,10 @@ export default function LoginModal({children}) {
       });
     }
   };
+
+  const handleSumbmit = (e) => {
+    onLogin(e);
+  };
   return (
     <>
       <Dialog open={open} onOpenChange={() => {}}>
@@ -109,27 +113,29 @@ export default function LoginModal({children}) {
           </DialogTitle>
           <div className="flex justify-center">
             <div className="w-96 p-4">
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+              <form onSubmit={handleSumbmit}>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" onClick={onLogin}>
+                    Login
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <Button type="submit" className="w-full" onClick={onLogin}>
-                  Login
-                </Button>
-              </div>
+              </form>
               {ssoList?.length && (
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center">
