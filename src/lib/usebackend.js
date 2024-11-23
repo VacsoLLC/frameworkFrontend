@@ -56,7 +56,7 @@ export function useBackend({
   console.log(
     'usebackend userId',
     `/api/${packageName}/${className}/${methodName}`,
-    userId
+    userId,
   );
 
   React.useEffect(() => {
@@ -87,7 +87,7 @@ export function useBackend({
             newArgs,
             true,
             supressDialog,
-            timeout
+            timeout,
           );
         } else {
           response = await api.fetch(
@@ -95,7 +95,7 @@ export function useBackend({
             newArgs,
             true,
             supressDialog,
-            timeout
+            timeout,
           );
         }
       } catch (e) {
@@ -111,7 +111,7 @@ export function useBackend({
       console.log(
         `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
         response,
-        arguments
+        arguments,
       );
 
       if (filter) {

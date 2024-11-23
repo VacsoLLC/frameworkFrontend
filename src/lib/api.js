@@ -24,7 +24,7 @@ class API {
             resolve();
           }
         },
-        (state) => state.authenticated
+        (state) => state.authenticated,
       );
     });
   }
@@ -67,7 +67,7 @@ class API {
     body = {},
     auth = true,
     suppressDialog = false,
-    timeoutMs = 30000
+    timeoutMs = 30000,
   ) {
     while (true) {
       if (auth) {
@@ -88,7 +88,7 @@ class API {
             body: JSON.stringify(body),
           }),
           timeoutMs,
-          url
+          url,
         );
         console.log('Done Fetching: ', url);
 
@@ -101,7 +101,7 @@ class API {
 
         if (response.status === 403) {
           throw new Error(
-            'Access Denied: You do not have permission to access this resource.'
+            'Access Denied: You do not have permission to access this resource.',
           );
         }
 
@@ -186,7 +186,7 @@ class API {
     ttl = 1000 * 60 * 60,
     auth = true,
     suppressDialog = false,
-    timeoutMs = 30000
+    timeoutMs = 30000,
   ) {
     const cachedData = this.getCached(url, ttl);
     if (cachedData) {
@@ -201,7 +201,7 @@ class API {
       options,
       auth,
       suppressDialog,
-      timeoutMs
+      timeoutMs,
     );
 
     if (response.ok) {
@@ -250,7 +250,7 @@ class API {
 
         const errorData = await response.json();
         throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
+          errorData.error || `HTTP error! status: ${response.status}`,
         );
       }
       const data = await response.json();
