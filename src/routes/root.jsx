@@ -118,7 +118,7 @@ function buildMenu(items, navigate) {
   let output = [];
 
   for (const item of Object.keys(items).sort(
-    (a, b) => items[a].order - items[b].order
+    (a, b) => items[a].order - items[b].order,
   )) {
     let itemoutput = {};
 
@@ -135,11 +135,11 @@ function buildMenu(items, navigate) {
           navigate(
             items[item].navigate +
               `/?tableName=${items[item].label}&where=${JSON.stringify(
-                items[item].filter
+                items[item].filter,
               )}&view=${items[item].view}`,
             {
               state: {},
-            }
+            },
           );
         });
       };

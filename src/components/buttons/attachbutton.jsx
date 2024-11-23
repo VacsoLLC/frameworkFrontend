@@ -56,7 +56,7 @@ export default function AttachmentUploader({
 
       const response = await api.uploadFiles(
         '/api/core/attachment/upload',
-        formData
+        formData,
       );
 
       if (response.ok) {

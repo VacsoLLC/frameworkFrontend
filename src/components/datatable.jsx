@@ -110,18 +110,18 @@ export default function DataTableExtended({
 
   const [sortOrder, setSortOrder] = useQueryState(
     'sortOrder',
-    parseAsString.withDefault('DESC')
+    parseAsString.withDefault('DESC'),
   );
 
   const [sortField, setSortField] = useQueryState(
     'sortField',
-    parseAsString.withDefault('id')
+    parseAsString.withDefault('id'),
   );
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
 
   const [limit, setLimit] = useQueryState(
     'limit',
-    parseAsInteger.withDefault(DEFAULT_LIMIT)
+    parseAsInteger.withDefault(DEFAULT_LIMIT),
   );
 
   const [schema] = useBackend({
@@ -134,22 +134,22 @@ export default function DataTableExtended({
   const [tableName, setTableName] = useQueryState(
     'tableName',
     parseAsString.withDefault(
-      location?.state?.tableHeader || schema?.data?.name
-    )
+      location?.state?.tableHeader || schema?.data?.name,
+    ),
   );
 
   const [where, setWhereClause] = useQueryState(
     'where',
     parseAsJson((tmp) => {
       return tmp;
-    }).withDefault([])
+    }).withDefault([]),
   );
 
   const [filter, setFilter] = useQueryState(
     'filter',
     parseAsJson((tmp) => {
       return tmp;
-    }).withDefault({})
+    }).withDefault({}),
   );
 
   const [rows, loading] = useBackend({
@@ -218,7 +218,7 @@ export default function DataTableExtended({
               onClick={() => {
                 onSortChange(
                   column.id,
-                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC'
+                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
                 );
               }}
             >
@@ -317,7 +317,7 @@ export default function DataTableExtended({
           className="mx-1"
         >
           {i}
-        </Button>
+        </Button>,
       );
     }
 
@@ -523,7 +523,7 @@ function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
           size="icon"
           className={cn(
             'h-8 w-8 transition-opacity duration-200',
-            value || matchMode != 'contains' ? 'opacity-100' : 'opacity-0'
+            value || matchMode != 'contains' ? 'opacity-100' : 'opacity-0',
           )}
           onClick={() => {
             onChange(column, '', '');
