@@ -115,7 +115,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         </SelectContent>
       </Select>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger>
+        <PopoverTrigger asChild>
           <IconButton
             icon="Info"
             disabled={!value}
