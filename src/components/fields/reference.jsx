@@ -22,6 +22,13 @@ import {Popover, PopoverContent, PopoverTrigger} from '../ui/popover';
 
 import {useBackend, callBackend} from '../../lib/usebackend.js';
 import IconButton from '../buttons/iconbutton.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip.jsx';
+import IconButtonWithoutTooltip from '../buttons/iconbuttonwithouttooltip.jsx';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -114,40 +121,49 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <IconButton
-            icon="Info"
-            disabled={!value}
-            className="ml-1"
-            tooltip="Preview referenced record."
-          />
-        </PopoverTrigger>
-        <PopoverContent className="w-160 p-4">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="font-semibold text-lg pr-6">
-              Referenced Record Preview
-            </h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              className=" top-2 h-6 w-6 rounded-full"
-              onClick={() => setOpen(false)}
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Button>
-          </div>
-          <RecordPreview
-            db={settings.joinDb}
-            table={settings.join}
-            recordId={parseInt(value)}
-            reload={reload}
-            forceReload={forceReload}
-            showHeader={true}
-          />
-        </PopoverContent>
-      </Popover>
+      <TooltipProvider>
+        <Tooltip>
+          <Popover open={open} onOpenChange={setOpen}>
+            <TooltipTrigger asChild>
+              <PopoverTrigger>
+                <IconButtonWithoutTooltip
+                  icon="Info"
+                  onClick={() => setOpen((prev) => !prev)}
+                  disabled={!value}
+                  className="ml-1"
+                />
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p> Preview referenced record.</p>
+            </TooltipContent>
+            <PopoverContent className="w-160 p-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-lg pr-6">
+                  Referenced Record Preview
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className=" top-2 h-6 w-6 rounded-full"
+                  onClick={() => setOpen(false)}
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close</span>
+                </Button>
+              </div>
+              <RecordPreview
+                db={settings.joinDb}
+                table={settings.join}
+                recordId={parseInt(value)}
+                reload={reload}
+                forceReload={forceReload}
+                showHeader={true}
+              />
+            </PopoverContent>
+          </Popover>
+        </Tooltip>
+      </TooltipProvider>
 
       <GoToReference
         db={settings.joinDb}
