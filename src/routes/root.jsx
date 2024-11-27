@@ -30,7 +30,7 @@ export default function Root({views}) {
   const errorMessage = useUserStore((state) => state.errorMessage);
   const clearErrorMessage = useUserStore((state) => state.clearErrorMessage);
 
-  const [newItems2] = useBackend({
+  const [menuRaw] = useBackend({
     packageName: 'core',
     className: 'menu',
     methodName: 'getAllMenuItems',
@@ -38,8 +38,8 @@ export default function Root({views}) {
     args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
   });
 
-  const newItems =
-    newItems2 && authenticated ? buildMenu(newItems2.data, navigate) : [];
+  const menuItems =
+    menuRaw && authenticated ? buildMenu(menuRaw.data, navigate) : [];
 
   const sendToast = (toastObject) => {
     console.log(toastObject, 'toast');
@@ -104,7 +104,7 @@ export default function Root({views}) {
       </Dialog>
       <Toaster />
       <TopNavbar
-        navItems={newItems}
+        navItems={menuItems}
         userItems={userItems}
         onSearch={(val) => navigate(`/search?value=${val}`)}
       />
