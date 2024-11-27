@@ -9,10 +9,18 @@ import Home from './routes/home.jsx';
 import CreateRecord from './routes/createrecord.jsx';
 import Search from './routes/search.jsx';
 import Action from './routes/action.jsx';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
+import useUserStore from './stores/user.js';
 
 import './main.css';
 
+const queryClient = new QueryClient();
+
 function Frontend({views}) {
+  const setQueryClient = useUserStore((state) => state.setQueryClient);
+  setQueryClient(queryClient);
+
   const router = createBrowserRouter([
     {
       path: '/',
@@ -60,9 +68,12 @@ function Frontend({views}) {
   //return <>hello</>;
 
   return (
-    <NuqsAdapter>
-      <RouterProvider router={router} />
-    </NuqsAdapter>
+    <QueryClientProvider client={queryClient}>
+      <NuqsAdapter>
+        <RouterProvider router={router} />
+      </NuqsAdapter>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 

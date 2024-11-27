@@ -2,72 +2,79 @@ import React, {useEffect} from 'react';
 import API from './api.js';
 //import {_} from 'lodash';
 import useUserStore from '../stores/user.js';
+import {useQuery} from '@tanstack/react-query';
 
 const api = new API();
 
 export function clearCache() {
-  api.clearCache();
+  const clearCache = useUserStore.getState().clearCache;
+  clearCache();
 }
 
 // This handles calls to the backend. This is a high level interface that handles common react stuff for you. api.fetch is a low level interface that you can use if you want to handle the backend calls yourself, but it is not recommended.
 /**
- * Custom hook to interact with backend API.
+ * Custom hook to interact with the backend API.
  *
- * @param {Object} options - The options for the backend call.
- * @param {string} options.packageName - The package name to call.
- * @param {string} options.className - The class name to call.
- * @param {string} options.methodName - The method name to call.
- * @param {string|boolean} [options.recordId=false] - The record ID, optional. If not provided, the method will be called without a record ID.
- * @param {Object} [options.args={}] - Arguments sent to the method.
- * @param {number} [options.reload=1] - If this value changes, a refresh will be forced.
- * @param {boolean} [options.cache=false] - If true, the data will be cached.
- * @param {Function|boolean} [options.filter=false] - A function to filter the data any time it is retrieved from the server, before it is stored and returned.
- * @param {boolean} [options.clear=false] - If true, the data will be cleared.
- * @param {boolean} [options.skip=false] - If true, the call will be skipped.
- * @param {boolean} [options.queueing=false] - If true, the call will be queued if another call is in progress. Useful for calls triggered by user input.
- * @param {number} [options.timeout=30000] - The timeout in milliseconds.
+ * @param {Object} params - The parameters for the backend call.
+ * @param {string} params.packageName - The package name to call.
+ * @param {string} params.className - The class name to call.
+ * @param {string} params.methodName - The method name to call.
+ * @param {boolean} [params.enabled=true] - If false, the call will be skipped.
+ * @param {string|boolean} [params.recordId=false] - Optional record ID. If not provided, the method will be called without a record ID.
+ * @param {Object} [params.args={}] - Arguments sent to the method.
+ * @param {number} [params.timeout=5000] - The timeout in milliseconds.
+ * @param {boolean} [params.supressDialog=true] - Whether to suppress error dialogs.
+ * @param {number} [params.reload=1] - If this value changes, a refresh will be forced.
+ * @param {boolean} [params.cache=false] - If true, the data will be cached for a long period. Normal data is only cached for 5 minutes and gets auto-refreshed based on various conditions.
  *
- * @returns {[any, boolean, any]} - Returns an array containing the response data, loading state, and error state.
+ * @returns {[any, boolean, any]} - Returns an array containing the data, loading state, and error state.
  */
 export function useBackend({
   packageName, // The package name to call
   className, // The class name to call
   methodName, // The method name to call
+  enabled = true, // If false, the call will be skipped.
   recordId = false, // recordId is optional. If it is not provided, the method will be called without a recordId.
   args = {}, // arguments sent to the method
-  reload = 1, // if this value changes a refresh will be forced
-  cache = false, // If true, the data will be cached.
-  filter = false, // This is a function that can be used to filter the data any time it is retrieved from the server, before it is stored and returned.
-  clear = false, // If ever true, the data will be cleared.
-  skip = false, // If true, the call will be skipped.
-  queueing = false, // If true, the call will be queued if another call is in progress. This is useful for calls that are triggered by user input.
   timeout = 5000, // The timeout in milliseconds
   supressDialog = true, // Whether to suppress error dialogs
+  reload = 1, // if this value changes a refresh will be forced
+  cache = false, // If true, the data will be cached for a long period. Normal data is only cached for 5 minutes, and gets auto refreshed based on a bunch of stuff.
+  auth = true,
 }) {
-  const [returnValue, setReturnValue] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
-  const [newArgs, setNewArgs] = React.useState(null);
-  const queuedRequest = React.useRef(null);
-  const fetching = React.useRef(false);
-  const userId = useUserStore((state) => state.userId);
-  const authenticated = useUserStore((state) => state.authenticated);
+  const [previousReload, setPreviousReload] = React.useState(reload);
 
-  console.log(
-    'usebackend userId',
-    `/api/${packageName}/${className}/${methodName}`,
-    userId,
-  );
+  const results = useQuery({
+    enabled,
+    refetchOnMount: !cache,
+    refetchOnWindowFocus: !cache,
+    refetchOnReconnect: !cache,
+    refetchInterval: cache ? 1000 * 60 * 60 : 1000 * 60 * 5,
+    queryKey: [
+      {
+        packageName,
+        className,
+        methodName,
+        recordId,
+        args,
+        supressDialog,
+        timeout,
+        auth,
+      },
+    ],
+    queryFn: ({queryKey, signal}) => {
+      console.log('useBackend: useQuery', 'queryKey', queryKey);
 
-  React.useEffect(() => {
-    if (!authenticated) {
-      console.log('useBackend: waiting for authentication');
-      return;
-    }
-    const fetchData = async () => {
-      if (newArgs === null) return;
-
-      const start = new Date().getTime();
+      const {
+        packageName,
+        className,
+        methodName,
+        recordId,
+        args,
+        supressDialog,
+        timeout,
+        auth,
+      } = queryKey[0];
 
       let URL = `/api/${packageName}/${className}/${methodName}`;
 
@@ -75,94 +82,31 @@ export function useBackend({
         URL += `/${recordId}`;
       }
 
-      let response;
+      return api.fetch(URL, args, auth, supressDialog, timeout);
+    },
+  });
 
-      setLoading(true);
-      fetching.current = true;
-      console.log('usebackend fetching', URL);
-      try {
-        if (cache) {
-          response = await api.fetchCached(
-            URL,
-            newArgs,
-            true,
-            supressDialog,
-            timeout,
-          );
-        } else {
-          response = await api.fetch(
-            URL,
-            newArgs,
-            true,
-            supressDialog,
-            timeout,
-          );
-        }
-      } catch (e) {
-        setError(e);
-        setLoading(false);
-        fetching.current = false;
-        return;
-      }
-      console.log('usebackend done fetching', URL);
-      setError(false);
-
-      const took = new Date().getTime() - start;
-      console.log(
-        `${packageName}.${className}.${methodName} Data received in ${took} ms: `,
-        response,
-        arguments,
-      );
-
-      if (filter) {
-        response = filter(response);
-      }
-
-      setReturnValue(response);
-
-      console.log('Done with request', newArgs);
-      if (queuedRequest.current) {
-        setNewArgs(queuedRequest.current);
-        console.log('Executing request', queuedRequest.current);
-        queuedRequest.current = null;
-      }
-      setLoading(false);
-      fetching.current = false;
-    };
-    fetchData();
-  }, [
-    packageName,
-    className,
-    methodName,
-    newArgs,
-    reload,
-    userId,
-    authenticated,
-    recordId,
-  ]);
-
-  useEffect(() => {
-    if (clear) {
-      setReturnValue(null);
-    }
-  }, [clear]);
-
-  if (skip) return [returnValue, loading, error];
-
-  // This prevents duplicate calls when just a reference changes.
-  if (!deepEqual(newArgs, args)) {
-    if (queueing && fetching.current) {
-      console.log('Queuing request', args);
-      queuedRequest.current = args;
-    } else {
-      console.log('Executing request', args);
-      setNewArgs(args);
-    }
+  if (reload !== previousReload) {
+    results.refetch();
+    setPreviousReload(reload);
   }
 
-  return [returnValue, loading, error];
+  return [results.data, results.isLoading, results.error, results];
 }
 
+/**
+ * Calls a backend API endpoint.
+ *
+ * @param {Object} options - The options for the backend call.
+ * @param {string} options.packageName - The name of the package.
+ * @param {string} options.className - The name of the class.
+ * @param {string} options.methodName - The name of the method.
+ * @param {string} [options.recordId] - The ID of the record (optional).
+ * @param {Object} options.args - The arguments to pass to the method.
+ * @param {boolean} [options.auth=true] - Whether to reuire authentication before calling. (default: true). Set to false if you want to make the call without auth.
+ * @param {boolean} [options.supressDialog=false] - Whether to suppress dialog messages for errors (default: false).
+ * @returns {Promise} The result of the API call.
+ */
 export function callBackend({
   packageName,
   className,
@@ -171,86 +115,13 @@ export function callBackend({
   args,
   auth = true,
   supressDialog = false,
-  cache = false,
-  ttl = 1000 * 60 * 60,
 }) {
   let URL = `/api/${packageName}/${className}/${methodName}`;
   if (recordId) {
     URL += `/${recordId}`;
   }
 
-  if (cache) {
-    return api.fetchCached(URL, args, ttl, auth, supressDialog);
-  }
-
   return api.fetch(URL, args, auth, supressDialog);
 }
 
 export {api};
-
-/**
- * Performs a deep comparison between two values to determine if they are equivalent.
- * @param {*} value1 The first value to compare
- * @param {*} value2 The second value to compare
- * @returns {boolean} Returns true if the values are equivalent, else false
- */
-function deepEqual(value1, value2) {
-  // Handle strict equality and null/undefined cases
-  if (value1 === value2) {
-    return true;
-  }
-
-  // If either value is null or undefined and they're not strictly equal, return false
-  if (value1 == null || value2 == null) {
-    return false;
-  }
-
-  // Handle different types
-  if (typeof value1 !== typeof value2) {
-    return false;
-  }
-
-  // Handle dates
-  if (value1 instanceof Date && value2 instanceof Date) {
-    return value1.getTime() === value2.getTime();
-  }
-
-  // Handle arrays
-  if (Array.isArray(value1) && Array.isArray(value2)) {
-    if (value1.length !== value2.length) {
-      return false;
-    }
-
-    for (let i = 0; i < value1.length; i++) {
-      if (!deepEqual(value1[i], value2[i])) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  // Handle objects
-  if (typeof value1 === 'object' && typeof value2 === 'object') {
-    const keys1 = Object.keys(value1);
-    const keys2 = Object.keys(value2);
-
-    if (keys1.length !== keys2.length) {
-      return false;
-    }
-
-    for (const key of keys1) {
-      if (!keys2.includes(key)) {
-        return false;
-      }
-
-      if (!deepEqual(value1[key], value2[key])) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  return false;
-}

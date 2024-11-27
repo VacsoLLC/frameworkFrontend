@@ -79,9 +79,9 @@ export default function Search() {
     args: {
       query: searchQuery,
     },
-    skip: !searchQuery,
+    enabled: searchQuery ? true : false,
     reload: searchTrigger,
-    queueing: true,
+
     timeout: 5000,
   });
 

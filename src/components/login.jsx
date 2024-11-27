@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 
-import {callBackend, clearCache} from '../lib/usebackend.js';
+import {callBackend, useBackend, clearCache} from '../lib/usebackend.js';
 
 import useUserStore from '../stores/user.js';
 import {Button} from '../components/ui/button';
@@ -13,7 +13,17 @@ import {Dialog, DialogContent, DialogTitle} from './ui/dialog.jsx';
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [ssoList, setSSOList] = useState(null);
+  const [ssoList2, setSSOList] = useState(null);
+
+  const [ssoList] = useBackend({
+    packageName: 'core',
+    className: 'saml',
+    methodName: 'list',
+    cache: true,
+    auth: false,
+  });
+
+  //const ssoList = ssoList3?.data;
 
   // const toast = useUserStore((state) => state.toast);
   const {toast: shadToast} = useToast();
@@ -28,26 +38,6 @@ export default function LoginModal({children}) {
   useEffect(() => {
     // We used to just use authenticated directly for the open={} on the popup, but it caused bugs. This is a workaround.
     setOpen(!authenticated);
-  }, [authenticated]);
-
-  useEffect(() => {
-    const fetchSSOList = async () => {
-      if (!authenticated) {
-        console.log('SSO Start');
-        const response = await callBackend({
-          packageName: 'core',
-          className: 'saml',
-          methodName: 'list',
-          cache: true,
-          auth: false,
-        });
-        console.log('SSO List:', response.data);
-        if (response.data.length > 0) {
-          setSSOList(response.data);
-        }
-      }
-    };
-    fetchSSOList();
   }, [authenticated]);
 
   const onLogin = async (e) => {
@@ -136,7 +126,7 @@ export default function LoginModal({children}) {
                   </Button>
                 </div>
               </form>
-              {ssoList?.length && (
+              {ssoList?.data?.length && (
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t" />
@@ -149,8 +139,8 @@ export default function LoginModal({children}) {
                 </div>
               )}
               <div className="space-y-4">
-                {ssoList?.length &&
-                  ssoList.map((sso) => (
+                {ssoList?.data?.length &&
+                  ssoList?.data.map((sso) => (
                     <Button
                       variant="outline"
                       className="w-full"

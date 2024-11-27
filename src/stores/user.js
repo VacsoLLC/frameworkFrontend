@@ -2,11 +2,11 @@
 import {create} from 'zustand';
 import {jwtDecode} from 'jwt-decode';
 import {persist} from 'zustand/middleware';
-import {clearCache} from '../lib/usebackend';
 
 const useUserStore = create(
   persist(
     (set, get) => ({
+      queryClient: null,
       token: null,
       tokenFields: {},
       authenticated: false,
@@ -24,6 +24,13 @@ const useUserStore = create(
       },
       toast: () => {},
       setToast: (toast) => set({toast}),
+      setQueryClient: (queryClient) => set({queryClient}),
+      clearCache: () => {
+        const queryClient = get().queryClient;
+        if (queryClient) {
+          queryClient.clear();
+        }
+      },
       setDefault: () => {
         set({
           token: null,
@@ -43,14 +50,15 @@ const useUserStore = create(
             authenticated: !isExpired,
             userId: decodedToken.id,
           });
-          clearCache();
+
+          get().clearCache();
         } catch (error) {
           console.error('Failed to decode token', error);
           get().setDefault();
         }
       },
       logout: () => {
-        clearCache();
+        get().clearCache();
         get().setDefault();
       },
       isAuthenticated: () => {

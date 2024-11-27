@@ -1,7 +1,6 @@
 // api.js
 import useUserStore from '../stores/user.js';
 
-let globalCache = {};
 class API {
   constructor() {}
 
@@ -14,7 +13,6 @@ class API {
     if (isAuthenticated) return;
 
     console.log('Not authenticated, waiting for authentication...');
-    this.clearCache();
 
     return new Promise((resolve) => {
       const unsubscribe = useUserStore.subscribe(
@@ -94,7 +92,7 @@ class API {
 
         if (response.status === 401) {
           useUserStore.getState().logout();
-          this.clearCache();
+
           console.log(`Received 401, Waiting for re-authentication... `);
           continue;
         }
@@ -128,10 +126,6 @@ class API {
           }
         }
 
-        if (globalCache[url]) {
-          delete globalCache[url];
-        }
-
         return {
           ok: response.ok,
           data: data.data,
@@ -150,71 +144,6 @@ class API {
         throw new Error(`${error.message}`);
       }
     }
-  }
-
-  getCached(url, ttl) {
-    const cachedItem = globalCache[url];
-    if (cachedItem && Date.now() - cachedItem.timestamp < ttl) {
-      console.log('Cache Hit!', url, cachedItem.data);
-      return JSON.parse(JSON.stringify(cachedItem.data));
-    }
-    console.log('Cache Miss!', url);
-    return null;
-  }
-
-  updateCache(url, data) {
-    globalCache[url] = {
-      data: JSON.parse(JSON.stringify(data)),
-      timestamp: Date.now(),
-    };
-  }
-
-  /**
-   * Fetch data from the API with caching
-   * @param {string} url - The URL to fetch data from
-   * @param {object} options - The options for the request
-   * @param {number} ttl - The time-to-live for the cache in milliseconds
-   * @param {boolean} auth - Whether to wait for authentication
-   * @param {boolean} suppressDialog - Whether to suppress error dialogs
-   * @param {number} timeoutMs - The timeout in milliseconds
-   * @returns {Promise} - A promise that resolves to the fetched or cached data
-   * @throws {Error} - Throws an error if the fetch fails or times out
-   */
-  async fetchCached(
-    url,
-    options = {},
-    ttl = 1000 * 60 * 60,
-    auth = true,
-    suppressDialog = false,
-    timeoutMs = 30000,
-  ) {
-    const cachedData = this.getCached(url, ttl);
-    if (cachedData) {
-      console.log('Cache hit', url);
-      return Promise.resolve(cachedData);
-    }
-
-    console.log('Cache miss', url);
-
-    const response = await this.fetch(
-      url,
-      options,
-      auth,
-      suppressDialog,
-      timeoutMs,
-    );
-
-    if (response.ok) {
-      this.updateCache(url, response);
-      return response;
-    } else {
-      throw new Error(`Fetch failed with status: ${response.status}`);
-    }
-  }
-
-  clearCache() {
-    console.log('Clearing cache', this);
-    globalCache = {};
   }
 
   /**
@@ -244,7 +173,7 @@ class API {
       if (!response.ok) {
         if (response.status === 401) {
           useUserStore.getState().logout();
-          this.clearCache();
+
           throw new Error('Authentication required');
         }
 
@@ -289,7 +218,7 @@ class API {
       if (!response.ok) {
         if (response.status === 401) {
           useUserStore.getState().logout();
-          this.clearCache();
+
           throw new Error('Authentication required');
         }
         throw new Error(`HTTP error! status: ${response.status}`);

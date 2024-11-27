@@ -7,47 +7,17 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs.jsx';
 import {useQueryState} from 'nuqs';
 
 export default function Related({db, table, recordId, reload, forceReload}) {
-  const [tables, loading] = useBackend({
+  const [tables2, loading] = useBackend({
     packageName: db,
     className: table,
     methodName: 'childrenGet',
     cache: true,
-    filter: (data) => prepTables(data),
     reload,
   });
 
+  const tables = tables2 ? prepTables({tables2, db, table, recordId}) : null;
+
   const [tabName, setTabName] = useQueryState('tabName');
-
-  const prepTables = (response) => {
-    const tablesTemp = [...response.data]; // copy the cached response since we're going to modify it.
-
-    for (const childTable of tablesTemp) {
-      for (const [columna, columnb] of Object.entries(childTable.columnmap)) {
-        if (!childTable.where) {
-          childTable.where = [];
-        }
-        let right = '';
-        switch (columnb) {
-          case 'id':
-            right = recordId;
-            break;
-          case 'db':
-            right = db;
-            break;
-          case 'table':
-            right = table;
-            break;
-          default:
-            right = recordId;
-            break;
-        }
-
-        childTable.where.push({[columna]: right});
-      }
-    }
-
-    return tablesTemp;
-  };
 
   if (loading) {
     return <></>;
@@ -113,6 +83,37 @@ export default function Related({db, table, recordId, reload, forceReload}) {
       ) : null}
     </Tabs>
   );
+}
+
+function prepTables({tables2: response, db, table, recordId}) {
+  const tablesTemp = [...response.data]; // copy the cached response since we're going to modify it.
+
+  for (const childTable of tablesTemp) {
+    for (const [columna, columnb] of Object.entries(childTable.columnmap)) {
+      if (!childTable.where) {
+        childTable.where = [];
+      }
+      let right = '';
+      switch (columnb) {
+        case 'id':
+          right = recordId;
+          break;
+        case 'db':
+          right = db;
+          break;
+        case 'table':
+          right = table;
+          break;
+        default:
+          right = recordId;
+          break;
+      }
+
+      childTable.where.push({[columna]: right});
+    }
+  }
+
+  return tablesTemp;
 }
 
 function removeUrlParams(paramsToRemove) {
