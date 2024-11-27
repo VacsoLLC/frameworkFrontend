@@ -7,7 +7,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs.jsx';
 import {useQueryState} from 'nuqs';
 
 export default function Related({db, table, recordId, reload, forceReload}) {
-  const [tables2, loading] = useBackend({
+  const [tablesRaw, loading] = useBackend({
     packageName: db,
     className: table,
     methodName: 'childrenGet',
@@ -15,7 +15,9 @@ export default function Related({db, table, recordId, reload, forceReload}) {
     reload,
   });
 
-  const tables = tables2 ? prepTables({tables2, db, table, recordId}) : null;
+  const tables = tablesRaw
+    ? prepTables({tablesRaw, db, table, recordId})
+    : null;
 
   const [tabName, setTabName] = useQueryState('tabName');
 
@@ -85,8 +87,8 @@ export default function Related({db, table, recordId, reload, forceReload}) {
   );
 }
 
-function prepTables({tables2: response, db, table, recordId}) {
-  const tablesTemp = [...response.data]; // copy the cached response since we're going to modify it.
+function prepTables({tablesRaw, db, table, recordId}) {
+  const tablesTemp = [...tablesRaw.data]; // copy the cached response since we're going to modify it.
 
   for (const childTable of tablesTemp) {
     for (const [columna, columnb] of Object.entries(childTable.columnmap)) {
