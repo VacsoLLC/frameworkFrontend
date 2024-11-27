@@ -13,7 +13,6 @@ import {Dialog, DialogContent, DialogTitle} from './ui/dialog.jsx';
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [ssoList2, setSSOList] = useState(null);
 
   const [ssoList] = useBackend({
     packageName: 'core',
@@ -23,9 +22,6 @@ export default function LoginModal({children}) {
     auth: false,
   });
 
-  //const ssoList = ssoList3?.data;
-
-  // const toast = useUserStore((state) => state.toast);
   const {toast: shadToast} = useToast();
 
   const setToken = useUserStore((state) => state.setToken);
@@ -90,6 +86,7 @@ export default function LoginModal({children}) {
   const handleSumbmit = (e) => {
     onLogin(e);
   };
+
   return (
     <>
       <Dialog open={open} onOpenChange={() => {}}>
