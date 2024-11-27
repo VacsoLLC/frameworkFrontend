@@ -45,7 +45,7 @@ export default function Record({
       id: recordId,
     },
     reload,
-    skip: newRecord,
+    enabled: !newRecord,
   });
 
   const [record, recordLoading] = useBackend({
@@ -54,7 +54,7 @@ export default function Record({
     methodName: 'recordGet',
     recordId,
     reload,
-    skip: newRecord,
+    enabled: !newRecord,
   });
 
   useEffect(() => {
