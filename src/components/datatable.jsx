@@ -207,7 +207,7 @@ export default function DataTableExtended({
             ? 'ASC'
             : 'DESC'
           : null;
-        console.log('tripptest666', currentSortField, currentSortOrder);
+
         return (
           <div className="flex items-center justify-between p-0">
             <div className="text-black">{settings.friendlyName}</div>
