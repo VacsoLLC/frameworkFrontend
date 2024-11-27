@@ -19,14 +19,11 @@ import {
 
 export default function Root({views}) {
   const navigate = useNavigate();
-  const userMenu = useRef(null);
-  //const [newItems, setNewItems] = useState([]);
   const logout = useUserStore((state) => state.logout);
   const userId = useUserStore((state) => state.userId);
   const setToast = useUserStore((state) => state.setToast);
   const {toast: shadToast} = useToast();
   const authenticated = useUserStore((state) => state.authenticated);
-  const toast = useRef(null);
   const errorMessage = useUserStore((state) => state.errorMessage);
   const clearErrorMessage = useUserStore((state) => state.clearErrorMessage);
 
@@ -36,6 +33,7 @@ export default function Root({views}) {
     methodName: 'getAllMenuItems',
     enabled: authenticated,
     args: {authenticated}, // getAllMenuItems doesn't take any arguments. But this forces a data refresh when the user logs in or out.
+    cache: true,
   });
 
   const menuItems =
