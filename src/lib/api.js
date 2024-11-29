@@ -128,8 +128,7 @@ class API {
 
         return {
           ok: response.ok,
-          data: data.data,
-          messages: data.messages,
+          ...data,
         };
       } catch (error) {
         if (error.message === 'Request timed out') {

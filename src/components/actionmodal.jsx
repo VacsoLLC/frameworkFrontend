@@ -68,7 +68,7 @@ export default function ActionModal({
           }
         }
 
-        await callBackend({
+        const response = await callBackend({
           packageName: db,
           className: table,
           methodName: button.id,
@@ -84,6 +84,10 @@ export default function ActionModal({
             detail: `${button.label} completed successfully`,
             life: 3000,
           });
+        }
+
+        if (response?.navigate) {
+          navigate(response?.navigate);
         }
 
         await closeDialog();
