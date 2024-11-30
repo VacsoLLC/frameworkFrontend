@@ -8,7 +8,14 @@ import {Input} from '../components/ui/input';
 import {Label} from '../components/ui/label';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';
-import {Dialog, DialogContent, DialogTitle} from './ui/dialog.jsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from './ui/dialog.jsx';
+
+import {VisuallyHidden} from '@radix-ui/react-visually-hidden';
 
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
@@ -98,6 +105,9 @@ export default function LoginModal({children}) {
           <DialogTitle>
             <div className="text-2xl font-bold text-center mb-0">Login</div>
           </DialogTitle>
+          <DialogDescription className="text-center">
+            <VisuallyHidden asChild>Login to continue</VisuallyHidden>
+          </DialogDescription>
           <div className="flex justify-center">
             <div className="w-96 p-4">
               <form onSubmit={handleSumbmit}>
@@ -107,6 +117,7 @@ export default function LoginModal({children}) {
                     <Input
                       id="email"
                       type="email"
+                      autoComplete="username"
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
@@ -115,6 +126,7 @@ export default function LoginModal({children}) {
                     <Input
                       id="password"
                       type="password"
+                      autoComplete="current-password"
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
