@@ -139,7 +139,7 @@ function buildMenu(items, navigate, location) {
 
     // If it has children, process them first
     if (items[item].children && Object.keys(items[item].children).length > 0) {
-      itemoutput.items = buildMenu(items[item].children, navigate);
+      itemoutput.items = buildMenu(items[item].children, navigate, location);
     }
 
     itemoutput.label = items[item].label;
@@ -163,6 +163,10 @@ function buildMenu(items, navigate, location) {
     if (items[item].icon) {
       itemoutput.icon = items[item].icon;
     }
+
+    itemoutput.isActive = location.search.includes(
+      encodeURIComponent(items[item].label),
+    );
 
     output.push(itemoutput);
   }

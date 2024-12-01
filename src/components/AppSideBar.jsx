@@ -92,6 +92,7 @@ export function AppSidebar({navItems, onSearch, userItems}) {
                               <SidebarMenuSubButton
                                 asChild
                                 className="w-full hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                                isActive={subItem.isActive}
                               >
                                 <a
                                   onClick={(e) => {
