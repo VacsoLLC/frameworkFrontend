@@ -1,5 +1,5 @@
 import {useRef, useEffect, startTransition} from 'react';
-import {Outlet} from 'react-router-dom';
+import {Outlet, useLocation} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
 import {useBackend} from '../lib/usebackend.js';
 import Login from '../components/login.jsx';
@@ -16,11 +16,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from '../components/ui/dialog.jsx';
-
+import {AppSidebar} from '../components/AppSideBar.jsx';
+import {SidebarInset, SidebarProvider} from '../components/ui/sidebar.jsx';
 export default function Root({views}) {
   const navigate = useNavigate();
+  const location = useLocation();
   const logout = useUserStore((state) => state.logout);
-  const userId = useUserStore((state) => state.userId);
+  const userId = useUserStore((state) => {
+    console.log(state, 'state');
+    return state.userId;
+  });
   const setToast = useUserStore((state) => state.setToast);
   const {toast: shadToast} = useToast();
   const authenticated = useUserStore((state) => state.authenticated);
@@ -37,7 +42,7 @@ export default function Root({views}) {
   });
 
   const menuItems =
-    menuRaw && authenticated ? buildMenu(menuRaw.data, navigate) : [];
+    menuRaw && authenticated ? buildMenu(menuRaw.data, navigate, location) : [];
 
   const sendToast = (toastObject) => {
     console.log(toastObject, 'toast');
@@ -101,20 +106,30 @@ export default function Root({views}) {
         </DialogContent>
       </Dialog>
       <Toaster />
-      <TopNavbar
+      {/* <TopNavbar
         navItems={menuItems}
         userItems={userItems}
         onSearch={(val) => navigate(`/search?value=${val}`)}
-      />
-
-      <Login>
-        <Outlet />
-      </Login>
+      /> */}
+      <SidebarProvider>
+        <div className="flex h-screen overflow-hidden">
+          <AppSidebar
+            navItems={menuItems}
+            onSearch={(val) => navigate(`/search?value=${val}`)}
+            userItems={userItems}
+          />
+          <SidebarInset className="h-full w-full overflow-auto">
+            <Login>
+              <Outlet />
+            </Login>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
     </div>
   );
 }
 
-function buildMenu(items, navigate) {
+function buildMenu(items, navigate, location) {
   let output = [];
 
   for (const item of Object.keys(items).sort(
