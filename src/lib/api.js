@@ -14,10 +14,20 @@ class API {
 
     console.log('Not authenticated, waiting for authentication...');
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const unsubscribe = useUserStore.subscribe(
         (store) => {
+          const timer = setTimeout(
+            () => {
+              console.log('Timeout waiting for authentication');
+              unsubscribe();
+              reject(new Error('Timeout waiting for authentication'));
+            },
+            1000 * 60 * 2,
+          ); // 2 minutes
+
           if (store.authenticated) {
+            clearTimeout(timer);
             unsubscribe();
             resolve();
           }

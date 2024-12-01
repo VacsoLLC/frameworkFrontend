@@ -3,6 +3,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import CreateRecordButton from './buttons/createrecord.jsx';
 import {useBackend} from '../lib/usebackend.js';
 import fields from './fields';
+import useUserStore from '../stores/user.js';
 
 import {useQueryState, parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
 
@@ -105,6 +106,7 @@ export default function DataTableExtended({
   child = false, // is this a child table?
   childWhere = [],
 }) {
+  const authenticated = useUserStore((state) => state.authenticated);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -163,6 +165,7 @@ export default function DataTableExtended({
       limit,
       offset: (page - 1) * limit,
       returnCount: true,
+      authenticated,
     },
     supressDialog: false,
     reload,
