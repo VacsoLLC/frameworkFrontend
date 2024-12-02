@@ -73,13 +73,12 @@ export function AppSidebar({navItems, onSearch, userItems, userEmail}) {
             {navItems.map((item, index) => (
               <React.Fragment key={item.label}>
                 {item.items ? (
-                  <Collapsible defaultOpen={true} className="group/collapsible">
+                  <Collapsible defaultOpen className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="w-full hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
                           <CustomIcon name={item.icon} /> {item.label}
-                          <ChevronDown className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                          <ChevronRight className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                          <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
