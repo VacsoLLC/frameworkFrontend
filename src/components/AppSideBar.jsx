@@ -38,7 +38,7 @@ import {
 } from './ui/dropdown-menu';
 import {DropdownMenuItem} from '@radix-ui/react-dropdown-menu';
 
-export function AppSidebar({navItems, onSearch, userItems}) {
+export function AppSidebar({navItems, onSearch, userItems, userEmail}) {
   return (
     <Sidebar className="flex-shrink-0">
       <div>
@@ -73,10 +73,7 @@ export function AppSidebar({navItems, onSearch, userItems}) {
             {navItems.map((item, index) => (
               <React.Fragment key={item.label}>
                 {item.items ? (
-                  <Collapsible
-                    defaultOpen={index === 1}
-                    className="group/collapsible"
-                  >
+                  <Collapsible defaultOpen={true} className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="w-full hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
@@ -141,7 +138,7 @@ export function AppSidebar({navItems, onSearch, userItems}) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> Account
+                  <User2 /> {userEmail ?? `Account`}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

@@ -23,14 +23,15 @@ export default function Root({views}) {
   const location = useLocation();
   const logout = useUserStore((state) => state.logout);
   const userId = useUserStore((state) => {
-    console.log(state, 'state');
     return state.userId;
   });
   const setToast = useUserStore((state) => state.setToast);
+  const email = useUserStore((state) => state.email)
   const {toast: shadToast} = useToast();
   const authenticated = useUserStore((state) => state.authenticated);
   const errorMessage = useUserStore((state) => state.errorMessage);
   const clearErrorMessage = useUserStore((state) => state.clearErrorMessage);
+  console.log(email)
 
   const [menuRaw] = useBackend({
     packageName: 'core',
@@ -112,18 +113,17 @@ export default function Root({views}) {
         onSearch={(val) => navigate(`/search?value=${val}`)}
       /> */}
       <SidebarProvider>
-        <div className="flex h-screen overflow-hidden">
           <AppSidebar
             navItems={menuItems}
             onSearch={(val) => navigate(`/search?value=${val}`)}
             userItems={userItems}
+            userEmail={email}
           />
-          <SidebarInset className="h-full w-full overflow-auto">
+          <SidebarInset>
             <Login>
               <Outlet />
             </Login>
           </SidebarInset>
-        </div>
       </SidebarProvider>
     </div>
   );
