@@ -8,7 +8,6 @@ const useUserStore = create(
     (set, get) => ({
       queryClient: null,
       token: null,
-      email: null,
       tokenFields: {},
       authenticated: false,
       errorMessage: null,
@@ -21,8 +20,6 @@ const useUserStore = create(
           for (const request of get().pendingRequests) {
             request();
           }
-        } else {
-          set({email: null})
         }
       },
       toast: () => {},
@@ -87,9 +84,6 @@ const useUserStore = create(
         get().logout();
         return false;
       },
-      setEmail:(email) => {
-        set({email})
-      }
     }),
     {name: 'user'},
   ),

@@ -4,7 +4,6 @@ import {useNavigate} from 'react-router-dom';
 import {useBackend} from '../lib/usebackend.js';
 import Login from '../components/login.jsx';
 import useUserStore from '../stores/user.js';
-import TopNavbar from '../components/AppBar.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from '../components/ui/toaster.jsx';
 import {Button} from '../components/ui/button.jsx';
@@ -106,11 +105,7 @@ export default function Root({views}) {
         </DialogContent>
       </Dialog>
       <Toaster />
-      {/* <TopNavbar
-        navItems={menuItems}
-        userItems={userItems}
-        onSearch={(val) => navigate(`/search?value=${val}`)}
-      /> */}
+
       <SidebarProvider>
         <AppSidebar
           navItems={menuItems}
