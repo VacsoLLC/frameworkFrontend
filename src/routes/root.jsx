@@ -1,10 +1,9 @@
 import {useRef, useEffect, startTransition} from 'react';
-import {Outlet} from 'react-router-dom';
+import {Outlet, useLocation} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
 import {useBackend} from '../lib/usebackend.js';
 import Login from '../components/login.jsx';
 import useUserStore from '../stores/user.js';
-import TopNavbar from '../components/AppBar.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from '../components/ui/toaster.jsx';
 import {Button} from '../components/ui/button.jsx';
@@ -16,12 +15,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from '../components/ui/dialog.jsx';
-
+import {AppSidebar} from '../components/AppSideBar.jsx';
+import {SidebarInset, SidebarProvider} from '../components/ui/sidebar.jsx';
 export default function Root({views}) {
   const navigate = useNavigate();
+  const location = useLocation();
   const logout = useUserStore((state) => state.logout);
-  const userId = useUserStore((state) => state.userId);
+  const userId = useUserStore((state) => {
+    return state.userId;
+  });
   const setToast = useUserStore((state) => state.setToast);
+
   const {toast: shadToast} = useToast();
   const authenticated = useUserStore((state) => state.authenticated);
   const errorMessage = useUserStore((state) => state.errorMessage);
@@ -37,7 +41,7 @@ export default function Root({views}) {
   });
 
   const menuItems =
-    menuRaw && authenticated ? buildMenu(menuRaw.data, navigate) : [];
+    menuRaw && authenticated ? buildMenu(menuRaw.data, navigate, location) : [];
 
   const sendToast = (toastObject) => {
     console.log(toastObject, 'toast');
@@ -101,20 +105,24 @@ export default function Root({views}) {
         </DialogContent>
       </Dialog>
       <Toaster />
-      <TopNavbar
-        navItems={menuItems}
-        userItems={userItems}
-        onSearch={(val) => navigate(`/search?value=${val}`)}
-      />
 
-      <Login>
-        <Outlet />
-      </Login>
+      <SidebarProvider>
+        <AppSidebar
+          navItems={menuItems}
+          onSearch={(val) => navigate(`/search?value=${val}`)}
+          userItems={userItems}
+        />
+        <SidebarInset>
+          <Login>
+            <Outlet />
+          </Login>
+        </SidebarInset>
+      </SidebarProvider>
     </div>
   );
 }
 
-function buildMenu(items, navigate) {
+function buildMenu(items, navigate, location) {
   let output = [];
 
   for (const item of Object.keys(items).sort(
@@ -124,7 +132,7 @@ function buildMenu(items, navigate) {
 
     // If it has children, process them first
     if (items[item].children && Object.keys(items[item].children).length > 0) {
-      itemoutput.items = buildMenu(items[item].children, navigate);
+      itemoutput.items = buildMenu(items[item].children, navigate, location);
     }
 
     itemoutput.label = items[item].label;
@@ -148,6 +156,10 @@ function buildMenu(items, navigate) {
     if (items[item].icon) {
       itemoutput.icon = items[item].icon;
     }
+
+    itemoutput.isActive = location.search.includes(
+      encodeURIComponent(items[item].label),
+    );
 
     output.push(itemoutput);
   }

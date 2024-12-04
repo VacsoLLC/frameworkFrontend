@@ -328,7 +328,7 @@ export default function DataTableExtended({
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-[calc(100vh-3.1rem)] p-1">
+    <div className="flex flex-col h-screen max-h-[calc(100vh-3.1rem)] p-1 w-full">
       {header}
       <div className="flex flex-col flex-grow min-h-0 border rounded-md mt-1">
         <Table>
