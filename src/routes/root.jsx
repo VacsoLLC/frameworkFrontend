@@ -26,12 +26,11 @@ export default function Root({views}) {
     return state.userId;
   });
   const setToast = useUserStore((state) => state.setToast);
-  const email = useUserStore((state) => state.email)
+
   const {toast: shadToast} = useToast();
   const authenticated = useUserStore((state) => state.authenticated);
   const errorMessage = useUserStore((state) => state.errorMessage);
   const clearErrorMessage = useUserStore((state) => state.clearErrorMessage);
-  console.log(email)
 
   const [menuRaw] = useBackend({
     packageName: 'core',
@@ -113,17 +112,16 @@ export default function Root({views}) {
         onSearch={(val) => navigate(`/search?value=${val}`)}
       /> */}
       <SidebarProvider>
-          <AppSidebar
-            navItems={menuItems}
-            onSearch={(val) => navigate(`/search?value=${val}`)}
-            userItems={userItems}
-            userEmail={email}
-          />
-          <SidebarInset>
-            <Login>
-              <Outlet />
-            </Login>
-          </SidebarInset>
+        <AppSidebar
+          navItems={menuItems}
+          onSearch={(val) => navigate(`/search?value=${val}`)}
+          userItems={userItems}
+        />
+        <SidebarInset>
+          <Login>
+            <Outlet />
+          </Login>
+        </SidebarInset>
       </SidebarProvider>
     </div>
   );

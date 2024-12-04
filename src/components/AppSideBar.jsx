@@ -37,8 +37,11 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import {DropdownMenuItem} from '@radix-ui/react-dropdown-menu';
+import useUserStore from '../stores/user.js';
 
-export function AppSidebar({navItems, onSearch, userItems, userEmail}) {
+export function AppSidebar({navItems, onSearch, userItems}) {
+  const user = useUserStore((state) => state.tokenFields);
+
   return (
     <Sidebar className="flex-shrink-0">
       <div>
@@ -120,7 +123,7 @@ export function AppSidebar({navItems, onSearch, userItems, userEmail}) {
                           cursor: 'pointer',
                         }}
                       >
-                        {item.label}
+                        <CustomIcon name={item.icon} /> {item.label}
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -137,7 +140,7 @@ export function AppSidebar({navItems, onSearch, userItems, userEmail}) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {userEmail ?? `Account`}
+                  <User2 /> {user.name ?? `Account`}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

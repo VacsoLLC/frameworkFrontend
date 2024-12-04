@@ -19,6 +19,7 @@ export default function ViewRecord() {
       recordId={parseInt(recordId)}
       reload={reload}
       forceReload={forceReload}
+      showHeader={true}
     />
   );
 }
