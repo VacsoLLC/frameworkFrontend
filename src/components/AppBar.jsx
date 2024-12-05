@@ -1,3 +1,5 @@
+// not currently used... may bring back as optional top bar vs side bar... but right now 100% sidebar.
+
 import * as React from 'react';
 import {ChevronDown, Search, User} from 'lucide-react';
 

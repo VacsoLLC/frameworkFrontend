@@ -32,6 +32,7 @@ export default function LoginModal({children}) {
   const {toast: shadToast} = useToast();
 
   const setToken = useUserStore((state) => state.setToken);
+
   const authenticated = useUserStore((state) => state.authenticated);
 
   const [open, setOpen] = useState(false);
@@ -61,6 +62,7 @@ export default function LoginModal({children}) {
       const data = response.data;
       if (data && data.token) {
         setToken(data.token);
+
         shadToast({
           title: 'Success',
           description: 'Login successful',
