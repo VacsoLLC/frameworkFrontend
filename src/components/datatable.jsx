@@ -326,9 +326,9 @@ export default function DataTableExtended({
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-[calc(100vh-3.1rem)] p-1 w-full">
+    <div className="flex flex-col h-screen max-h-[calc(100vh-3.1rem)] p-1">
       {header}
-      <div className="flex flex-col flex-grow min-h-0 border rounded-md mt-1">
+      <div className="flex flex-col flex-grow min-h-0 border rounded-md mt-1 w-full max-w-full">
         <Table>
           <TableHeader>
             {shadTable.getHeaderGroups().map((headerGroup) => (

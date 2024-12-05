@@ -112,7 +112,7 @@ export default function Root({views}) {
           onSearch={(val) => navigate(`/search?value=${val}`)}
           userItems={userItems}
         />
-        <SidebarInset>
+        <SidebarInset className="flex flex-col flex-grow min-h-0 w-full max-w-full overflow-hidden">
           <Login>
             <Outlet />
           </Login>
