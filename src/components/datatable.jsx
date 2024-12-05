@@ -106,7 +106,6 @@ export default function DataTableExtended({
   child = false, // is this a child table?
   childWhere = [],
 }) {
-  const authenticated = useUserStore((state) => state.authenticated);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -165,7 +164,6 @@ export default function DataTableExtended({
       limit,
       offset: (page - 1) * limit,
       returnCount: true,
-      authenticated,
     },
     supressDialog: false,
     reload,

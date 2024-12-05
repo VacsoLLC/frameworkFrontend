@@ -43,6 +43,7 @@ export function useBackend({
   auth = true,
 }) {
   const [previousReload, setPreviousReload] = React.useState(reload);
+  const authenticated = useUserStore((state) => state.authenticated);
 
   const results = useQuery({
     enabled,
@@ -60,6 +61,7 @@ export function useBackend({
         supressDialog,
         timeout,
         auth,
+        authenticated,
       },
     ],
     queryFn: ({queryKey, signal}) => {
