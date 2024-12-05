@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from './ui/dialog.jsx';
 import {Button} from './ui/button.jsx';
+import {Loader2} from 'lucide-react';
 
 export default function ActionModal({
   show,
@@ -23,12 +24,15 @@ export default function ActionModal({
   forceReload,
   recordFormData,
   columns,
+  afterSubmit,
+  beforeSubmit,
   ...props
 }) {
   const toast = useUserStore((state) => state.toast);
   const [showDialog, setShowDialog] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (show && !button.inputs && !button.verify) {
@@ -60,6 +64,8 @@ export default function ActionModal({
       }
     } else {
       try {
+        beforeSubmit && beforeSubmit();
+        setLoading(true);
         for (const column in columns) {
           if (columns[column].columnType == 'datetime') {
             if (recordFormData[column]) {
@@ -104,6 +110,9 @@ export default function ActionModal({
           detail: `An error occurred: ${error.message}`,
           life: 5000,
         });
+      } finally {
+        afterSubmit && afterSubmit();
+        setLoading(false);
       }
     }
   };
@@ -132,8 +141,11 @@ export default function ActionModal({
                   className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
                   style={{width: '200px'}}
                 ></div>
-                <div className="flex-col-reverse">
-                  <Button onClick={onSubmit}>{button.label}</Button>
+                <div className="flex items-center">
+                  <Button onClick={onSubmit} disabled={loading}>
+                    {loading && <Loader2 className="animate-spin" />}
+                    {button.label}
+                  </Button>
                   <Button
                     onClick={closeDialog}
                     variant="secondary"
@@ -148,55 +160,5 @@ export default function ActionModal({
         )}
       </DialogContent>
     </Dialog>
-  );
-
-  return (
-    <>
-      <Dialog
-        header={button.label}
-        visible={showDialog}
-        onHide={closeDialog}
-        size="large"
-        style={{width: '1000px'}}
-        className=""
-      >
-        {button.verify && (
-          <>
-            {button.verify}
-            <br />
-            <br />
-          </>
-        )}
-        {(button.verify || button.inputs) && (
-          <>
-            <Form
-              schema={button.inputs}
-              formData={formData}
-              handleChange={handleChange}
-            >
-              <div className="field grid" key="submitbutton">
-                <div
-                  className="col-fixed mb-2 md:mb-0 nowrap align-content-end formLabel"
-                  style={{width: '200px'}}
-                ></div>
-                <div className="col">
-                  <Button
-                    label={button.label}
-                    className="mr-1 mb-1"
-                    onClick={onSubmit}
-                  />
-                  <Button
-                    label="Cancel"
-                    severity="secondary"
-                    className="mr-1 mb-1"
-                    onClick={closeDialog}
-                  />
-                </div>
-              </div>
-            </Form>
-          </>
-        )}
-      </Dialog>
-    </>
   );
 }

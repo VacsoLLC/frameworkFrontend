@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip.jsx';
+import {Loader2} from 'lucide-react';
 
 const COLOR_TO_VARIANT_MAP = {
   primary: 'default',
@@ -33,9 +34,12 @@ export default function ActionButton({
   className = '',
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [buttonsLoading, setButtonsLoading] = useState(false);
 
   const onClick = () => {
+    setButtonsLoading(true);
     setShowModal(true);
+    setButtonsLoading(false);
   };
 
   const onClose = () => {
@@ -70,6 +74,8 @@ export default function ActionButton({
         show={showModal}
         button={button}
         onClose={onClose}
+        beforeSubmit={() => setButtonsLoading(true)}
+        afterSubmit={() => setButtonsLoading(false)}
         reload={reload}
         forceReload={forceReload}
         recordFormData={formData}
@@ -79,11 +85,12 @@ export default function ActionButton({
         <Tooltip>
           <TooltipTrigger as="span" tabIndex={0}>
             <Button
-              disabled={button.disabled ? true : false}
+              disabled={(button.disabled ? true : false) || buttonsLoading}
               variant={COLOR_TO_VARIANT_MAP[button?.color] ?? 'default'}
               className={`mr-1 mb-1 ${className}`}
               onClick={onClick}
             >
+              {buttonsLoading && <Loader2 className="animate-spin" />}
               {button?.label}
             </Button>
           </TooltipTrigger>
