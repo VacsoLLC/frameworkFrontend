@@ -37,7 +37,7 @@ export function useBackend({
   recordId = false, // recordId is optional. If it is not provided, the method will be called without a recordId.
   args = {}, // arguments sent to the method
   timeout = 5000, // The timeout in milliseconds
-  supressDialog = true, // Whether to suppress error dialogs
+  supressDialog = false, // Whether to suppress error dialogs
   reload = 1, // if this value changes a refresh will be forced
   cache = false, // If true, the data will be cached for a long period. Normal data is only cached for 5 minutes, and gets auto refreshed based on a bunch of stuff.
   auth = true,
