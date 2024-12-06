@@ -6,10 +6,10 @@ export function SidebarToggle() {
 
   return (
     <SidebarTrigger
-      className={`absolute bottom-4 z-100 h-7 w-7 rounded-full border-2 bg-background transition-all ${
-        open ? '-right-4' : '-right-12'
+      className={`absolute bottom-3 z-100 h-6 w-6 rounded-full border-2 bg-background transition-all ${
+        open ? '-right-4' : '-right-7'
       }`}
-      icon={open ? <ChevronLeft /> : <ChevronRight />}
+      icon={open ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
     />
   );
 }
