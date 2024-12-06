@@ -222,22 +222,24 @@ export default function Record({
         <div className="flex flex-wrap">
           {!newRecord &&
             buttons?.data &&
-            Object.entries(buttons.data).map(([key, button]) => (
-              <>
-                <ActionButton
-                  button={button}
-                  key={key}
-                  db={db}
-                  table={table}
-                  recordId={recordId}
-                  forceReload={forceReload}
-                  reload={reload}
-                  formData={formData}
-                  columns={schema.data.schema}
-                />
-                {button.newLine && <div className="w-full" />}
-              </>
-            ))}
+            Object.entries(buttons.data).map(([key, button]) => {
+              return (
+                <>
+                  <ActionButton
+                    button={button}
+                    key={key}
+                    db={db}
+                    table={table}
+                    recordId={recordId}
+                    forceReload={forceReload}
+                    reload={reload}
+                    formData={formData}
+                    columns={schema.data.schema}
+                  />
+                  {button.newLine && <div className="w-full" />}
+                </>
+              );
+            })}
         </div>
       </Form>
     </div>
