@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip.jsx';
 import {Loader2} from 'lucide-react';
+import CustomIcon from '../CustomIcon.jsx';
 
 const COLOR_TO_VARIANT_MAP = {
   primary: 'default',
@@ -85,12 +86,16 @@ export default function ActionButton({
         <Tooltip>
           <TooltipTrigger as="span" tabIndex={0}>
             <Button
+              size="sm"
               disabled={(button.disabled ? true : false) || buttonsLoading}
               variant={COLOR_TO_VARIANT_MAP[button?.color] ?? 'default'}
               className={`mr-1 mb-1 ${className}`}
               onClick={onClick}
             >
               {buttonsLoading && <Loader2 className="animate-spin" />}
+              {button?.icon && (
+                <CustomIcon name={button.icon} className="m-0 p-0" />
+              )}
               {button?.label}
             </Button>
           </TooltipTrigger>

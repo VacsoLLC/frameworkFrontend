@@ -4,6 +4,7 @@ import CreateRecordButton from './buttons/createrecord.jsx';
 import {useBackend} from '../lib/usebackend.js';
 import fields from './fields';
 import useUserStore from '../stores/user.js';
+import ActionButton from './buttons/actionbutton.jsx';
 
 import {useQueryState, parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
 
@@ -169,6 +170,16 @@ export default function DataTableExtended({
     reload,
   });
 
+  const [buttons, buttonsLoading] = useBackend({
+    packageName: db,
+    className: table,
+    methodName: 'actionsGet',
+    args: {
+      type: 'table',
+    },
+    reload,
+  });
+
   const onFilterElementChange = (columnId, value, matchMode) => {
     console.log('Filter Changed!', columnId, value, matchMode);
 
@@ -270,7 +281,26 @@ export default function DataTableExtended({
         <span className="text-2xl text-900 font-bold ml-1">{tableName}</span>
       </div>
 
-      <div>
+      <div className="-mr-1 -mb-1">
+        {buttons?.data &&
+          Object.entries(buttons.data).map(([key, button]) => {
+            return (
+              <>
+                <ActionButton
+                  button={button}
+                  key={key}
+                  db={db}
+                  table={table}
+                  recordId={null}
+                  forceReload={forceReload}
+                  reload={reload}
+                  formData={null}
+                  columns={schema.data.schema}
+                />
+                {button.newLine && <div className="w-full" />}
+              </>
+            );
+          })}
         <CreateRecordButton
           db={db}
           table={table}
@@ -281,14 +311,13 @@ export default function DataTableExtended({
           }}
           where={child ? where : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
           closeOnCreate={closeOnCreate}
-          className="ml-1"
+          className="mr-1 mb-1"
         />
-
         <IconButton
           icon="RefreshCcw"
           tooltip="Refresh data in table"
           onClick={forceReload}
-          className="ml-1"
+          className="mr-1 mb-1"
         />
       </div>
     </div>

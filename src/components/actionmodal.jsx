@@ -87,7 +87,7 @@ export default function ActionModal({
           toast({
             severity: 'success',
             summary: 'Success',
-            detail: `${button.label} completed successfully`,
+            detail: `${button.label || 'Action'} completed successfully`,
             life: 3000,
           });
         }
