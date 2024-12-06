@@ -80,7 +80,7 @@ export default function ActionModal({
           methodName: button.id,
           recordId,
           args: {...formData, data: recordFormData},
-          supressDialog: true,
+          supressDialog: false,
         });
 
         if (button.showSuccess) {
