@@ -1,25 +1,49 @@
-import {Download} from 'lucide-react';
+import {Info} from 'lucide-react';
 import {api} from '../../lib/usebackend';
-import {Button} from '../ui/button';
+import FilePreview from '../FilePreview';
+import {Popover} from '../ui/popover';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 
-export function read(...args) {
-  return <pre>{args[0].value}</pre>;
+export function read(props) {
+  const {
+    value,
+    record: {id, image},
+  } = props;
+  return (
+    <div className="flex">
+      <pre>{value}</pre>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Info className="h-4 w-4 ml-2" />
+          </TooltipTrigger>
+          <TooltipContent side="bottom" align="center">
+            <FilePreview
+              onButtonClick={() => {}}
+              value={{fileName: value, recordId: id, isImage: image}}
+              hideNameAndDownload
+            />
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+  );
 }
 
-export function edit({formData, value, recordId}) {
+export function edit({formData, value, recordId, record}) {
   return (
-    <>
-      <div className="flex align-items-center">
-        <span className="mr-2">{value}</span>
-      </div>
-      <Button
-        onClick={(e) => {
-          e.preventDefault();
-          api.downloadFile(`/api/core/attachment/download/${recordId}`, value);
-        }}
-      >
-        <Download size={16} />
-      </Button>
-    </>
+    <FilePreview
+      onButtonClick={(e) => {
+        e.preventDefault();
+        api.downloadFile(`/api/core/attachment/download/${recordId}`, value);
+      }}
+      value={{fileName: value, recordId, isImage: record?.data?.image}}
+      fileType={'image'}
+    />
   );
 }

@@ -194,6 +194,7 @@ export default function Record({
         handleChange={handleChange}
         key={`${db}${table}${recordId}`}
         newRecord={newRecord}
+        record={record}
         recordId={recordId}
         onSubmit={(e) => {
           e.preventDefault();

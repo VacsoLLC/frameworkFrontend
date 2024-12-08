@@ -255,6 +255,7 @@ export default function DataTableExtended({
               value: value,
               valueFriendly: value,
               settings,
+              record: row?.original,
             })
           : value;
       },
