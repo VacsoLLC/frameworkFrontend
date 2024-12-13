@@ -14,23 +14,28 @@ export function read(props) {
     value,
     record: {id, image},
   } = props;
-  return (
-    <div className="flex">
-      <pre>{value}</pre>
+  if (image) {
+    return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <Info className="h-4 w-4 ml-2" />
-          </TooltipTrigger>
-          <TooltipContent side="bottom" align="center">
             <FilePreview
               onButtonClick={() => {}}
               value={{fileName: value, recordId: id, isImage: image}}
               hideNameAndDownload
+              showFullScreenButton={false}
             />
+          </TooltipTrigger>
+          <TooltipContent side="bottom" align="center">
+            <pre>{value}</pre>p
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+    );
+  }
+  return (
+    <div className="flex">
+      <pre>{value}</pre>
     </div>
   );
 }
