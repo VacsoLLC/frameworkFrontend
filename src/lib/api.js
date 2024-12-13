@@ -206,13 +206,7 @@ class API {
     }
   }
 
-  /**
-   * Initiates a file download from the specified URL using the bearer token for authentication
-   * @param {string} url - The URL to download the file from
-   * @param {string} filename - The suggested filename for the download (optional)
-   * @throws {Error} If the download fails or the user is not authenticated
-   */
-  async downloadFile(url, filename = null) {
+  async getWindowUrl(url, filename = null) {
     await this.waitForAuthentication();
     const token = useUserStore.getState().token;
 
@@ -252,6 +246,25 @@ class API {
 
       // Create a temporary URL for the Blob
       const windowUrl = window.URL.createObjectURL(blob);
+
+      return windowUrl;
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      useUserStore.getState().setErrorMessage(error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Initiates a file download from the specified URL using the bearer token for authentication
+   * @param {string} url - The URL to download the file from
+   * @param {string} filename - The suggested filename for the download (optional)
+   * @throws {Error} If the download fails or the user is not authenticated
+   */
+  async downloadFile(url, filename = null) {
+    // Create a temporary URL for the Blob
+    try {
+      const windowUrl = await this.getWindowUrl(url, filename);
 
       // Create a temporary anchor element to trigger the download
       const a = document.createElement('a');
