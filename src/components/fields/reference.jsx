@@ -176,6 +176,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
                 setModalSelectedValue(value);
               }}
               disableRowClick
+              saveState={false}
             />
           </div>
           <DialogFooter>

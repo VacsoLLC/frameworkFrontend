@@ -6,7 +6,8 @@ import fields from './fields';
 import useUserStore from '../stores/user.js';
 import ActionButton from './buttons/actionbutton.jsx';
 
-import {useQueryState, parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
+import {parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
+import useQueryState from '../hooks/usequerystate.js'; // Special useQueryState that has an enable/disable flag. When disabled, it's just a standard useState.
 
 import IconButton from './buttons/iconbutton.jsx';
 
@@ -111,6 +112,7 @@ export default function DataTableExtended({
   onRowSelect,
   disableRowClick = false,
   heightMode = 'full',
+  saveState = true,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -118,17 +120,24 @@ export default function DataTableExtended({
   const [sortOrder, setSortOrder] = useQueryState(
     'sortOrder',
     parseAsString.withDefault('DESC'),
+    saveState,
   );
 
   const [sortField, setSortField] = useQueryState(
     'sortField',
     parseAsString.withDefault('id'),
+    saveState,
   );
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [page, setPage] = useQueryState(
+    'page',
+    parseAsInteger.withDefault(1),
+    saveState,
+  );
 
   const [limit, setLimit] = useQueryState(
     'limit',
     parseAsInteger.withDefault(DEFAULT_LIMIT),
+    saveState,
   );
 
   const [schema] = useBackend({
@@ -143,6 +152,7 @@ export default function DataTableExtended({
     parseAsString.withDefault(
       location?.state?.tableHeader || schema?.data?.name,
     ),
+    saveState,
   );
 
   const [where, setWhereClause] = useQueryState(
@@ -150,6 +160,7 @@ export default function DataTableExtended({
     parseAsJson((tmp) => {
       return tmp;
     }).withDefault([]),
+    saveState,
   );
 
   const [filter, setFilter] = useQueryState(
@@ -157,6 +168,7 @@ export default function DataTableExtended({
     parseAsJson((tmp) => {
       return tmp;
     }).withDefault({}),
+    saveState,
   );
 
   const [rows, loading] = useBackend({
