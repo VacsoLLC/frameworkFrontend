@@ -22,6 +22,14 @@ import {Popover, PopoverContent, PopoverTrigger} from '../ui/popover';
 
 import {useBackend, callBackend} from '../../lib/usebackend.js';
 import IconButton from '../buttons/iconbutton.jsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog.jsx';
+import DataTableExtended from '../datatable.jsx';
 
 async function getDropDownOptions(settings, value) {
   if (settings.join) {
@@ -54,6 +62,10 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
   const navigate = useNavigate();
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [reload, setReload] = useState(1);
+
+  const [referenceModalOpen, setReferenceModalOpen] = useState(false);
+  const [modalSelectedValue, setModalSelectedValue] = useState(parseInt(value));
+
   console.log(`${columnId}: ${value} ${typeof value}`, dropdownOptions);
 
   const forceReload = () => {
@@ -148,7 +160,49 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           />
         </PopoverContent>
       </Popover>
-
+      <Dialog open={referenceModalOpen} onOpenChange={setReferenceModalOpen}>
+        <DialogContent className="min-w-[90vw] max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Select value</DialogTitle>
+          </DialogHeader>
+          <div className="flex-grow overflow-auto">
+            <DataTableExtended
+              db={settings.joinDb}
+              heightMode=""
+              showRadioButtons
+              table={settings.join}
+              selectedRow={parseInt(modalSelectedValue)}
+              onRowSelect={(value) => {
+                setModalSelectedValue(value);
+              }}
+              disableRowClick
+              saveState={false}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setReferenceModalOpen(false)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                handleChange(columnId, modalSelectedValue);
+                setReferenceModalOpen(false);
+              }}
+            >
+              Select
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <IconButton
+        icon="TextSearch"
+        onClick={() => setReferenceModalOpen(true)}
+        className="ml-1"
+        tooltip="Search for related record."
+      />
       <GoToReference
         db={settings.joinDb}
         table={settings.join}

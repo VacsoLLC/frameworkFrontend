@@ -6,7 +6,8 @@ import fields from './fields';
 import useUserStore from '../stores/user.js';
 import ActionButton from './buttons/actionbutton.jsx';
 
-import {useQueryState, parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
+import {parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
+import useQueryState from '../hooks/usequerystate.js'; // Special useQueryState that has an enable/disable flag. When disabled, it's just a standard useState.
 
 import IconButton from './buttons/iconbutton.jsx';
 
@@ -106,6 +107,12 @@ export default function DataTableExtended({
   forceReload,
   child = false, // is this a child table?
   childWhere = [],
+  showRadioButtons = false,
+  selectedRow,
+  onRowSelect,
+  disableRowClick = false,
+  heightMode = 'full',
+  saveState = true,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -113,17 +120,24 @@ export default function DataTableExtended({
   const [sortOrder, setSortOrder] = useQueryState(
     'sortOrder',
     parseAsString.withDefault('DESC'),
+    saveState,
   );
 
   const [sortField, setSortField] = useQueryState(
     'sortField',
     parseAsString.withDefault('id'),
+    saveState,
   );
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [page, setPage] = useQueryState(
+    'page',
+    parseAsInteger.withDefault(1),
+    saveState,
+  );
 
   const [limit, setLimit] = useQueryState(
     'limit',
     parseAsInteger.withDefault(DEFAULT_LIMIT),
+    saveState,
   );
 
   const [schema] = useBackend({
@@ -138,6 +152,7 @@ export default function DataTableExtended({
     parseAsString.withDefault(
       location?.state?.tableHeader || schema?.data?.name,
     ),
+    saveState,
   );
 
   const [where, setWhereClause] = useQueryState(
@@ -145,6 +160,7 @@ export default function DataTableExtended({
     parseAsJson((tmp) => {
       return tmp;
     }).withDefault([]),
+    saveState,
   );
 
   const [filter, setFilter] = useQueryState(
@@ -152,6 +168,7 @@ export default function DataTableExtended({
     parseAsJson((tmp) => {
       return tmp;
     }).withDefault({}),
+    saveState,
   );
 
   const [rows, loading] = useBackend({
@@ -204,64 +221,82 @@ export default function DataTableExtended({
     setSortOrder(order);
   };
 
-  const columns = Object.entries(schema?.data?.schema || {})
-    .filter(([columnId, settings]) => {
-      if (settings.join || settings.hidden || settings.hiddenList) return;
-      return true;
-    })
-    .sort(([, settingsA], [, settingsB]) => settingsA.order - settingsB.order)
-    .map(([columnId, settings]) => ({
-      accessorKey: columnId,
-      header: ({column}) => {
-        const currentSortField = sortField === column.id ? column.id : null;
-        const currentSortOrder = currentSortField
-          ? sortOrder === 'ASC'
-            ? 'ASC'
-            : 'DESC'
-          : null;
+  const columns = [
+    ...(showRadioButtons
+      ? [
+          {
+            id: 'selection',
+            header: () => null,
+            cell: ({row}) => (
+              <input
+                type="radio"
+                checked={selectedRow === row.original.id}
+                onChange={() => onRowSelect(row.original.id)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...Object.entries(schema?.data?.schema || {})
+      .filter(([columnId, settings]) => {
+        if (settings.join || settings.hidden || settings.hiddenList) return;
+        return true;
+      })
+      .sort(([, settingsA], [, settingsB]) => settingsA.order - settingsB.order)
+      .map(([columnId, settings]) => ({
+        accessorKey: columnId,
+        header: ({column}) => {
+          const currentSortField = sortField === column.id ? column.id : null;
+          const currentSortOrder = currentSortField
+            ? sortOrder === 'ASC'
+              ? 'ASC'
+              : 'DESC'
+            : null;
 
-        return (
-          <div className="flex items-center justify-between p-0">
-            <div className="text-black">{settings.friendlyName}</div>
-            <Button
-              variant={currentSortField ? 'outline' : 'ghost'}
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => {
-                onSortChange(
-                  column.id,
-                  currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
-                );
-              }}
-            >
-              <span className="sr-only">Open menu</span>
-              {currentSortOrder ? (
-                currentSortOrder === 'ASC' ? (
-                  <ChevronsUp className="h-4 w-4" />
+          return (
+            <div className="flex items-center justify-between p-0">
+              <div className="text-black">{settings.friendlyName}</div>
+              <Button
+                variant={currentSortField ? 'outline' : 'ghost'}
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => {
+                  onSortChange(
+                    column.id,
+                    currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
+                  );
+                }}
+              >
+                <span className="sr-only">Open menu</span>
+                {currentSortOrder ? (
+                  currentSortOrder === 'ASC' ? (
+                    <ChevronsUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronsDown className="h-4 w-4" />
+                  )
                 ) : (
-                  <ChevronsDown className="h-4 w-4" />
-                )
-              ) : (
-                <ChevronsUpDown className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-        );
-      },
-      cell: ({row}) => {
-        const value = row.getValue(columnId);
-        return fields[settings.fieldType]?.read
-          ? fields[settings.fieldType].read({
-              value: value,
-              valueFriendly: value,
-              settings,
-              record: row?.original,
-            })
-          : value;
-      },
-      enableSorting: true,
-      enableColumnFilter: true,
-    }));
+                  <ChevronsUpDown className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          );
+        },
+        cell: ({row}) => {
+          const value = row.getValue(columnId);
+          return fields[settings.fieldType]?.read
+            ? fields[settings.fieldType].read({
+                value: value,
+                valueFriendly: value,
+                settings,
+                record: row?.original,
+              })
+            : value;
+        },
+        enableSorting: true,
+        enableColumnFilter: true,
+      })),
+  ];
 
   const shadTable = useReactTable({
     data: rows?.data?.rows ?? [],
@@ -356,7 +391,9 @@ export default function DataTableExtended({
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-[calc(100vh-3.1rem)] p-1">
+    <div
+      className={`flex flex-col ${heightMode === 'full' ? 'h-screen max-h-[calc(100vh-3.1rem)]' : ''} p-1`}
+    >
       {header}
       <div className="flex flex-col flex-grow min-h-0 border rounded-md mt-1 w-full max-w-full">
         <Table>
@@ -412,7 +449,10 @@ export default function DataTableExtended({
               {shadTable.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  onClick={() => navigate(`/${db}/${table}/${row.original.id}`)}
+                  onClick={() =>
+                    !disableRowClick &&
+                    navigate(`/${db}/${table}/${row.original.id}`)
+                  }
                   className="cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => {
