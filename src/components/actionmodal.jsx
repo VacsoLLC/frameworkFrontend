@@ -92,16 +92,16 @@ export default function ActionModal({
           });
         }
 
+        await closeDialog();
+
         if (response?.navigate) {
           navigate(response?.navigate);
-        }
-
-        await closeDialog();
-        await forceReload();
-
-        if (button.close) {
+        } else if (button.close) {
           navigate(-1);
+        } else {
+          await forceReload();
         }
+        
       } catch (error) {
         console.error('Error in button action:', error);
         toast({

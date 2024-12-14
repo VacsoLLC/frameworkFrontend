@@ -46,13 +46,13 @@ export default function AttachmentUploader({
       const files = Array.from(event.target.files);
       const formData = new FormData();
 
-      files.forEach((file, index) => {
-        formData.append(`file${index}`, file);
-      });
-
       formData.append('db', db);
       formData.append('table', table);
       formData.append('row', recordId);
+
+      files.forEach((file, index) => {
+        formData.append(`file${index}`, file);
+      });
 
       const response = await api.uploadFiles(
         '/api/core/attachment/upload',
@@ -102,7 +102,8 @@ export default function AttachmentUploader({
             <Button
               onClick={handleButtonClick}
               disabled={uploading || disabled}
-              className=""
+              size="sm"
+              className={`mr-1 mb-1`}
             >
               {uploading ? (
                 <>
