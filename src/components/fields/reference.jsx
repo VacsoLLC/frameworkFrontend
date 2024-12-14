@@ -201,7 +201,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         icon="TextSearch"
         onClick={() => setReferenceModalOpen(true)}
         className="ml-1"
-        tooltip="Preview referenced record."
+        tooltip="Search for related record."
       />
       <GoToReference
         db={settings.joinDb}
