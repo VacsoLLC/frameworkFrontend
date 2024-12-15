@@ -206,7 +206,16 @@ class API {
     }
   }
 
-  async getWindowUrl(url, filename = null) {
+  /**
+   * Fetches a URL and returns a temporary URL for the downloaded file.
+   *
+   * @param {string} url - The URL to fetch.
+   * @param {string} [filename=null] - Optional filename for the downloaded file.
+   * @param {boolean} [suppressDialog=false] - Whether to suppress error dialogs.
+   * @returns {Promise<string>} - A promise that resolves to a temporary URL for the downloaded file.
+   * @throws {Error} - Throws an error if the fetch operation fails or if authentication is required.
+   */
+  async getWindowUrl(url, filename = null, suppressDialog = false) {
     await this.waitForAuthentication();
     const token = useUserStore.getState().token;
 
@@ -250,7 +259,10 @@ class API {
       return windowUrl;
     } catch (error) {
       console.error('Error downloading file:', error);
-      useUserStore.getState().setErrorMessage(error.message);
+      if (!suppressDialog) {
+        useUserStore.getState().setErrorMessage(error.message);
+      }
+
       throw error;
     }
   }
