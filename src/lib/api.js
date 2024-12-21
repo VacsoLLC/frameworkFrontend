@@ -1,8 +1,13 @@
 // api.js
 import useUserStore from '../stores/user.js';
+import lock from './lock.js';
+
+const keyLock = new lock();
 
 class API {
-  constructor() {}
+  constructor() {
+    this.urlCache = {};
+  }
 
   authenticated() {
     return useUserStore.getState().authenticated;
@@ -217,7 +222,16 @@ class API {
    */
   async getWindowUrl(url, filename = null, suppressDialog = false) {
     await this.waitForAuthentication();
+
     const token = useUserStore.getState().token;
+
+    const unlock = await keyLock.lock(url, 1000 * 5); // use locking to prevent multiple requests for the same URL
+
+    if (this.urlCache[url]) {
+      console.log('Image: CACHE HIT:', url, this.urlCache[url]);
+      unlock();
+      return this.urlCache[url];
+    }
 
     try {
       const response = await fetch(url, {
@@ -255,14 +269,16 @@ class API {
 
       // Create a temporary URL for the Blob
       const windowUrl = window.URL.createObjectURL(blob);
-
+      this.urlCache[url] = windowUrl;
+      console.log('Image: CACHE MISS:', url, this.urlCache[url]);
+      unlock();
       return windowUrl;
     } catch (error) {
       console.error('Error downloading file:', error);
       if (!suppressDialog) {
         useUserStore.getState().setErrorMessage(error.message);
       }
-
+      unlock();
       throw error;
     }
   }

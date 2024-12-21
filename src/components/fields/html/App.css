@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+@media print {
+	body {
+		margin: 0 !important;
+	}
+}
+
+.main-container {
+	font-family: 'Lato';
+	width: fit-content;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.ck-content {
+	font-family: 'Lato';
+	line-height: 1.6;
+	word-break: break-word;
+}
+
+.editor-container_include-block-toolbar {
+	margin-left: 42px;
+}
+
+.editor-container_balloon-editor .editor-container__editor {
+	min-width: 795px;
+	max-width: 795px;
+}
+
+.ck-content h1 {
+	@apply !text-4xl !font-bold;
+}
+
+.ck-content h2 {
+	@apply !text-3xl !font-bold;
+}
+
+.ck-content h3 {
+	@apply !text-2xl !font-bold;
+}
+
+.ck-content h4 {
+	@apply !text-xl !font-bold;
+}
+
+.ck-content h5 {
+	@apply !text-lg !font-bold;
+}
+
+.ck-content h6 {
+	@apply !text-base !font-bold;
+}
+
+.ck-content ul {
+	list-style-type: disc;
+	padding-left: 40px;
+	margin: 1em 0;
+}
+
+.ck-content ol {
+	list-style-type: decimal;
+	padding-left: 40px;
+	margin: 1em 0;
+}
+
+
+.editor-container_include-block-toolbar {
+	margin-left: 42px;
+}
+
+.editor_container__word-count .ck-word-count {
+	color: var(--ck-color-text);
+	display: flex;
+	height: 20px;
+	gap: var(--ck-spacing-small);
+	justify-content: flex-end;
+	font-size: var(--ck-font-size-base);
+	line-height: var(--ck-line-height-base);
+	font-family: var(--ck-font-face);
+	padding: var(--ck-spacing-small) var(--ck-spacing-standard);
+}
+
+.editor-container_include-word-count.editor-container_classic-editor .editor_container__word-count {
+	border: 0px solid var(--ck-color-base-border);
+	border-radius: var(--ck-border-radius);
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-top: none;
+}
+
+.editor-container_include-word-count.editor-container_classic-editor .editor-container__editor .ck-editor .ck-editor__editable {
+	border-radius: 0;
+}

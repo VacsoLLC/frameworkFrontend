@@ -9,6 +9,9 @@ import * as datetime from './datetime';
 import * as file from './file';
 import * as email from './email';
 import * as phone from './phone';
+
+import * as html from './html';
+
 export default {
   reference,
   string,
@@ -20,4 +23,5 @@ export default {
   file,
   email,
   phone,
+  html,
 };
