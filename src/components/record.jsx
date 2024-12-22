@@ -4,10 +4,11 @@ import {useBackend, callBackend} from '../lib/usebackend.js';
 import useUserStore from '../stores/user.js';
 import Form from './form.jsx';
 import ActionButton from './buttons/actionbutton.jsx';
-import {formatDateTime, unFormatDateTime} from './util.js';
+import {unFormatDateTime} from './util.js';
 import {Button} from './ui/button.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';
+import ActiveViewers from './ActiveViewers.jsx';
 
 export default function Record({
   db,
@@ -23,6 +24,7 @@ export default function Record({
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const toast = useUserStore((state) => state.toast);
+  const [counter, setCounter] = useState(0);
   const {toast: shadToast} = useToast();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -34,6 +36,55 @@ export default function Record({
     methodName: 'schemaGet',
     cache: true,
   });
+
+  const [activeViews, activeViewsLoading] = useBackend({
+    packageName: 'core',
+    className: 'views',
+    methodName: 'getActiveViews',
+    reload: counter,
+    args: {
+      db,
+      table,
+      row: recordId,
+    },
+  });
+  useEffect(() => {
+    callBackend({
+      packageName: 'core',
+      className: 'views',
+      methodName: 'logUser',
+      supressDialog: true,
+      args: {
+        db,
+        table,
+        row: recordId,
+      },
+    }).catch(() => {
+      console.log('error');
+    });
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      setCounter((prev) => prev + 1);
+      callBackend({
+        packageName: 'core',
+        className: 'views',
+        methodName: 'logUser',
+        supressDialog: true,
+        args: {
+          db,
+          table,
+          row: recordId,
+        },
+      }).catch(() => {
+        console.log('error');
+      });
+    }, 5000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [table, recordId]);
 
   const newRecord = !recordId;
 
@@ -188,6 +239,16 @@ export default function Record({
       ) : (
         ''
       )}
+      <ActiveViewers
+        currentViewers={
+          activeViewsLoading
+            ? []
+            : activeViews?.data?.rows?.map((viewer) => ({
+                id: viewer.author,
+                name: viewer?.author_name,
+              }))
+        }
+      />
       <Form
         schema={filteredSchema}
         formData={formData}
