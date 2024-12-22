@@ -28,15 +28,21 @@ const FilePreview = ({
     !isImage && !['pdf'].includes(fileName?.split('.').pop());
   useEffect(() => {
     const fetcher = async () => {
-      setLoading(true);
-      const url = await api.getWindowUrl(
-        `/api/core/attachment/download/${recordId}`,
-        fileName,
-      );
-      setImageUrl(url);
-      imageRef?.current?.setAttribute('src', url);
+      try {
+        setLoading(true);
+        const url = await api.getWindowUrl(
+          `/api/core/attachment/download/${recordId}`,
+          fileName,
+          true,
+        );
+        setImageUrl(url);
+        imageRef?.current?.setAttribute('src', url);
+      } catch (error) {
+        console.error('Error fetching file:', error);
+      }
       setLoading(false);
     };
+
     fetcher();
   }, []);
 
