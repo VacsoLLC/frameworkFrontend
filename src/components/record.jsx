@@ -37,55 +37,6 @@ export default function Record({
     cache: true,
   });
 
-  const [activeViews, activeViewsLoading] = useBackend({
-    packageName: 'core',
-    className: 'views',
-    methodName: 'getActiveViews',
-    reload: counter,
-    args: {
-      db,
-      table,
-      row: recordId,
-    },
-  });
-  useEffect(() => {
-    callBackend({
-      packageName: 'core',
-      className: 'views',
-      methodName: 'logUser',
-      supressDialog: true,
-      args: {
-        db,
-        table,
-        row: recordId,
-      },
-    }).catch(() => {
-      console.log('error');
-    });
-  }, []);
-
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      setCounter((prev) => prev + 1);
-      callBackend({
-        packageName: 'core',
-        className: 'views',
-        methodName: 'logUser',
-        supressDialog: true,
-        args: {
-          db,
-          table,
-          row: recordId,
-        },
-      }).catch(() => {
-        console.log('error');
-      });
-    }, 5000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [table, recordId]);
-
   const newRecord = !recordId;
 
   const [buttons, buttonsLoading] = useBackend({
@@ -233,22 +184,15 @@ export default function Record({
     <div className="m-4">
       <Toaster />
       {showHeader ? (
-        <h2 className="text-2xl font-semibold">
-          {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
-        </h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold">
+            {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
+          </h2>
+          <ActiveViewers db={db} recordId={recordId} table={table} />
+        </div>
       ) : (
         ''
       )}
-      <ActiveViewers
-        currentViewers={
-          activeViewsLoading
-            ? []
-            : activeViews?.data?.rows?.map((viewer) => ({
-                id: viewer.author,
-                name: viewer?.author_name,
-              }))
-        }
-      />
       <Form
         schema={filteredSchema}
         formData={formData}

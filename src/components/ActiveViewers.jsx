@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Card,
   CardContent,
@@ -13,9 +13,47 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
+import {useBackend} from '../lib/usebackend';
 
-export default function ActiveViewers({currentViewers}) {
+// db,
+// table,
+// row: recordId,
+export default function ActiveViewers({db, table, recordId}) {
   const [isOpen, setIsOpen] = useState(false);
+  const [counter, setCounter] = useState(1);
+  const [activeViews, activeViewsLoading] = useBackend({
+    packageName: 'core',
+    className: 'views',
+    methodName: 'getActiveViews',
+    reload: counter,
+    args: {
+      db,
+      table,
+      row: recordId,
+    },
+  });
+
+  useBackend({
+    packageName: 'core',
+    className: 'views',
+    methodName: 'logUser',
+    supressDialog: true,
+    args: {
+      db,
+      table,
+      row: recordId,
+    },
+    reload: counter,
+  });
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      setCounter((prev) => prev + 1);
+    }, 5000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [table, recordId]);
   const maxDisplayed = 3;
 
   const getInitials = (name) => {
@@ -35,6 +73,10 @@ export default function ActiveViewers({currentViewers}) {
     return `hsl(${hue}, 70%, 70%)`;
   };
 
+  const currentViewers = (activeViews?.data?.rows ?? []).map((viewer) => ({
+    id: viewer.author,
+    name: viewer?.author_name,
+  }));
   return (
     <TooltipProvider>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
