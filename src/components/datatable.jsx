@@ -240,7 +240,7 @@ export default function DataTableExtended({
       : []),
     ...Object.entries(schema?.data?.schema || {})
       .filter(([columnId, settings]) => {
-        if (settings.join || settings.hidden || settings.hiddenList) return;
+        if (settings.hidden || settings.hiddenList) return; 
         return true;
       })
       .sort(([, settingsA], [, settingsB]) => settingsA.order - settingsB.order)
@@ -283,7 +283,7 @@ export default function DataTableExtended({
           );
         },
         cell: ({row}) => {
-          const value = row.getValue(columnId);
+          const value = row.original[settings.joinDisplayAlias || columnId];
           return fields[settings.fieldType]?.read
             ? fields[settings.fieldType].read({
                 value: value,

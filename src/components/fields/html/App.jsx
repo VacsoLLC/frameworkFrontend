@@ -60,22 +60,16 @@ import './App.css';
 
 const LICENSE_KEY = 'GPL'; // or <YOUR_LICENSE_KEY>.
 
-/*
-      id={columnId}
-      name={columnId}
-      placeholder={settings.helpText}
-      onChange={(e) => handleChange(columnId, e.target.value)}
-      value={value || ''}
-      key={columnId}
+let currentRecordId = null; // dumb
 
-	  */
-
-export default function App({value, placeholder, onChange, onReady}) {
+export default function App({value, placeholder, onChange, onReady, recordId}) {
   const editorContainerRef = useRef(null);
   const editorRef = useRef(null);
   const editorRef2 = useRef(null);
   const editorWordCountRef = useRef(null);
   const [isLayoutReady, setIsLayoutReady] = useState(false);
+
+  currentRecordId = recordId;
 
   useEffect(() => {
     setIsLayoutReady(true);
@@ -102,12 +96,16 @@ export default function App({value, placeholder, onChange, onReady}) {
             'alignment',
             'outdent',
             'indent',
+            '|',
             'sourceEditing',
+            'showBlocks',
             '-',
             'bold',
             'underline',
             'strikethrough',
             'link',
+            '|',
+
             'insertImage',
             'insertImageViaUrl',
             'mediaEmbed',
@@ -334,7 +332,12 @@ class UploadAdapter {
     return this.loader.file.then(async (file) => {
       return new Promise(async (resolve, reject) => {
         // Create FormData
-        const response = await uploadHandler([file], 'core', 'page', 3);
+        const response = await uploadHandler(
+          [file],
+          'core',
+          'page',
+          currentRecordId,
+        );
 
         resolve({
           default: response.data.id,

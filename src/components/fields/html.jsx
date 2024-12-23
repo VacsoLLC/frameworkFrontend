@@ -12,6 +12,7 @@ export function edit({
 
   value,
   handleChange,
+  recordId,
 }) {
   return (
     <Edit
@@ -19,6 +20,7 @@ export function edit({
       settings={settings}
       value={value}
       handleChange={handleChange}
+      recordId={recordId}
     />
   );
 }
@@ -30,6 +32,7 @@ export function Edit({
 
   value,
   handleChange,
+  recordId,
 }) {
   const cleanupRef = useRef(null);
 
@@ -59,6 +62,7 @@ export function Edit({
         }}
         value={value || ''}
         key={columnId}
+        recordId={recordId}
       />
     </>
   );
