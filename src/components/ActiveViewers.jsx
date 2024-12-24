@@ -81,7 +81,7 @@ export default function ActiveViewers({db, table, recordId}) {
     <TooltipProvider>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <button className="flex items-center space-x-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+          <button className="flex items-center space-x-2 bg-white p-1 rounded-full shadow-md hover:bg-gray-50 transition-colors mr-2">
             <div className="flex -space-x-2">
               {currentViewers.slice(0, maxDisplayed).map((viewer) => (
                 <Tooltip key={viewer.id}>
@@ -114,7 +114,7 @@ export default function ActiveViewers({db, table, recordId}) {
                 </Tooltip>
               )}
             </div>
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-gray-600 pr-2">
               <span className="relative flex h-2 w-2 mr-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>

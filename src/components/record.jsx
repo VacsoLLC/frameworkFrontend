@@ -181,11 +181,11 @@ export default function Record({
     return <></>;
 
   return (
-    <div className="m-4">
+    <div className="m-0">
       <Toaster />
       {showHeader ? (
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-2xl font-semibold m-2">
             {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
           </h2>
           <ActiveViewers db={db} recordId={recordId} table={table} />
