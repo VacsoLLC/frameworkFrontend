@@ -24,26 +24,14 @@ export default function ActiveViewers({db, table, recordId}) {
   const [activeViews, activeViewsLoading] = useBackend({
     packageName: 'core',
     className: 'views',
-    methodName: 'getActiveViews',
-    reload: counter,
-    args: {
-      db,
-      table,
-      row: recordId,
-    },
-  });
-
-  useBackend({
-    packageName: 'core',
-    className: 'views',
-    methodName: 'logUser',
     supressDialog: true,
+    methodName: 'logUser',
+    reload: counter,
     args: {
       db,
       table,
       row: recordId,
     },
-    reload: counter,
   });
 
   useEffect(() => {
