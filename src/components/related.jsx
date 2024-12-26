@@ -37,7 +37,7 @@ export default function Related({db, table, recordId, reload, forceReload}) {
   return (
     <Tabs
       defaultValue={defaultTab}
-      className="m-2 p-0 border rounded-lg border-slate-200"
+      className="m-2 mt-1 p-0 border rounded-lg border-slate-200"
       value={tabName || defaultTab}
       onValueChange={(value) => {
         console.log('VALUE', value);

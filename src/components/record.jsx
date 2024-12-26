@@ -4,10 +4,11 @@ import {useBackend, callBackend} from '../lib/usebackend.js';
 import useUserStore from '../stores/user.js';
 import Form from './form.jsx';
 import ActionButton from './buttons/actionbutton.jsx';
-import {formatDateTime, unFormatDateTime} from './util.js';
+import {unFormatDateTime} from './util.js';
 import {Button} from './ui/button.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';
+import ActiveViewers from './ActiveViewers.jsx';
 
 export default function Record({
   db,
@@ -23,6 +24,7 @@ export default function Record({
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const toast = useUserStore((state) => state.toast);
+  const [counter, setCounter] = useState(0);
   const {toast: shadToast} = useToast();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -179,12 +181,15 @@ export default function Record({
     return <></>;
 
   return (
-    <div className="m-4">
+    <div className="m-0">
       <Toaster />
       {showHeader ? (
-        <h2 className="text-2xl font-semibold">
-          {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
-        </h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold m-2">
+            {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
+          </h2>
+          <ActiveViewers db={db} recordId={recordId} table={table} />
+        </div>
       ) : (
         ''
       )}
