@@ -24,15 +24,13 @@ export default function ViewRecord() {
           showHeader={true}
         />
         <React.Suspense fallback={<div></div>}>
-          <div className="mt-4">
-            <Related
-              db={db}
-              table={table}
-              recordId={parseInt(recordId)}
-              reload={reload}
-              forceReload={forceReload}
-            />
-          </div>
+          <Related
+            db={db}
+            table={table}
+            recordId={parseInt(recordId)}
+            reload={reload}
+            forceReload={forceReload}
+          />
         </React.Suspense>
       </React.Suspense>
     </div>

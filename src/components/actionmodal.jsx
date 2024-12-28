@@ -101,7 +101,6 @@ export default function ActionModal({
         } else {
           await forceReload();
         }
-        
       } catch (error) {
         console.error('Error in button action:', error);
         toast({

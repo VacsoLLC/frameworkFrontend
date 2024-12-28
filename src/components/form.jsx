@@ -81,7 +81,7 @@ export default function Form({
         {/* <Tooltip target=".tooltip" /> */}
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="space-y-2 w-full mt-4"
+          className="space-y-2 w-full pr-2"
           style={{maxWidth: '1000px'}}
         >
           {Object.entries(schema || {})

@@ -37,7 +37,7 @@ export default function Related({db, table, recordId, reload, forceReload}) {
   return (
     <Tabs
       defaultValue={defaultTab}
-      className="m-2 p-0 border rounded-lg border-slate-200"
+      className="m-2 mt-1 p-0 border rounded-lg border-slate-200"
       value={tabName || defaultTab}
       onValueChange={(value) => {
         console.log('VALUE', value);
@@ -91,10 +91,8 @@ function prepTables({tablesRaw, db, table, recordId}) {
   const tablesTemp = [...tablesRaw.data]; // copy the cached response since we're going to modify it.
 
   for (const childTable of tablesTemp) {
+    childTable.where = [];
     for (const [columna, columnb] of Object.entries(childTable.columnmap)) {
-      if (!childTable.where) {
-        childTable.where = [];
-      }
       let right = '';
       switch (columnb) {
         case 'id':
