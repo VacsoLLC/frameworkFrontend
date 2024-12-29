@@ -15,10 +15,12 @@ export default function View({views = {}}) {
 
   if (recordId) {
     ViewComponent =
-      views[view?.toLowerCase()] || defaultViews.record[view?.toLowerCase()];
+      views?.record?.[view?.toLowerCase()] ||
+      defaultViews.record[view?.toLowerCase()];
   } else {
     ViewComponent =
-      views[view?.toLowerCase()] || defaultViews.table[view?.toLowerCase()];
+      views?.table?.[view?.toLowerCase()] ||
+      defaultViews.table[view?.toLowerCase()];
   }
 
   if (!ViewComponent) {
