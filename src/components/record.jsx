@@ -188,7 +188,9 @@ export default function Record({
           <h2 className="text-2xl font-semibold m-2">
             {(newRecord ? 'Create ' : 'Update ') + schema?.data?.name}
           </h2>
-          <ActiveViewers db={db} recordId={recordId} table={table} />
+          {!newRecord && (
+            <ActiveViewers db={db} recordId={recordId} table={table} />
+          )}
         </div>
       ) : (
         ''
