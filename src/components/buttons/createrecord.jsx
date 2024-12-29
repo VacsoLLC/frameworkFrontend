@@ -40,6 +40,7 @@ export default function AddRecordButton({
         onClick={() => {
           openDialog();
         }}
+        disabled={disabled}
       />
 
       <Dialog open={showDialog} onOpenChange={closeDialog}>

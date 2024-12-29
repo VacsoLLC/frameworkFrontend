@@ -98,6 +98,8 @@ export async function loadAuthenticatedImages() {
     try {
       const url = await api.getWindowUrl(
         `/api/core/attachment/download/${recordId}`,
+        null,
+        true,
       );
       img.src = url;
     } catch (error) {

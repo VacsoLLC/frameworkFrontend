@@ -137,18 +137,22 @@ function buildMenu(items, navigate, location) {
 
     itemoutput.label = items[item].label;
 
-    if (items[item].view) {
+    if (items[item].navigate) {
       itemoutput.command = () => {
+        const query = [`tableName=${items[item].label}`];
+        
+        if (items[item].view) {
+          query.push(`view=${items[item].view}`);
+        }
+
+        if (items[item].filter && items[item].filter.length > 0) {
+          query.push(`where=${JSON.stringify(items[item].filter)}`);
+        }
+
         startTransition(() => {
-          navigate(
-            items[item].navigate +
-              `/?tableName=${items[item].label}&where=${JSON.stringify(
-                items[item].filter,
-              )}&view=${items[item].view}`,
-            {
-              state: {},
-            },
-          );
+          navigate(items[item].navigate + `/?` + query.join('&'), {
+            state: {},
+          });
         });
       };
     }

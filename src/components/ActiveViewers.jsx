@@ -15,6 +15,8 @@ import {
 } from './ui/tooltip';
 import {useBackend} from '../lib/usebackend';
 
+const ENABLED = true;
+
 // db,
 // table,
 // row: recordId,
@@ -32,15 +34,18 @@ export default function ActiveViewers({db, table, recordId}) {
       table,
       row: recordId,
     },
+    enabled: ENABLED,
   });
 
   useEffect(() => {
-    const intervalId = setInterval(async () => {
-      setCounter((prev) => prev + 1);
-    }, 5000);
-    return () => {
-      clearInterval(intervalId);
-    };
+    if (ENABLED) {
+      const intervalId = setInterval(async () => {
+        setCounter((prev) => prev + 1);
+      }, 5000);
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
   }, [table, recordId]);
   const maxDisplayed = 3;
 
