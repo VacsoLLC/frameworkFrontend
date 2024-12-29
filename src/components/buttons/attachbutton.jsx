@@ -29,7 +29,6 @@ export default function AttachmentUploader({
   disabled,
   label = 'Attach Files',
 }) {
-  const toast = useUserStore((state) => state.toast);
   const uploadRef = React.useRef(null);
   const [uploading, setUploading] = useState(false);
 
@@ -40,58 +39,22 @@ export default function AttachmentUploader({
    * Handles multiple file uploads
    * @param {Object} event - The upload event object
    */
-  const uploadHandler = async (event) => {
-    try {
-      setUploading(true);
-      const files = Array.from(event.target.files);
-      const formData = new FormData();
-
-      formData.append('db', db);
-      formData.append('table', table);
-      formData.append('row', recordId);
-
-      files.forEach((file, index) => {
-        formData.append(`file${index}`, file);
-      });
-
-      const response = await api.uploadFiles(
-        '/api/core/attachment/upload',
-        formData,
-      );
-
-      if (response.ok) {
-        toast({
-          severity: 'success',
-          summary: 'Success',
-          detail: `${files.length} file(s) uploaded successfully`,
-          life: 3000,
-        });
-        if (onUploadComplete) {
-          onUploadComplete();
-        }
-      } else {
-        throw new Error('File upload failed');
-      }
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      toast({
-        severity: 'error',
-        summary: 'Error',
-        detail: `An error occurred while uploading files: ${error.message}`,
-        life: 5000,
-      });
-    } finally {
-      if (uploadRef.current) uploadRef.current.value = '';
-      setUploading(false);
-    }
-  };
 
   return (
     <>
       <input
         type="file"
         ref={uploadRef}
-        onChange={uploadHandler}
+        onChange={(e) =>
+          uploadHandler(
+            e.target.files,
+            db,
+            table,
+            recordId,
+            onUploadComplete,
+            setUploading,
+          )
+        }
         className="hidden"
         multiple
       />
@@ -125,4 +88,58 @@ export default function AttachmentUploader({
       </TooltipProvider>
     </>
   );
+}
+
+export async function uploadHandler(
+  files = [],
+  db,
+  table,
+  recordId,
+  onUploadComplete = () => {},
+  setUploading = () => {},
+) {
+  const toast = useUserStore.getState().toast;
+
+  try {
+    setUploading(true);
+    const filesArray = Array.from(files);
+    const formData = new FormData();
+
+    formData.append('db', db);
+    formData.append('table', table);
+    formData.append('row', recordId);
+
+    filesArray.forEach((file, index) => {
+      formData.append(`file${index}`, file);
+    });
+
+    const response = await api.uploadFiles(
+      '/api/core/attachment/upload',
+      formData,
+    );
+
+    if (response.ok) {
+      toast({
+        severity: 'success',
+        summary: 'Success',
+        detail: `${filesArray.length} file(s) uploaded successfully`,
+        life: 3000,
+      });
+      onUploadComplete();
+      return response;
+    } else {
+      throw new Error('File upload failed');
+    }
+  } catch (error) {
+    console.error('Error uploading files:', error);
+    toast({
+      severity: 'error',
+      summary: 'Error',
+      detail: `An error occurred while uploading files: ${error.message}`,
+      life: 5000,
+    });
+  } finally {
+    //if (uploadRef.current) uploadRef.current.value = '';
+    setUploading(false);
+  }
 }

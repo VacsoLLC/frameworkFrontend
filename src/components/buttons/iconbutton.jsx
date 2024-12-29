@@ -20,16 +20,18 @@ export default function IconButton({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            size="sm"
-            onClick={onClick}
-            disabled={disabled}
-            type="button"
-            //className={disabled ? 'hidden ' : '' + className}
-            className={className}
-          >
-            <CustomIcon name={icon} />
-          </Button>
+          <span tabIndex={0}>
+            <Button
+              size="sm"
+              onClick={onClick}
+              disabled={disabled}
+              type="button"
+              //className={disabled ? 'hidden ' : '' + className}
+              className={className}
+            >
+              <CustomIcon name={icon} />
+            </Button>
+          </span>
         </TooltipTrigger>
         <TooltipContent>
           <p>{tooltip}</p>

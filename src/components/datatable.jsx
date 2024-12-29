@@ -240,7 +240,7 @@ export default function DataTableExtended({
       : []),
     ...Object.entries(schema?.data?.schema || {})
       .filter(([columnId, settings]) => {
-        if (settings.join || settings.hidden || settings.hiddenList) return;
+        if (settings.hidden || settings.hiddenList) return;
         return true;
       })
       .sort(([, settingsA], [, settingsB]) => settingsA.order - settingsB.order)
@@ -283,7 +283,7 @@ export default function DataTableExtended({
           );
         },
         cell: ({row}) => {
-          const value = row.getValue(columnId);
+          const value = row.original[settings.joinDisplayAlias || columnId];
           return fields[settings.fieldType]?.read
             ? fields[settings.fieldType].read({
                 value: value,
@@ -340,12 +340,12 @@ export default function DataTableExtended({
         <CreateRecordButton
           db={db}
           table={table}
-          disabled={schema?.data?.readOnly}
+          disabled={schema?.data?.createDisable || schema?.data?.readOnly}
           header={'Create ' + schema?.data?.name}
           onClose={() => {
             forceReload();
           }}
-          where={child ? where : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
+          where={child ? childWhere : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
           closeOnCreate={closeOnCreate}
           className="mr-1 mb-1"
         />
@@ -390,6 +390,14 @@ export default function DataTableExtended({
     return pageNumbers;
   };
 
+  const goToRecord = ({db, table, row}) => {
+    if (schema.data.viewRecord != 'default') {
+      navigate(`/${db}/${table}/${row}?view=${schema.data.viewRecord}`);
+    } else {
+      navigate(`/${db}/${table}/${row}`);
+    }
+  };
+
   return (
     <div
       className={`flex flex-col ${heightMode === 'full' ? 'h-screen max-h-[calc(100vh-3.1rem)]' : ''} p-1`}
@@ -415,25 +423,26 @@ export default function DataTableExtended({
                       <HeaderFilter
                         key={header.column.id}
                         column={
-                          schema.data.schema[header.column.id].tableAlias +
+                          schema.data.schema[header.column.id]
+                            .filterTableAlias +
                           '.' +
-                          schema.data.schema[header.column.id].actualColumnName
+                          schema.data.schema[header.column.id].filterColumn
                         }
                         onChange={onFilterElementChange}
                         value={
                           filter[
-                            schema.data.schema[header.column.id].tableAlias +
+                            schema.data.schema[header.column.id]
+                              .filterTableAlias +
                               '.' +
-                              schema.data.schema[header.column.id]
-                                .actualColumnName
+                              schema.data.schema[header.column.id].filterColumn
                           ]?.value
                         }
                         matchMode={
                           filter[
-                            schema.data.schema[header.column.id].tableAlias +
+                            schema.data.schema[header.column.id]
+                              .filterTableAlias +
                               '.' +
-                              schema.data.schema[header.column.id]
-                                .actualColumnName
+                              schema.data.schema[header.column.id].filterColumn
                           ]?.matchMode
                         }
                       />
@@ -449,9 +458,11 @@ export default function DataTableExtended({
               {shadTable.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  onClick={() =>
-                    !disableRowClick &&
-                    navigate(`/${db}/${table}/${row.original.id}`)
+                  onClick={
+                    () =>
+                      !disableRowClick &&
+                      goToRecord({db, table, row: row.original.id})
+                    //navigate(`/${db}/${table}/${row.original.id}`)
                   }
                   className="cursor-pointer"
                 >

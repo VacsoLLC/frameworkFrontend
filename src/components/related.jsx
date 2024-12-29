@@ -31,8 +31,17 @@ export default function Related({db, table, recordId, reload, forceReload}) {
     }`;
   };
 
+  // Get the first tab based on order
   const defaultTab =
-    tables && tables.length > 0 ? getTabKey(tables?.[0]) : null;
+    tables && tables.length > 0
+      ? getTabKey(
+          tables.reduce((lowestTab, currentTab) =>
+            !lowestTab || currentTab.tabOrder < lowestTab.tabOrder
+              ? currentTab
+              : lowestTab,
+          ),
+        )
+      : null;
 
   return (
     <Tabs
@@ -55,32 +64,40 @@ export default function Related({db, table, recordId, reload, forceReload}) {
       {tables && tables.length > 0 ? (
         <>
           <TabsList className="w-100 m-2">
-            {tables.map((childTable) => (
-              <TabsTrigger
+            {tables
+              .sort((a, b) => {
+                return a.tabOrder - b.tabOrder;
+              })
+              .map((childTable) => (
+                <TabsTrigger
+                  value={getTabKey(childTable)}
+                  key={getTabKey(childTable)}
+                >
+                  {childTable.tabName}
+                </TabsTrigger>
+              ))}
+          </TabsList>
+          {tables
+            .sort((a, b) => {
+              return a.tabOrder - b.tabOrder;
+            })
+            .map((childTable) => (
+              <TabsContent
                 value={getTabKey(childTable)}
                 key={getTabKey(childTable)}
               >
-                {childTable.tabName}
-              </TabsTrigger>
+                <DataTable
+                  db={childTable.db}
+                  table={childTable.table}
+                  childWhere={childTable.where}
+                  closeOnCreate={true}
+                  reload={reload}
+                  forceReload={forceReload}
+                  key={table + childTable.tabName + childTable.table}
+                  child={true}
+                />
+              </TabsContent>
             ))}
-          </TabsList>
-          {tables.map((childTable) => (
-            <TabsContent
-              value={getTabKey(childTable)}
-              key={getTabKey(childTable)}
-            >
-              <DataTable
-                db={childTable.db}
-                table={childTable.table}
-                childWhere={childTable.where}
-                closeOnCreate={true}
-                reload={reload}
-                forceReload={forceReload}
-                key={table + childTable.tabName + childTable.table}
-                child={true}
-              />
-            </TabsContent>
-          ))}
         </>
       ) : null}
     </Tabs>
