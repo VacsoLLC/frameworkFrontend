@@ -140,7 +140,7 @@ function buildMenu(items, navigate, location) {
     if (items[item].navigate) {
       itemoutput.command = () => {
         const query = [`tableName=${items[item].label}`];
-        
+
         if (items[item].view) {
           query.push(`view=${items[item].view}`);
         }
