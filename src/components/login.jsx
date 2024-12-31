@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from './ui/dialog.jsx';
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden';
 
@@ -19,6 +20,7 @@ export default function LoginModal({children}) {
   const [password, setPassword] = useState('');
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [forgotPasswordMessage, setForgotPasswordMessage] = useState('');
 
   const [ssoList] = useBackend({
@@ -106,12 +108,7 @@ export default function LoginModal({children}) {
         supressDialog: true,
       });
       setForgotPasswordMessage('Check your mailbox for the reset link.');
-      shadToast({
-        title: 'Success',
-        description: 'Password reset link sent',
-        duration: 3000,
-        variant: 'success',
-      });
+      setShowSuccessDialog(true);
     } catch (error) {
       let errorMessage = 'Something went wrong. Please try again.';
       if (error.response && error.response.status === 404) {
@@ -125,6 +122,12 @@ export default function LoginModal({children}) {
         variant: 'error',
       });
     }
+  };
+  const handleCloseSuccessDialog = () => {
+    setShowSuccessDialog(false);
+    setForgotPasswordMode(false);
+    setForgotPasswordEmail('');
+    setForgotPasswordMessage('');
   };
 
   return (
@@ -235,6 +238,18 @@ export default function LoginModal({children}) {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogTitle>Password Reset Email Sent</DialogTitle>
+          <DialogDescription>
+            {forgotPasswordMessage}
+          </DialogDescription>
+          <DialogFooter>
+            <Button onClick={handleCloseSuccessDialog}>OK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Toaster />
       {children}
     </>
