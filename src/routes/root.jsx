@@ -85,7 +85,7 @@ export default function Root({views}) {
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
-          className="[&>button]:hidden w-120"
+          className="[&>button]:hidden w-120 z-50"
           hideClose
         >
           <DialogHeader>
@@ -140,7 +140,7 @@ function buildMenu(items, navigate, location) {
     if (items[item].navigate) {
       itemoutput.command = () => {
         const query = [`tableName=${items[item].label}`];
-        
+
         if (items[item].view) {
           query.push(`view=${items[item].view}`);
         }

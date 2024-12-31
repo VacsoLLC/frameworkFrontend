@@ -12,6 +12,7 @@ import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import useUserStore from './stores/user.js';
 
 import './main.css';
+import ResetPassword from './routes/ResetPassword.jsx';
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,10 @@ function Frontend({views}) {
     {
       path: '/token',
       element: <Token />,
+    },
+    {
+      path: '/reset-password',
+      element: <ResetPassword />,
     },
   ]);
   //return <>hello</>;
