@@ -98,30 +98,17 @@ export default function LoginModal({children}) {
   };
 
   const handleForgotPassword = async () => {
-    try {
-      const response = await callBackend({
-        packageName: 'core',
-        className: 'login',
-        methodName: 'forgotPassword',
-        args: {email: forgotPasswordEmail},
-        auth: false,
-        supressDialog: true,
-      });
-      setForgotPasswordMessage('Check your mailbox for the reset link.');
-      setShowSuccessDialog(true);
-    } catch (error) {
-      let errorMessage = 'Something went wrong. Please try again.';
-      if (error.response && error.response.status === 404) {
-        errorMessage = 'Email not found. Please check your email address.';
-      }
-      setForgotPasswordMessage(errorMessage);
-      shadToast({
-        title: 'Failed',
-        description: errorMessage,
-        duration: 3000,
-        variant: 'error',
-      });
-    }
+    const response = await callBackend({
+      packageName: 'core',
+      className: 'login',
+      methodName: 'forgotPassword',
+      args: {email: forgotPasswordEmail},
+      auth: false,
+    });
+    setForgotPasswordMessage(
+      'If your email address was found, a password reset link has been sent.',
+    );
+    setShowSuccessDialog(true);
   };
   const handleCloseSuccessDialog = () => {
     setShowSuccessDialog(false);
@@ -136,7 +123,7 @@ export default function LoginModal({children}) {
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
-          className="[&>button]:hidden w-120"
+          className="w-120 z-50"
         >
           <DialogTitle>
             <div className="text-2xl font-bold text-center mb-0">
@@ -169,7 +156,7 @@ export default function LoginModal({children}) {
                         <Label htmlFor="email">Email</Label>
                         <Input
                           id="email"
-                          type="email"
+                          type="text"
                           autoComplete="username"
                           onChange={(e) => setEmail(e.target.value)}
                         />
@@ -241,9 +228,7 @@ export default function LoginModal({children}) {
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogTitle>Password Reset Email Sent</DialogTitle>
-          <DialogDescription>
-            {forgotPasswordMessage}
-          </DialogDescription>
+          <DialogDescription>{forgotPasswordMessage}</DialogDescription>
           <DialogFooter>
             <Button onClick={handleCloseSuccessDialog}>OK</Button>
           </DialogFooter>

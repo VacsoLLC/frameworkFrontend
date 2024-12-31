@@ -85,7 +85,7 @@ export default function Root({views}) {
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
-          className="[&>button]:hidden w-120"
+          className="[&>button]:hidden w-120 z-50"
           hideClose
         >
           <DialogHeader>
