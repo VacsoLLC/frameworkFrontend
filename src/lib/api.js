@@ -126,8 +126,8 @@ class API {
             throw new Error(`${response.statusText}`);
           }
 
-          if (json.error) {
-            throw new Error(json.error);
+          if (json.message) {
+            throw new Error(json.message);
           } else {
             throw new Error(`${response.statusText}`);
           }
