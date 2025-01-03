@@ -57,6 +57,7 @@ import {
 import 'ckeditor5/ckeditor5.css';
 
 import './App.css';
+import ResizableHeight from './ResizablePlugin.js';
 
 const LICENSE_KEY = 'GPL'; // or <YOUR_LICENSE_KEY>.
 
@@ -121,6 +122,7 @@ export default function App({value, placeholder, onChange, onReady, recordId}) {
           Autosave,
           BalloonToolbar,
           BlockQuote,
+          ResizableHeight,
           BlockToolbar,
           Bold,
           Bookmark,
@@ -163,6 +165,7 @@ export default function App({value, placeholder, onChange, onReady, recordId}) {
           TodoList,
           Underline,
           WordCount,
+          ResizableHeight,
         ],
         balloonToolbar: ['bold', 'italic', 'strikethrough', 'link'],
         blockToolbar: [
