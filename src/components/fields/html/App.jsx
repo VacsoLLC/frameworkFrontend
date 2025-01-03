@@ -165,7 +165,6 @@ export default function App({value, placeholder, onChange, onReady, recordId}) {
           TodoList,
           Underline,
           WordCount,
-          ResizableHeight,
         ],
         balloonToolbar: ['bold', 'italic', 'strikethrough', 'link'],
         blockToolbar: [
