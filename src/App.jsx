@@ -63,12 +63,12 @@ function Frontend({views}) {
     },
     {
       path: '/signup',
-      element: <SignUpPage/>,
+      element: <SignUpPage />,
     },
     {
       path: '/set-password',
-      element: <CreatePasswordPage/>,
-    }
+      element: <CreatePasswordPage />,
+    },
   ]);
   //return <>hello</>;
 
