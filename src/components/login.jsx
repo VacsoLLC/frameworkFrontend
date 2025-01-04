@@ -14,6 +14,7 @@ import {
   DialogFooter,
 } from './ui/dialog.jsx';
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden';
+import { Link } from 'react-router-dom';
 
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
@@ -177,6 +178,13 @@ export default function LoginModal({children}) {
                   </Button>
                 </div>
               </form>
+                {!forgotPasswordMode && (
+                  <div className='flex justify-center mt-1'>
+                    <Link to="/signup" className="text-sm hover:underline">
+                      Don't have an account? Sign up
+                    </Link>
+                  </div>
+                )}
               {forgotPasswordMessage && (
                 <p className="mt-4 text-center text-sm">
                   {forgotPasswordMessage}

@@ -123,11 +123,13 @@ class API {
           try {
             json = await response.json();
           } catch {
-            throw new Error(`${response.statusText}`);
+            throw new Error(`${response}`);
           }
 
           if (json.error) {
             throw new Error(json.error);
+          } else if(json.message) {
+            throw new Error(json.message);
           } else {
             throw new Error(`${response.statusText}`);
           }
