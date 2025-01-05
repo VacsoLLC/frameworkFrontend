@@ -68,7 +68,7 @@ export default function ActionModal({
         setLoading(true);
         for (const column in columns) {
           if (columns[column].columnType == 'datetime') {
-            if (recordFormData[column]) {
+            if (recordFormData && recordFormData[column]) {
               recordFormData[column] = unFormatDateTime(recordFormData[column]); // TODO: get rid of this. may not actually be needed
             }
           }
