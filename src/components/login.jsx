@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from './ui/dialog.jsx';
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
@@ -23,6 +23,7 @@ export default function LoginModal({children}) {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [forgotPasswordMessage, setForgotPasswordMessage] = useState('');
+  const navigate = useNavigate();
 
   const [ssoList] = useBackend({
     packageName: 'core',
@@ -178,28 +179,35 @@ export default function LoginModal({children}) {
                   </Button>
                 </div>
               </form>
-              {!forgotPasswordMode && (
-                <div className="flex justify-center mt-1">
-                  <Link to="/signup" className="text-sm hover:underline">
-                    Don't have an account? Sign up
-                  </Link>
-                </div>
-              )}
               {forgotPasswordMessage && (
                 <p className="mt-4 text-center text-sm">
                   {forgotPasswordMessage}
                 </p>
               )}
-              <div className="mt-4 text-center">
+              <div
+                className={`mt-2 text-center flex items-center justify-${forgotPasswordMode ? 'center' : 'between'}`}
+              >
                 <Button
                   variant="link"
                   onClick={() => {
                     setForgotPasswordMode(!forgotPasswordMode);
                     setForgotPasswordMessage('');
                   }}
+                  className="p-0"
                 >
                   {forgotPasswordMode ? 'Back to Login' : 'Forgot Password?'}
                 </Button>
+                {!forgotPasswordMode && (
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      navigate('/signup');
+                    }}
+                    className="p-0"
+                  >
+                    Sign up
+                  </Button>
+                )}
               </div>
               {!forgotPasswordMode && ssoList?.data?.length && (
                 <>

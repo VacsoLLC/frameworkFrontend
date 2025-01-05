@@ -16,6 +16,7 @@ import {
 import {CloudCog} from 'lucide-react';
 
 export default function CreatePasswordPage() {
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +37,14 @@ export default function CreatePasswordPage() {
       });
       return;
     }
+    if (!fullName.trim()) {
+      toast({
+        title: 'Full Name Required',
+        description: 'Please enter your full name.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     setIsLoading(true);
 
@@ -44,7 +53,7 @@ export default function CreatePasswordPage() {
         packageName: 'core',
         className: 'login',
         methodName: 'createAccount',
-        args: {token, password},
+        args: {token, password, fullName},
         auth: false,
         supressDialog: true,
       });
@@ -74,9 +83,19 @@ export default function CreatePasswordPage() {
         <div className="max-w-md mx-auto bg-white rounded-lg border border-gray-200 shadow-md overflow-hidden">
           <div className="p-6">
             <h1 className="text-3xl font-bold text-center mb-6">
-              Create Your Password
+              Complete the signup
             </h1>
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
