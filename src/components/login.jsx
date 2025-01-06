@@ -185,25 +185,25 @@ export default function LoginModal({children}) {
                 </p>
               )}
               <div
-                className={`mt-2 text-center flex items-center justify-${forgotPasswordMode ? 'center' : 'between'}`}
+                className={`mt-4 text-center flex items-center justify-${forgotPasswordMode ? 'center' : 'between'} gap-2`}
               >
                 <Button
-                  variant="link"
+                  variant={forgotPasswordMode ? 'link' : 'outline'}
                   onClick={() => {
                     setForgotPasswordMode(!forgotPasswordMode);
                     setForgotPasswordMessage('');
                   }}
-                  className="p-0"
+                  className="flex-1"
                 >
                   {forgotPasswordMode ? 'Back to Login' : 'Forgot Password?'}
                 </Button>
                 {!forgotPasswordMode && (
                   <Button
-                    variant="link"
+                    variant="outline"
                     onClick={() => {
                       navigate('/signup');
                     }}
-                    className="p-0"
+                    className="flex-1"
                   >
                     Sign up
                   </Button>
