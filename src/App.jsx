@@ -13,6 +13,8 @@ import useUserStore from './stores/user.js';
 
 import './main.css';
 import ResetPassword from './routes/ResetPassword.jsx';
+import SignUpPage from './routes/signup.jsx';
+import CreatePasswordPage from './routes/completeAccountCreation.jsx';
 
 const queryClient = new QueryClient();
 
@@ -58,6 +60,14 @@ function Frontend({views}) {
     {
       path: '/reset-password',
       element: <ResetPassword />,
+    },
+    {
+      path: '/signup',
+      element: <SignUpPage />,
+    },
+    {
+      path: '/set-password',
+      element: <CreatePasswordPage />,
     },
   ]);
   //return <>hello</>;

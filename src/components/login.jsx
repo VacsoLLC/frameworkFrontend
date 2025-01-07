@@ -14,6 +14,7 @@ import {
   DialogFooter,
 } from './ui/dialog.jsx';
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden';
+import {Link, useNavigate} from 'react-router-dom';
 
 export default function LoginModal({children}) {
   const [email, setEmail] = useState('');
@@ -22,6 +23,7 @@ export default function LoginModal({children}) {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [forgotPasswordMessage, setForgotPasswordMessage] = useState('');
+  const navigate = useNavigate();
 
   const [ssoList] = useBackend({
     packageName: 'core',
@@ -182,16 +184,30 @@ export default function LoginModal({children}) {
                   {forgotPasswordMessage}
                 </p>
               )}
-              <div className="mt-4 text-center">
+              <div
+                className={`mt-4 text-center flex items-center justify-${forgotPasswordMode ? 'center' : 'between'} gap-2`}
+              >
                 <Button
-                  variant="link"
+                  variant={forgotPasswordMode ? 'link' : 'outline'}
                   onClick={() => {
                     setForgotPasswordMode(!forgotPasswordMode);
                     setForgotPasswordMessage('');
                   }}
+                  className="flex-1"
                 >
                   {forgotPasswordMode ? 'Back to Login' : 'Forgot Password?'}
                 </Button>
+                {!forgotPasswordMode && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      navigate('/signup');
+                    }}
+                    className="flex-1"
+                  >
+                    Sign up
+                  </Button>
+                )}
               </div>
               {!forgotPasswordMode && ssoList?.data?.length && (
                 <>
