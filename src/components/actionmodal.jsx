@@ -74,6 +74,13 @@ export default function ActionModal({
           }
         }
 
+        // Don't send empty values. If the user doesn't touch the field, it wont exist in formData. If they touch it but clear it, it will be an empty string. This will remove it.
+        for (const column in formData) {
+          if (formData[column] == '') {
+            delete formData[column];
+          }
+        }
+
         const response = await callBackend({
           packageName: db,
           className: table,
