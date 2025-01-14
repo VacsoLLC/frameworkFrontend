@@ -13,7 +13,9 @@ import {
   DialogFooter,
   DialogTitle,
 } from '../components/ui/dialog';
-import {CloudCog} from 'lucide-react';
+import z from 'zxcvbn';
+import {PasswordStrengthBar} from '../components/ui/PasswordStrengthBar';
+import {MINIMUM_REQUIRED_STRENGTH} from '../components/ui/ResetPasswordForm';
 
 export default function CreatePasswordPage() {
   const [fullName, setFullName] = useState('');
@@ -23,6 +25,7 @@ export default function CreatePasswordPage() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const {toast} = useToast();
   const [searchParams] = useSearchParams();
+  const passwordStrength = z(password);
 
   const navigate = useNavigate();
   const token = searchParams.get('token');
@@ -105,6 +108,13 @@ export default function CreatePasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <div>
+                  {password.length > 0 ? (
+                    <PasswordStrengthBar strength={passwordStrength.score} />
+                  ) : (
+                    <div />
+                  )}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -119,7 +129,14 @@ export default function CreatePasswordPage() {
               {password !== confirmPassword && password && confirmPassword && (
                 <p className="text-sm text-red-500">Passwords do not match</p>
               )}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={
+                  isLoading ||
+                  passwordStrength.score < MINIMUM_REQUIRED_STRENGTH
+                }
+              >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
