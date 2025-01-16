@@ -25,7 +25,10 @@ export default function CreatePasswordPage() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const {toast} = useToast();
   const [searchParams] = useSearchParams();
-  const passwordStrength = z(password);
+
+  let passwordStrength = null;
+
+  if (password) passwordStrength = z(password).score;
 
   const navigate = useNavigate();
   const token = searchParams.get('token');
@@ -109,11 +112,7 @@ export default function CreatePasswordPage() {
                   required
                 />
                 <div>
-                  {password.length > 0 ? (
-                    <PasswordStrengthBar strength={passwordStrength.score} />
-                  ) : (
-                    <div />
-                  )}
+                  <PasswordStrengthBar strength={passwordStrength} />
                 </div>
               </div>
               <div className="space-y-2">
@@ -134,7 +133,7 @@ export default function CreatePasswordPage() {
                 className="w-full"
                 disabled={
                   isLoading ||
-                  passwordStrength.score < MINIMUM_REQUIRED_STRENGTH
+                  passwordStrength < MINIMUM_REQUIRED_STRENGTH
                 }
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}

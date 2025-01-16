@@ -19,7 +19,10 @@ export default function ResetPasswordForm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
-  const passwordStrength = z(password);
+
+  let passwordStrength = null;
+
+  if (password) passwordStrength = z(password).score;
 
   const passwordsMatch = password === confirmPassword && password.length > 0;
 
@@ -56,7 +59,7 @@ export default function ResetPasswordForm() {
   };
 
   const isConfirmPasswordDisabled =
-    passwordStrength.score < MINIMUM_REQUIRED_STRENGTH;
+    passwordStrength < MINIMUM_REQUIRED_STRENGTH;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-md mx-auto">
@@ -70,11 +73,7 @@ export default function ResetPasswordForm() {
           required
         />
         <div>
-          {password.length > 0 ? (
-            <PasswordStrengthBar strength={passwordStrength.score} />
-          ) : (
-            <div />
-          )}
+          <PasswordStrengthBar strength={passwordStrength} />
         </div>
       </div>
       <div className="space-y-2">
