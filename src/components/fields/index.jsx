@@ -11,6 +11,7 @@ import * as email from './email';
 import * as phone from './phone';
 
 import * as html from './html';
+import * as password from './password';
 
 export default {
   reference,
@@ -24,4 +25,5 @@ export default {
   email,
   phone,
   html,
+  password,
 };

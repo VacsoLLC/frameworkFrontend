@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from './ui/dialog.jsx';
 import {Button} from './ui/button.jsx';
-import {Loader2} from 'lucide-react';
+import {CloudCog, Loader2} from 'lucide-react';
 
 export default function ActionModal({
   show,
@@ -122,6 +122,7 @@ export default function ActionModal({
       }
     }
   };
+  console.log('button', button);
   return (
     <Dialog open={showDialog} onOpenChange={() => closeDialog()}>
       <DialogContent>
