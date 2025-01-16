@@ -9,10 +9,11 @@ export function edit({
   value,
   handleChange,
 }) {
-  let passwordStrength;
-  if (settings.requiresStrengthCheck) {
-    passwordStrength = z(value ?? '');
+  let passwordStrength = null;
+  if (settings.requiresStrengthCheck && value) {
+    passwordStrength = z(value ?? '').score;
   }
+
   const component = (
     <Input
       id={columnId}
@@ -29,11 +30,7 @@ export function edit({
     return (
       <div className="w-full mb-2">
         {component}
-        {(value ?? '').length > 0 ? (
-          <PasswordStrengthBar strength={passwordStrength.score} />
-        ) : (
-          <div />
-        )}
+        <PasswordStrengthBar strength={passwordStrength} />
       </div>
     );
   }

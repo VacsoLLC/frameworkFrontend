@@ -2,6 +2,7 @@ import React from 'react';
 
 export function PasswordStrengthBar({strength}) {
   const getColor = (score) => {
+    if (score === null) return 'bg-gray-200';
     const colors = [
       'bg-red-500', // Very weak
       'bg-orange-500', // Weak
