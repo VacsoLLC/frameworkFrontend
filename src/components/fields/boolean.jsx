@@ -7,6 +7,7 @@ export function edit({
   dropdownOptions,
   value,
   handleChange,
+  ...extraProps
 }) {
   return (
     <Checkbox
@@ -16,6 +17,7 @@ export function edit({
         handleChange(columnId, checked ? 1 : 0);
       }}
       checked={value ? true : false}
+      {...extraProps}
     />
   );
 }

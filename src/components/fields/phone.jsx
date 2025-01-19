@@ -7,6 +7,7 @@ export function edit({
   dropdownOptions,
   value,
   handleChange,
+  ...extraProps
 }) {
   return (
     <>
@@ -19,6 +20,7 @@ export function edit({
         value={value || ''}
         size={settings.fieldWidth}
         key={columnId}
+        {...extraProps}
       />
       <DialNumber value={value} />
     </>

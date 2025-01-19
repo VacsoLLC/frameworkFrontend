@@ -9,6 +9,7 @@ import {Button} from './ui/button.jsx';
 import {useToast} from '../hooks/use-toast.js';
 import {Toaster} from './ui/toaster.jsx';
 import ActiveViewers from './ActiveViewers.jsx';
+import WarningAlert from './ui/WarningAlert.jsx';
 
 export default function Record({
   db,
@@ -180,6 +181,8 @@ export default function Record({
   if (!record && (loading || recordLoading || schemaLoading || buttonsLoading))
     return <></>;
 
+  console.log('TRIPP record', record.deleted_at);
+
   return (
     <div className="m-0">
       <Toaster />
@@ -194,6 +197,14 @@ export default function Record({
         </div>
       ) : (
         ''
+      )}
+      {!recordLoading && record.deleted_at ? (
+        <WarningAlert
+          title={`Record can't be edited`}
+          message={`This record is deleted and is in read only mode`}
+        />
+      ) : (
+        <></>
       )}
       <Form
         schema={filteredSchema}

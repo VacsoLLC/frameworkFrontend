@@ -28,6 +28,7 @@ export default function IconButton({
               type="button"
               //className={disabled ? 'hidden ' : '' + className}
               className={className}
+              {...props}
             >
               <CustomIcon name={icon} />
             </Button>

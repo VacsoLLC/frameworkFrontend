@@ -38,6 +38,8 @@ export default function Form({
   recordId,
   record,
 }) {
+  const isRecordDeleted = record?.data?.deleted_at || true;
+  console.log('TRIPP isRecordDeleted', isRecordDeleted);
   const renderInputField = (columnId, settings) => {
     let Field = Fields.string.edit;
 
@@ -71,6 +73,7 @@ export default function Form({
         recordId={recordId}
         formData={formData}
         record={record}
+        disabled={!!isRecordDeleted}
       />
     );
   };

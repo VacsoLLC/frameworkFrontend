@@ -20,6 +20,7 @@ export default function AddRecordButton({
   disabled = false,
   className,
   where,
+  ...extraProps
 }) {
   const [showDialog, setShowDialog] = useState(false);
 
@@ -41,6 +42,7 @@ export default function AddRecordButton({
           openDialog();
         }}
         disabled={disabled}
+        {...extraProps}
       />
 
       <Dialog open={showDialog} onOpenChange={closeDialog}>
