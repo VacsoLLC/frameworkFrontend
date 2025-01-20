@@ -119,13 +119,13 @@ export default function DataTableExtended({
 
   const [sortOrder, setSortOrder] = useQueryState(
     'sortOrder',
-    parseAsString.withDefault('DESC'),
+    parseAsString.withDefault(null),
     saveState,
   );
 
   const [sortField, setSortField] = useQueryState(
     'sortField',
-    parseAsString.withDefault('id'),
+    parseAsString.withDefault(null),
     saveState,
   );
   const [page, setPage] = useQueryState(
@@ -177,8 +177,8 @@ export default function DataTableExtended({
     methodName: 'rowsGet',
     args: {
       where: [...childWhere, ...where, ...convertToWhere(filter)],
-      sortField,
-      sortOrder,
+      sortField: sortField === null ? undefined : sortField, // nuqs only does nulls, its never undefined. But we want to pass undefined to the backend is not supplied.
+      sortOrder: sortOrder === null ? undefined : sortOrder,
       limit,
       offset: (page - 1) * limit,
       returnCount: true,
