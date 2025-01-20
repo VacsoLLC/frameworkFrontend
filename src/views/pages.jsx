@@ -7,8 +7,16 @@ import Related from '../components/related.jsx';
 import ActiveViewers from '../components/ActiveViewers.jsx';
 import {ChevronRight, ChevronDown} from 'lucide-react';
 import CreateRecord from '../components/buttons/createrecord.jsx';
+import useQueryState from '../hooks/usequerystate.js'; // Special useQueryState that has an enable/disable flag. When disabled, it's just a standard useState.
+import {parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
 
 export default function Pages({db, table}) {
+  const [tableName, setTableName] = useQueryState(
+    'tableName',
+    parseAsString.withDefault(location?.state?.tableHeader || 'Pages'),
+    true,
+  );
+
   const [record, recordLoading] = useBackend({
     packageName: db,
     className: table,
@@ -22,7 +30,7 @@ export default function Pages({db, table}) {
   return (
     <div className="p-2">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Pages</h2>
+        <h2 className="text-xl font-semibold">{tableName}</h2>
         <CreateRecord db={db} table={table} header="Create Page" />
       </div>
       {buildTree(record.data.rows)}
