@@ -14,8 +14,13 @@ export default function IconButton({
   onClick,
   disabled = false,
   className,
+  show = true,
   ...props
 }) {
+  if (!show) {
+    return;
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -26,6 +31,7 @@ export default function IconButton({
               onClick={onClick}
               disabled={disabled}
               type="button"
+              show={show}
               //className={disabled ? 'hidden ' : '' + className}
               className={className}
               {...props}
