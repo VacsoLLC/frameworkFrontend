@@ -1,5 +1,5 @@
 import {AlertTriangle} from 'lucide-react';
-import {Alert, AlertDescription, AlertTitle} from './alert';
+import {Alert, AlertDescription, AlertTitle} from './ui/alert';
 
 export default function WarningAlert({title, message}) {
   return (

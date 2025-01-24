@@ -7,7 +7,7 @@ import ActionButton from './buttons/actionbutton.jsx';
 import {unFormatDateTime} from './util.js';
 import {Button} from './ui/button.jsx';
 import ActiveViewers from './ActiveViewers.jsx';
-import WarningAlert from './ui/WarningAlert.jsx';
+import Alert from './alert.jsx';
 
 export default function Record({
   db,
@@ -53,6 +53,9 @@ export default function Record({
     packageName: db,
     className: table,
     methodName: 'recordGet',
+    args: {
+      includeDeleted: true,
+    },
     recordId,
     reload,
     enabled: !newRecord,
@@ -194,7 +197,7 @@ export default function Record({
       )}
 
       {record?.data.deleted_at && (
-        <WarningAlert
+        <Alert
           title={`Record Deleted`}
           message={`This record is deleted and can not be modified.`}
         />
