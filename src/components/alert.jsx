@@ -1,7 +1,7 @@
 import {AlertTriangle} from 'lucide-react';
 import {Alert, AlertDescription, AlertTitle} from './ui/alert';
 
-export default function WarningAlert({title, message}) {
+export default function AlertBar({title, message}) {
   return (
     <div class="w-full p-2">
       <Alert variant="destructive" className="">
