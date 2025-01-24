@@ -1,5 +1,11 @@
 import {Checkbox} from '../ui/checkbox';
-import {Select, SelectContent, SelectTrigger, SelectValue} from '../ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+} from '../ui/select';
 
 export function edit({
   columnId,
@@ -24,21 +30,19 @@ export function read(props) {
   return <>{props.value ? 'Yes' : 'No'}</>;
 }
 
-export function filter({columnId, value, onFilterElementChange, ...props}) {
+export function filter({column, value, onChange, label, ...props}) {
   return (
     <Select
       value={value}
-      placeholder={lavel}
       onValueChange={(val) => {
-        onFilterElementChange(columnId, val, 'equals');
+        onChange(column, val, 'equals');
       }}
     >
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Theme" />
+        <SelectValue placeholder="" />
       </SelectTrigger>
       <SelectContent>
         {[
-          {label: 'All', value: ''},
           {label: 'Yes', value: '1'},
           {label: 'No', value: '0'},
         ].map((item) => {

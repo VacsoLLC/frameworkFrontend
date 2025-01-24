@@ -421,6 +421,7 @@ export default function DataTableExtended({
 
                     {header.column.getCanFilter() ? (
                       <HeaderFilter
+                        settings={schema.data.schema[header.column.id]}
                         key={header.column.id}
                         column={
                           schema.data.schema[header.column.id]
@@ -559,10 +560,19 @@ export default function DataTableExtended({
   );
 }
 
-function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
-  return (
-    <>
-      <div className="flex items-center space-x-1 my-1">
+function FilterComponent({
+  column,
+  onChange,
+  value = '',
+  matchMode = 'contains',
+  settings,
+}) {
+  if (fields?.[settings?.fieldType]?.filter) {
+    const Field = fields?.[settings?.fieldType]?.filter;
+    return <Field onChange={onChange} column={column} value={value} />;
+  } else {
+    return (
+      <>
         <Input
           value={value}
           onChange={(e) => {
@@ -600,6 +610,28 @@ function HeaderFilter({column, onChange, value = '', matchMode = 'contains'}) {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+      </>
+    );
+  }
+}
+
+function HeaderFilter({
+  column,
+  onChange,
+  value = '',
+  matchMode = 'contains',
+  settings,
+}) {
+  return (
+    <>
+      <div className="flex items-center space-x-1 my-1">
+        <FilterComponent
+          column={column}
+          settings={settings}
+          value={value}
+          onChange={onChange}
+        />
+
         <Button
           variant="ghost"
           size="icon"
