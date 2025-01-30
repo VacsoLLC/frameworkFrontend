@@ -7,7 +7,6 @@ import ActionButton from './buttons/actionbutton.jsx';
 import {unFormatDateTime} from './util.js';
 import {Button} from './ui/button.jsx';
 import {useToast} from '../hooks/use-toast.js';
-import {Toaster} from './ui/toaster.jsx';
 import ActiveViewers from './ActiveViewers.jsx';
 
 export default function Record({
@@ -182,7 +181,6 @@ export default function Record({
 
   return (
     <div className="m-0">
-      <Toaster />
       {showHeader ? (
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold m-2">
