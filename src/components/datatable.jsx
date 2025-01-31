@@ -359,7 +359,7 @@ export default function DataTableExtended({
           className="mr-1 mb-1"
         />
         <IconButton
-          icon={showDeleted ? 'EyeOff' : 'Eye'}
+          icon={showDeleted ? 'Eye' : 'EyeOff'}
           tooltip={
             showDeleted ? 'Hide deleted records' : 'Show deleted records'
           }
