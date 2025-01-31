@@ -38,6 +38,8 @@ export default function Form({
   recordId,
   record,
 }) {
+  const isRecordDeleted = record?.data?.deleted_at ? true : false;
+
   const renderInputField = (columnId, settings) => {
     let Field = Fields.string.edit;
 
@@ -71,6 +73,7 @@ export default function Form({
         recordId={recordId}
         formData={formData}
         record={record}
+        disabled={!!isRecordDeleted}
       />
     );
   };
@@ -88,34 +91,41 @@ export default function Form({
             .sort(([, a], [, b]) => {
               return a.order - b.order;
             })
-            .map(([columnId, settings]) => (
-              <div
-                className="flex items-center justify-center space-x-4"
-                key={columnId}
-              >
-                <div className="w-[150px] text-right shrink-0">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Label htmlFor={columnId} className="">
-                        {settings.friendlyName || columnId}
-                        {settings.required && (
-                          <span className="text-danger"> *</span>
-                        )}
-                      </Label>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        {(settings.helpText ? settings.helpText : '') +
-                          (settings.required ? ' This field is required.' : '')}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
+            .map(([columnId, settings]) => {
+              if (settings.hiddenOnEmpty && !formData[columnId]) {
+                return;
+              }
+              return (
+                <div
+                  className="flex items-center justify-center space-x-4"
+                  key={columnId}
+                >
+                  <div className="w-[150px] text-right shrink-0">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Label htmlFor={columnId} className="">
+                          {settings.friendlyName || columnId}
+                          {settings.required && (
+                            <span className="text-danger"> *</span>
+                          )}
+                        </Label>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {(settings.helpText ? settings.helpText : '') +
+                            (settings.required
+                              ? ' This field is required.'
+                              : '')}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="flex-grow flex items-center space-x-1">
+                    {renderInputField(columnId, settings)}
+                  </div>
                 </div>
-                <div className="flex-grow flex items-center space-x-1">
-                  {renderInputField(columnId, settings)}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           <div className="flex items-center justify-center space-x-4">
             <div className="w-[150px] text-right shrink-0"> </div>
             <div className="flex-grow flex items-center space-x-2">

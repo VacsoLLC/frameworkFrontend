@@ -6,6 +6,7 @@ export function edit({
   dropdownOptions,
   value,
   handleChange,
+  ...extraProps
 }) {
   return (
     <Input
@@ -16,6 +17,7 @@ export function edit({
       value={value || ''}
       size={settings.fieldWidth}
       key={columnId}
+      {...extraProps}
     />
   );
 }

@@ -11,6 +11,10 @@ const useUserStore = create(
       tokenFields: {},
       authenticated: false,
       errorMessage: null,
+      hasRole: (role) => {
+        const roles = get().tokenFields.roles;
+        return roles && roles.includes(role);
+      },
       clearErrorMessage: () => set({errorMessage: null}),
       setErrorMessage: (errorMessage) => set({errorMessage}),
       setAuthenticated: (authenticated) => {

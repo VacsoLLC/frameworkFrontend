@@ -4,9 +4,9 @@ export function edit({
   columnId,
   settings,
   dropdownOptions,
-
   value,
   handleChange,
+  ...extraProps
 }) {
   return (
     <Textarea
@@ -17,6 +17,7 @@ export function edit({
       value={value || ''}
       key={columnId}
       style={{height: '100px'}}
+      {...extraProps}
     />
   );
 }

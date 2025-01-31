@@ -13,6 +13,7 @@ export function edit({
   dropdownOptions,
   value,
   handleChange,
+  ...extraProps
 }) {
   return (
     <Select
@@ -23,6 +24,7 @@ export function edit({
       }}
       size={settings.fieldWidth}
       key={columnId}
+      {...extraProps}
     >
       <SelectTrigger>
         <SelectValue />
