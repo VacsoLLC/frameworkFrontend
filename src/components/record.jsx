@@ -84,16 +84,6 @@ export default function Record({
     }
   }, [record, schema]);
 
-  useEffect(() => {
-    if (newRecord && where.length > 0 && Object.keys(formData).length === 0) {
-      const newFormData = {};
-      where.forEach((whereClause) => {
-        Object.assign(newFormData, whereClause);
-      });
-      setFormData(newFormData);
-    }
-  }, [newRecord, where, formData]);
-
   const handleChange = (columnId, value) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
