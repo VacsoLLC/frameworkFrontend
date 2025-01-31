@@ -42,6 +42,7 @@ async function getDropDownOptions(settings, value) {
           columns: ['id', settings.friendlyColumnName],
           queryModifier: settings.queryModifier,
           queryModifierArgs: {settings, value},
+          limit: 10000,
         },
       });
 
