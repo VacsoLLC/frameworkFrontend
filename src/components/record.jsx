@@ -6,9 +6,8 @@ import Form from './form.jsx';
 import ActionButton from './buttons/actionbutton.jsx';
 import {unFormatDateTime} from './util.js';
 import {Button} from './ui/button.jsx';
-import {useToast} from '../hooks/use-toast.js';
-import {Toaster} from './ui/toaster.jsx';
 import ActiveViewers from './ActiveViewers.jsx';
+import Alert from './alert.jsx';
 
 export default function Record({
   db,
@@ -25,7 +24,7 @@ export default function Record({
   const [formData, setFormData] = useState({});
   const toast = useUserStore((state) => state.toast);
   const [counter, setCounter] = useState(0);
-  const {toast: shadToast} = useToast();
+
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const userId = useUserStore((state) => state.userId);
@@ -54,6 +53,9 @@ export default function Record({
     packageName: db,
     className: table,
     methodName: 'recordGet',
+    args: {
+      includeDeleted: true,
+    },
     recordId,
     reload,
     enabled: !newRecord,
@@ -81,16 +83,6 @@ export default function Record({
       setLoading(false);
     }
   }, [record, schema]);
-
-  useEffect(() => {
-    if (newRecord && where.length > 0 && Object.keys(formData).length === 0) {
-      const newFormData = {};
-      where.forEach((whereClause) => {
-        Object.assign(newFormData, whereClause);
-      });
-      setFormData(newFormData);
-    }
-  }, [newRecord, where, formData]);
 
   const handleChange = (columnId, value) => {
     setFormData((prevFormData) => ({
@@ -127,11 +119,11 @@ export default function Record({
         onClose(response.data.id);
       }
 
-      shadToast({
+      toast({
+        severity: 'success',
         summary: 'Success',
-        description: `Record created successfully. ID: ${response.data.id}`,
+        detail: `Record created successfully. ID: ${response.data.id}`,
         life: 3000,
-        variant: 'success',
       });
 
       if (!closeOnCreate) {
@@ -179,10 +171,8 @@ export default function Record({
   if (error) return <p>Error: {error}</p>;
   if (!record && (loading || recordLoading || schemaLoading || buttonsLoading))
     return <></>;
-
   return (
     <div className="m-0">
-      <Toaster />
       {showHeader ? (
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold m-2">
@@ -195,6 +185,14 @@ export default function Record({
       ) : (
         ''
       )}
+
+      {record?.data.deleted_at && (
+        <Alert
+          title={`Record Deleted`}
+          message={`This record is deleted and can not be modified.`}
+        />
+      )}
+
       <Form
         schema={filteredSchema}
         formData={formData}

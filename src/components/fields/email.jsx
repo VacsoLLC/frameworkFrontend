@@ -8,6 +8,7 @@ export function edit({
   dropdownOptions,
   value,
   handleChange,
+  ...extraProps
 }) {
   return (
     <>
@@ -20,13 +21,14 @@ export function edit({
         value={value || ''}
         size={settings.fieldWidth}
         key={columnId}
+        {...extraProps}
       />
-      <SendEmail value={value} />
+      <SendEmail value={value} {...extraProps}/>
     </>
   );
 }
 
-function SendEmail({value}) {
+function SendEmail({value, ...props}) {
   if (!value?.includes('@')) {
     return null;
   }
@@ -40,6 +42,7 @@ function SendEmail({value}) {
         window.location.href = `mailto:${value}`;
       }}
       className="ml-1"
+      {...props}
     />
   );
 }

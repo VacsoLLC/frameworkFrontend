@@ -6,7 +6,7 @@ import fields from './fields';
 import useUserStore from '../stores/user.js';
 import ActionButton from './buttons/actionbutton.jsx';
 
-import {parseAsJson, parseAsString, parseAsInteger} from 'nuqs';
+import {parseAsJson, parseAsString, parseAsInteger, parseAsBoolean} from 'nuqs';
 import useQueryState from '../hooks/usequerystate.js'; // Special useQueryState that has an enable/disable flag. When disabled, it's just a standard useState.
 
 import IconButton from './buttons/iconbutton.jsx';
@@ -117,6 +117,14 @@ export default function DataTableExtended({
   const location = useLocation();
   const navigate = useNavigate();
 
+  const hasRole = useUserStore((state) => state.hasRole);
+
+  const [showDeleted, setShowDeleted] = useQueryState(
+    'showDeleted',
+    parseAsBoolean.withDefault(false),
+    saveState,
+  );
+
   const [sortOrder, setSortOrder] = useQueryState(
     'sortOrder',
     parseAsString.withDefault(null),
@@ -181,6 +189,7 @@ export default function DataTableExtended({
       sortOrder: sortOrder === null ? undefined : sortOrder,
       limit,
       offset: (page - 1) * limit,
+      includeDeleted: showDeleted,
       returnCount: true,
     },
     supressDialog: false,
@@ -331,7 +340,7 @@ export default function DataTableExtended({
                   forceReload={forceReload}
                   reload={reload}
                   formData={null}
-                  columns={schema.data.schema}
+                  columns={schema?.data?.schema}
                 />
                 {button.newLine && <div className="w-full" />}
               </>
@@ -347,6 +356,21 @@ export default function DataTableExtended({
           }}
           where={child ? childWhere : []} // we pass in the where clause if this is a child table so we can prefill the foreign keys
           closeOnCreate={closeOnCreate}
+          className="mr-1 mb-1"
+        />
+        <IconButton
+          icon={showDeleted ? 'Eye' : 'EyeOff'}
+          tooltip={
+            showDeleted ? 'Hide deleted records' : 'Show deleted records'
+          }
+          onClick={() =>
+            setShowDeleted((show) => {
+              return !show;
+            })
+          }
+          show={
+            hasRole(2) // this is only for admins
+          }
           className="mr-1 mb-1"
         />
         <IconButton

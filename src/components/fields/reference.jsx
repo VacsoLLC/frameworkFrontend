@@ -63,6 +63,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
   const navigate = useNavigate();
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [reload, setReload] = useState(1);
+  const {disabled} = props;
 
   const [referenceModalOpen, setReferenceModalOpen] = useState(false);
   const [modalSelectedValue, setModalSelectedValue] = useState(parseInt(value));
@@ -113,6 +114,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         // size={settings.fieldWidth}
         key={columnId}
         placeholder={settings.friendlyColumnName}
+        disabled={disabled}
       >
         <SelectTrigger>
           <SelectValue />
@@ -131,7 +133,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         <PopoverTrigger>
           <IconButton
             icon="Info"
-            disabled={!value}
+            disabled={!value || disabled}
             className="ml-1"
             tooltip="Preview referenced record."
           />
@@ -146,6 +148,7 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
               size="icon"
               className=" top-2 h-6 w-6 rounded-full"
               onClick={() => setOpen(false)}
+              disabled={disabled}
             >
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
@@ -203,11 +206,13 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
         onClick={() => setReferenceModalOpen(true)}
         className="ml-1"
         tooltip="Search for related record."
+        disabled={disabled}
       />
       <GoToReference
         db={settings.joinDb}
         table={settings.join}
         recordId={value}
+        disabled={disabled}
       />
 
       {settings.referenceCreate && (
@@ -223,13 +228,16 @@ export function edit({columnId, settings, value, handleChange, ...props}) {
           closeOnCreate={true}
           header="Create Related Record"
           className="ml-1"
+          {...props}
         />
       )}
     </>
   );
 }
 
-function GoToReference({db, table, recordId}) {
+edit.displayName = 'ReferenceEdit';
+
+function GoToReference({db, table, recordId, disabled}) {
   const navigate = useNavigate();
 
   return (
@@ -237,6 +245,7 @@ function GoToReference({db, table, recordId}) {
       icon="SquareArrowOutUpRight"
       tooltip={`Go to referenced record. DB: ${db} Table: ${table} Record: ${recordId}`}
       onClick={() => navigate(`/${db}/${table}/${recordId}`)}
+      disabled={disabled}
     />
   );
 }
@@ -250,6 +259,7 @@ export function preview({valueFriendly, value, settings, ...props}) {
         db={settings.joinDb}
         table={settings.join}
         recordId={value}
+        {...props}
       />
     </>
   );
