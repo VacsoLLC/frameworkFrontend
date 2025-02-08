@@ -6,6 +6,7 @@ import {Button} from '../components/ui/button';
 import Related from '../components/related.jsx';
 import ActiveViewers from '../components/ActiveViewers.jsx';
 import CreateRecord from '../components/buttons/createrecord.jsx';
+import Tree from '../components/pageTree.jsx';
 
 export default function Page({db, table, recordId}) {
   const [reload, setReload] = React.useState(0);
@@ -42,7 +43,14 @@ export default function Page({db, table, recordId}) {
           </div>
 
           <HTML value={record?.data?.body} />
+
+          <div className="pt-4 ">
+            <h2 className="text-2xl font-semibold">Child pages</h2>
+
+            <Tree db={db} table={table} parentId={parseInt(recordId)} />
+          </div>
         </div>
+
         <Related
           db={db}
           table={table}
