@@ -19,7 +19,7 @@ export default function Page({db, table, recordId}) {
   });
 
   const forceReload = () => {
-    setReload(reload + 1);
+    setReload((num) => num + 1);
   };
 
   return (

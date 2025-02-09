@@ -38,13 +38,12 @@ export default function AttachmentUploader({
       e.stopPropagation();
     };
 
-    const handleDrop = (e) => {
+    const handleDrop = async (e) => {
       e.preventDefault();
       e.stopPropagation();
 
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-
-        uploadHandler(
+        await uploadHandler(
           e.dataTransfer.files,
           db,
           table,
