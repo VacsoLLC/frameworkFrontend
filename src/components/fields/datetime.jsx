@@ -1,14 +1,17 @@
-import React, { useRef, useState } from "react";
-import { format, parse } from "date-fns";
-import { Input } from "../ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
-import { Clock } from "lucide-react";
-import { Calendar } from "../ui/calendar";
+import React, {useRef, useState} from 'react';
+import {format, parse} from 'date-fns';
+import {Input} from '../ui/input';
+import {Popover, PopoverContent, PopoverTrigger} from '../ui/popover';
+import {Button} from '../ui/button';
+import {Clock} from 'lucide-react';
+import {Calendar} from '../ui/calendar';
+import {formatDateTime as customFormat} from '../util';
 
 export const edit = () => {
   const [date, setDate] = useState(new Date());
-  const [inputValue, setInputValue] = useState(format(new Date(), "yyyy-MM-dd HH:mm"));
+  const [inputValue, setInputValue] = useState(
+    format(new Date(), 'yyyy-MM-dd HH:mm'),
+  );
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const inputRef = useRef(null);
 
@@ -20,26 +23,26 @@ export const edit = () => {
         selectedDate.getMonth(),
         selectedDate.getDate(),
         date.getHours(),
-        date.getMinutes()
+        date.getMinutes(),
       );
       setDate(newDate);
-      setInputValue(format(newDate, "yyyy-MM-dd HH:mm"));
+      setInputValue(format(newDate, 'yyyy-MM-dd HH:mm'));
     }
   };
 
   // Handle time change from time input
   const handleTimeChange = (e) => {
     const newTime = e.target.value;
-    const [hours, minutes] = newTime.split(":");
+    const [hours, minutes] = newTime.split(':');
     const newDate = new Date(
       date.getFullYear(),
       date.getMonth(),
       date.getDate(),
       parseInt(hours),
-      parseInt(minutes)
+      parseInt(minutes),
     );
     setDate(newDate);
-    setInputValue(format(newDate, "yyyy-MM-dd HH:mm"));
+    setInputValue(format(newDate, 'yyyy-MM-dd HH:mm'));
   };
 
   // Handle input change
@@ -48,7 +51,7 @@ export const edit = () => {
     setInputValue(newValue);
 
     // Parse the new value and update the date
-    const parsedDate = parse(newValue, "yyyy-MM-dd HH:mm", new Date());
+    const parsedDate = parse(newValue, 'yyyy-MM-dd HH:mm', new Date());
     if (!isNaN(parsedDate)) {
       setDate(parsedDate);
     }
@@ -89,7 +92,7 @@ export const edit = () => {
           <div className="p-3 border-t">
             <Input
               type="time"
-              value={format(date, "HH:mm")}
+              value={format(date, 'HH:mm')}
               onChange={handleTimeChange}
               className="w-full"
             />
