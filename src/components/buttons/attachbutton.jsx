@@ -32,6 +32,40 @@ export default function AttachmentUploader({
   const uploadRef = React.useRef(null);
   const [uploading, setUploading] = useState(false);
 
+  React.useEffect(() => {
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDrop = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+
+        uploadHandler(
+          e.dataTransfer.files,
+          db,
+          table,
+          recordId,
+          onUploadComplete,
+          setUploading,
+        );
+
+        e.dataTransfer.clearData();
+      }
+    };
+
+    document.addEventListener('dragover', handleDragOver);
+    document.addEventListener('drop', handleDrop);
+
+    return () => {
+      document.removeEventListener('dragover', handleDragOver);
+      document.removeEventListener('drop', handleDrop);
+    };
+  }, []);
+
   const handleButtonClick = () => {
     uploadRef.current?.click();
   };
