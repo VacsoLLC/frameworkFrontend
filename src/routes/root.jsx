@@ -150,9 +150,11 @@ function buildMenu(items, navigate, location) {
         }
 
         startTransition(() => {
-          navigate(items[item].navigate + `/?` + query.join('&'), {
-            state: {},
-          });
+          setTimeout(() => {
+            navigate(items[item].navigate + `/?` + query.join('&'), {
+              state: {},
+            });
+          }, 0);
         });
       };
     }
