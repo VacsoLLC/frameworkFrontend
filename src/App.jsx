@@ -1,5 +1,5 @@
 import {NuqsAdapter} from 'nuqs/adapters/react-router';
-import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import {createBrowserRouter, RouterProvider, useParams} from 'react-router-dom';
 import Root from './routes/root.jsx';
 import View from './routes/view.jsx';
 import Token from './routes/token.jsx';
@@ -17,6 +17,19 @@ import SignUpPage from './routes/signup.jsx';
 import CreatePasswordPage from './routes/completeAccountCreation.jsx';
 
 const queryClient = new QueryClient();
+
+function ViewWrapper({views}) {
+  const {db, table, recordId} = useParams();
+  return (
+    <View
+      views={views}
+      db={db}
+      table={table}
+      recordId={recordId}
+      key={`${db}-${table}-${recordId}`} // This ensures the component gets comlpetely re-mounted when the params change
+    />
+  );
+}
 
 function Frontend({views}) {
   const setQueryClient = useUserStore((state) => state.setQueryClient);
@@ -37,7 +50,7 @@ function Frontend({views}) {
         },
         {
           path: '/:db/:table', //core/user/table
-          element: <View views={views} />,
+          element: <ViewWrapper views={views} />,
         },
         {
           path: '/:db/:table/create', //core/user/create
@@ -45,7 +58,7 @@ function Frontend({views}) {
         },
         {
           path: '/:db/:table/:recordId', //core/user/record/1
-          element: <View views={views} />,
+          element: <ViewWrapper views={views} />,
         },
         {
           path: '/:packageName/:className/action/:methodName/:recordId',
