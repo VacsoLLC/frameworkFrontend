@@ -10,7 +10,7 @@ import {formatDateTime as customFormat} from '../util';
 export const edit = () => {
   const [date, setDate] = useState(new Date());
   const [inputValue, setInputValue] = useState(
-    format(new Date(), 'yyyy-MM-dd HH:mm'),
+    format(new Date(), 'yyyy-MM-dd hh:mm a'),
   );
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const inputRef = useRef(null);
@@ -26,7 +26,7 @@ export const edit = () => {
         date.getMinutes(),
       );
       setDate(newDate);
-      setInputValue(format(newDate, 'yyyy-MM-dd HH:mm'));
+      setInputValue(format(newDate, 'yyyy-MM-dd hh:mm a'));
     }
   };
 
@@ -42,7 +42,7 @@ export const edit = () => {
       parseInt(minutes),
     );
     setDate(newDate);
-    setInputValue(format(newDate, 'yyyy-MM-dd HH:mm'));
+    setInputValue(format(newDate, 'yyyy-MM-dd hh:mm a'));
   };
 
   // Handle input change
@@ -51,7 +51,7 @@ export const edit = () => {
     setInputValue(newValue);
 
     // Parse the new value and update the date
-    const parsedDate = parse(newValue, 'yyyy-MM-dd HH:mm', new Date());
+    const parsedDate = parse(newValue, 'yyyy-MM-dd hh:mm a', new Date());
     if (!isNaN(parsedDate)) {
       setDate(parsedDate);
     }
@@ -74,6 +74,7 @@ export const edit = () => {
         onClick={handleInputClick}
         ref={inputRef}
         className="w-64"
+        placeholder="yyyy-MM-dd hh:mm a"
       />
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
@@ -85,7 +86,6 @@ export const edit = () => {
           <Calendar
             mode="single"
             selected={date}
-            defaultMonth={date}
             onSelect={handleDateChange}
             initialFocus
           />

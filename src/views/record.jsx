@@ -9,7 +9,7 @@ export default function ViewRecord() {
   const [reload, setReload] = React.useState(0);
 
   const forceReload = () => {
-    setReload(reload + 1);
+    setReload((num) => num + 1);
   };
 
   return (

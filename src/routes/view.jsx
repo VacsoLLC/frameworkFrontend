@@ -2,10 +2,7 @@ import * as React from 'react';
 import defaultViews from '../views/index.js';
 import {useQueryState, parseAsString} from 'nuqs';
 
-import {Routes, Route, useParams} from 'react-router-dom';
-
-export default function View({views = {}}) {
-  const {db, table, recordId} = useParams(); //view
+export default function View({views = {}, table, db, recordId, ...props}) {
   const [view, setView] = useQueryState(
     'view',
     parseAsString.withDefault('default'),

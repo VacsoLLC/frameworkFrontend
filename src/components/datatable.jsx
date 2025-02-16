@@ -27,13 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-} from '@tanstack/react-table';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -235,12 +229,12 @@ export default function DataTableExtended({
       ? [
           {
             id: 'selection',
-            header: () => null,
-            cell: ({row}) => (
+            header: null,
+            render: (row) => (
               <input
                 type="radio"
-                checked={selectedRow === row.original.id}
-                onChange={() => onRowSelect(row.original.id)}
+                checked={selectedRow === row.id}
+                onChange={() => onRowSelect(row.id)}
                 onClick={(e) => e.stopPropagation()}
               />
             ),
@@ -254,72 +248,50 @@ export default function DataTableExtended({
       })
       .sort(([, settingsA], [, settingsB]) => settingsA.order - settingsB.order)
       .map(([columnId, settings]) => ({
-        accessorKey: columnId,
-        header: ({column}) => {
-          const currentSortField = sortField === column.id ? column.id : null;
-          const currentSortOrder = currentSortField
-            ? sortOrder === 'ASC'
-              ? 'ASC'
-              : 'DESC'
-            : null;
-
-          return (
-            <div className="flex items-center justify-between p-0">
-              <div className="text-black">{settings.friendlyName}</div>
-              <Button
-                variant={currentSortField ? 'outline' : 'ghost'}
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => {
-                  onSortChange(
-                    column.id,
-                    currentSortOrder === 'ASC' ? 'DESC' : 'ASC',
-                  );
-                }}
-              >
-                <span className="sr-only">Open menu</span>
-                {currentSortOrder ? (
-                  currentSortOrder === 'ASC' ? (
-                    <ChevronsUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronsDown className="h-4 w-4" />
-                  )
+        id: columnId,
+        header: () => (
+          <div className="flex items-center justify-between p-0">
+            <div className="text-black">{settings.friendlyName}</div>
+            <Button
+              variant={sortField === columnId ? 'outline' : 'ghost'}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => {
+                onSortChange(
+                  columnId,
+                  sortField === columnId && sortOrder === 'ASC'
+                    ? 'DESC'
+                    : 'ASC',
+                );
+              }}
+            >
+              <span className="sr-only">Open menu</span>
+              {sortField === columnId ? (
+                sortOrder === 'ASC' ? (
+                  <ChevronsUp className="h-4 w-4" />
                 ) : (
-                  <ChevronsUpDown className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          );
-        },
-        cell: ({row}) => {
-          const value = row.original[settings.joinDisplayAlias || columnId];
+                  <ChevronsDown className="h-4 w-4" />
+                )
+              ) : (
+                <ChevronsUpDown className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        ),
+        render: (row) => {
+          const value = row[settings.joinDisplayAlias || columnId];
           return fields[settings.fieldType]?.read
             ? fields[settings.fieldType].read({
                 value: value,
                 valueFriendly: value,
                 settings,
-                record: row?.original,
+                record: row,
               })
             : value;
         },
-        enableSorting: true,
-        enableColumnFilter: true,
       })),
   ];
 
-  const shadTable = useReactTable({
-    data: rows?.data?.rows ?? [],
-    columns,
-    manualPagination: true,
-    manualSorting: true,
-    manualFiltering: true,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
-
-  console.log(shadTable);
   const header = (
     <div className="flex flex-wrap align-middle justify-between">
       <div className="flex items-end">
@@ -430,91 +402,75 @@ export default function DataTableExtended({
       <div className="flex flex-col flex-grow min-h-0 border rounded-md mt-1 w-full max-w-full">
         <Table>
           <TableHeader>
-            {shadTable.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="sticky top-0 bg-white px-2"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : header.column.columnDef.header({
-                          column: header.column,
-                        })}
-
-                    {header.column.getCanFilter() ? (
-                      <HeaderFilter
-                        settings={schema.data.schema[header.column.id]}
-                        key={header.column.id}
-                        column={
-                          schema.data.schema[header.column.id]
-                            .filterTableAlias +
-                          '.' +
-                          schema.data.schema[header.column.id].filterColumn
-                        }
-                        onChange={onFilterElementChange}
-                        value={
-                          filter[
-                            schema.data.schema[header.column.id]
-                              .filterTableAlias +
-                              '.' +
-                              schema.data.schema[header.column.id].filterColumn
-                          ]?.value
-                        }
-                        matchMode={
-                          filter[
-                            schema.data.schema[header.column.id]
-                              .filterTableAlias +
-                              '.' +
-                              schema.data.schema[header.column.id].filterColumn
-                          ]?.matchMode
-                        }
-                      />
-                    ) : null}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
+            <TableRow>
+              {columns.map((column) => (
+                <TableHead
+                  key={column.id}
+                  className="sticky top-0 bg-white px-2"
+                >
+                  {column.header && column.header()}
+                  {column.id !== 'selection' && (
+                    <HeaderFilter
+                      settings={schema.data.schema[column.id]}
+                      column={
+                        schema.data.schema[column.id].filterTableAlias +
+                        '.' +
+                        schema.data.schema[column.id].filterColumn
+                      }
+                      onChange={onFilterElementChange}
+                      value={
+                        filter[
+                          schema.data.schema[column.id].filterTableAlias +
+                            '.' +
+                            schema.data.schema[column.id].filterColumn
+                        ]?.value
+                      }
+                      matchMode={
+                        filter[
+                          schema.data.schema[column.id].filterTableAlias +
+                            '.' +
+                            schema.data.schema[column.id].filterColumn
+                        ]?.matchMode
+                      }
+                    />
+                  )}
+                </TableHead>
+              ))}
+            </TableRow>
           </TableHeader>
 
-          {shadTable.getRowModel().rows.length ? (
-            <TableBody>
-              {shadTable.getRowModel().rows.map((row) => (
+          <TableBody>
+            {rows?.data?.rows?.length ? (
+              rows.data.rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  onClick={
-                    () =>
-                      !disableRowClick &&
-                      goToRecord({db, table, row: row.original.id})
-                    //navigate(`/${db}/${table}/${row.original.id}`)
+                  onClick={() =>
+                    !disableRowClick && goToRecord({db, table, row: row.id})
                   }
                   className="cursor-pointer"
                 >
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <TableCell key={cell.id} className="p-2">
-                        {cell.column.columnDef.cell({
-                          row: cell.row,
-                          getValue: cell.getValue,
-                        })}
-                      </TableCell>
-                    );
-                  })}
+                  {columns.map((column) => (
+                    <TableCell key={column.id} className="p-2">
+                      {column.render ? column.render(row) : row[column.id]}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                {loading ? (
-                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                ) : (
-                  'No data found'
-                )}
-              </TableCell>
-            </TableRow>
-          )}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  {loading ? (
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  ) : (
+                    'No data found'
+                  )}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
         </Table>
 
         <div className="flex items-center justify-between px-2 py-1">

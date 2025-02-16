@@ -9,7 +9,7 @@ export default function Root() {
   const location = useLocation();
 
   const forceReload = () => {
-    setReload(reload + 1);
+    setReload((num) => num + 1);
   };
 
   const [tableName, setTableName] = useQueryState('tableName');
