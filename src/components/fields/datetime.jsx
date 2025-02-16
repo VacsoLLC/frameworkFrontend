@@ -1,17 +1,24 @@
-import React, {useRef, useState} from 'react';
-import {format, parse} from 'date-fns';
+import React, {useEffect, useRef, useState} from 'react';
+import {format, parse, parseISO} from 'date-fns';
 import {Input} from '../ui/input';
 import {Popover, PopoverContent, PopoverTrigger} from '../ui/popover';
 import {Button} from '../ui/button';
 import {Clock} from 'lucide-react';
-import {Calendar} from '../ui/calendar';
+import {Calendar} from '../calendar';
 import {formatDateTime as customFormat} from '../util';
+import TimePicker from '../TimePicker';
 
-export const edit = () => {
-  const [date, setDate] = useState(new Date());
+export const edit = (props) => {
+  const {value, columnId, handleChange} = props;
+  if (!value) return null;
+  const d = new Date(value);
+  const [date, setDate] = useState(d);
+  console.log(d, 'date');
+  console.log(format(date, 'yyyy-MM-dd hh:mm a'));
   const [inputValue, setInputValue] = useState(
-    format(new Date(), 'yyyy-MM-dd hh:mm a'),
+    format(date, 'yyyy-MM-dd hh:mm a'),
   );
+  console.log(inputValue, 'inputValue');
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const inputRef = useRef(null);
 
@@ -30,10 +37,7 @@ export const edit = () => {
     }
   };
 
-  // Handle time change from time input
-  const handleTimeChange = (e) => {
-    const newTime = e.target.value;
-    const [hours, minutes] = newTime.split(':');
+  const handleTimeChange = (hours, minutes) => {
     const newDate = new Date(
       date.getFullYear(),
       date.getMonth(),
@@ -57,6 +61,9 @@ export const edit = () => {
     }
   };
 
+  useEffect(() => {
+    handleChange(columnId, date);
+  }, [date]);
   // Restore cursor position after input change
   const handleInputClick = (e) => {
     const cursorPosition = e.target.selectionStart;
@@ -90,11 +97,11 @@ export const edit = () => {
             initialFocus
           />
           <div className="p-3 border-t">
-            <Input
-              type="time"
-              value={format(date, 'HH:mm')}
+            <TimePicker
+              selectedHour={date.getHours()}
+              selectedMinute={date.getMinutes()}
+              selectedAmPm={date.getHours() >= 12 ? 'PM' : 'AM'}
               onChange={handleTimeChange}
-              className="w-full"
             />
           </div>
         </PopoverContent>

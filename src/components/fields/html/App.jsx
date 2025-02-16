@@ -57,15 +57,13 @@ import {
 import 'ckeditor5/ckeditor5.css';
 
 import './App.css';
-import { CustomImageUploadPlugin } from '../../plugins/ImageUpload/ImagePlugin.js';
+import {CustomImageUploadPlugin} from '../../plugins/ImageUpload/ImagePlugin.js';
 
 const LICENSE_KEY = 'GPL'; // or <YOUR_LICENSE_KEY>.
 
 let currentRecordId = null; // dumb
 
-
 // ClassicEditor.builtinPlugins.push(CustomImageUploadPlugin)
-
 
 export default function App({value, placeholder, onChange, onReady, recordId}) {
   const editorContainerRef = useRef(null);
@@ -115,7 +113,7 @@ export default function App({value, placeholder, onChange, onReady, recordId}) {
             'insertImageViaUrl',
             'mediaEmbed',
             'insertTable',
-            'customImageUpload'
+            'customImageUpload',
           ],
           shouldNotGroupWhenFull: true,
         },
@@ -169,7 +167,7 @@ export default function App({value, placeholder, onChange, onReady, recordId}) {
           TodoList,
           Underline,
           WordCount,
-          CustomImageUploadPlugin
+          CustomImageUploadPlugin,
         ],
         balloonToolbar: ['bold', 'italic', 'strikethrough', 'link'],
         blockToolbar: [
