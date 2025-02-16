@@ -56,11 +56,11 @@ import {
 
 import 'ckeditor5/ckeditor5.css';
 
-import './App.css';
+import './app.css';
 
-const LICENSE_KEY = 'GPL'; // or <YOUR_LICENSE_KEY>.
+const LICENSE_KEY = 'GPL';
 
-let currentRecordId = null; // dumb
+let currentRecordId = null; 
 
 export default function App({value, placeholder, onChange, onReady, recordId}) {
   const editorContainerRef = useRef(null);
