@@ -35,7 +35,13 @@ export default function Pages({db, table}) {
     <div className="p-2">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">{tableName}</h2>
-        <CreateRecord db={db} table={table} header="Create Page" />
+        <CreateRecord
+          db={db}
+          table={table}
+          where={[{parent: null}]}
+          onCreateView='page'
+          header="Create Page"
+        />
       </div>
 
       <Tree db={db} table={table} parentId={null} />

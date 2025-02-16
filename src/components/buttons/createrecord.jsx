@@ -20,6 +20,7 @@ export default function AddRecordButton({
   disabled = false,
   className,
   where,
+  onCreateView,
   ...extraProps
 }) {
   const [showDialog, setShowDialog] = useState(false);
@@ -57,6 +58,7 @@ export default function AddRecordButton({
               closeDialog(id);
             }}
             where={where}
+            onCreateView={onCreateView}
             closeOnCreate={closeOnCreate}
           />
         </DialogContent>

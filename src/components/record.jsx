@@ -18,6 +18,7 @@ export default function Record({
   where = [],
   reload,
   forceReload,
+  onCreateView,
   showHeader = false,
 }) {
   const [error, setError] = useState(null);
@@ -127,7 +128,11 @@ export default function Record({
       });
 
       if (!closeOnCreate) {
-        navigate(`/${db}/${table}/${response.data.id}`);
+        if (onCreateView) {
+          navigate(`/${db}/${table}/${response.data.id}?view=${onCreateView}`);
+        } else {
+          navigate(`/${db}/${table}/${response.data.id}`);
+        }
       } else if (onClose) {
         onClose();
       }

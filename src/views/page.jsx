@@ -33,6 +33,7 @@ export default function Page({db, table, recordId}) {
                 db={db}
                 table={table}
                 where={[{parent: record?.data?.id}]}
+                onCreateView="page"
                 header="Create child page"
               />
               <Button asChild size="sm">
