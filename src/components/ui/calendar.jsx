@@ -8,6 +8,7 @@ import {buttonVariants} from './button';
 function Calendar({className, classNames, showOutsideDays = true, ...props}) {
   return (
     <DayPicker
+      defaultMonth={props.selected}
       showOutsideDays={showOutsideDays}
       className={cn('p-3', className)}
       classNames={{
