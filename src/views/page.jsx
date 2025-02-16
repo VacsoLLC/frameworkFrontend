@@ -7,6 +7,7 @@ import Related from '../components/related.jsx';
 import ActiveViewers from '../components/ActiveViewers.jsx';
 import CreateRecord from '../components/buttons/createrecord.jsx';
 import Tree from '../components/pageTree.jsx';
+import Alert from '../components/alert.jsx';
 
 export default function Page({db, table, recordId}) {
   const [reload, setReload] = React.useState(0);
@@ -15,6 +16,9 @@ export default function Page({db, table, recordId}) {
     packageName: db,
     className: table,
     methodName: 'recordGet',
+    args: {
+      includeDeleted: true,
+    },
     recordId,
   });
 
@@ -42,6 +46,13 @@ export default function Page({db, table, recordId}) {
               <ActiveViewers db={db} table={table} recordId={recordId} />
             </div>
           </div>
+
+          {record?.data.deleted_at && (
+            <Alert
+              title={`Record Deleted`}
+              message={`This record is deleted and can not be modified.`}
+            />
+          )}
 
           <HTML value={record?.data?.body} />
 
