@@ -132,8 +132,7 @@ export default function CreatePasswordPage() {
                 type="submit"
                 className="w-full"
                 disabled={
-                  isLoading ||
-                  passwordStrength < MINIMUM_REQUIRED_STRENGTH
+                  isLoading || passwordStrength < MINIMUM_REQUIRED_STRENGTH
                 }
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}

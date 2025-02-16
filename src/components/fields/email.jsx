@@ -23,7 +23,7 @@ export function edit({
         key={columnId}
         {...extraProps}
       />
-      <SendEmail value={value} {...extraProps}/>
+      <SendEmail value={value} {...extraProps} />
     </>
   );
 }
