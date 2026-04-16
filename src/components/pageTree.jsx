@@ -18,7 +18,7 @@ export default function Tree({db, table, parentId = null}) {
   }
 
   if (record.data.length === 0) {
-    return <div className="ml-3">No pages found</div>;
+    return <div className="ml-6">No pages found</div>;
   }
 
   return (
