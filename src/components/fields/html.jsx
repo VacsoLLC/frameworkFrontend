@@ -1,4 +1,4 @@
-import Html from './html/app.jsx';
+import Html from './html/App.jsx';
 import {useEffect, useState, useRef} from 'react';
 
 import {api} from '../../lib/usebackend.js';

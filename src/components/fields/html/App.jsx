@@ -56,7 +56,7 @@ import {
 
 import 'ckeditor5/ckeditor5.css';
 
-import './app.css';
+import './App.css';
 
 const LICENSE_KEY = 'GPL';
 

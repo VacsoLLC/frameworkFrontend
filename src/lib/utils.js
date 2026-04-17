@@ -1,5 +1,5 @@
 import {clsx} from 'clsx';
-import {debounce} from 'lodash';
+import {debounce} from 'lodash-es';
 import {useEffect, useMemo, useRef} from 'react';
 import {twMerge} from 'tailwind-merge';
 
